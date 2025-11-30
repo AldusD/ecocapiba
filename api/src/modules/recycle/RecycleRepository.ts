@@ -77,4 +77,23 @@ export class RecycleRepository {
       where: { id },
     });
   }
+
+  async hasRecycleInPeriod(
+    userId: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<boolean> {
+    const recycle = await this.prisma.recyclesMade.findFirst({
+      where: {
+        userId: userId,
+        doneDate: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      select: { id: true }, 
+    });
+
+    return recycle !== null;
+  }
 }
