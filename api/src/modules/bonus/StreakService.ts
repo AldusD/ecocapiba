@@ -1,18 +1,30 @@
-import { RecycleRepository } from "../recycle/RecycleRepository.js"; 
+import { RecycleRepository } from "../recycle/RecycleRepository.js";
 
 export class StreakService {
   private recycleRepository = new RecycleRepository();
 
-  // Configurações da Regra de Negócio
   private readonly BASE_MULTIPLIER = 1.0;
   private readonly WEEKLY_BONUS = 0.1;
   private readonly MAX_MULTIPLIER = 1.7;
 
   async calculateMultiplier(userId: string): Promise<{ streakWeeks: number, multiplier: number }> {
     let streakWeeks = 0;
-    let keepChecking = true;
     
     let checkDate = new Date();
+
+    const currentWeekRange = this.getWeekRange(checkDate);
+    const recycledThisWeek = await this.recycleRepository.hasRecycleInPeriod(
+      userId,
+      currentWeekRange.start,
+      currentWeekRange.end
+    );
+
+    if (recycledThisWeek) {
+      streakWeeks++;
+    }
+
+    checkDate.setDate(checkDate.getDate() - 7);
+    let keepChecking = true;
 
     while (keepChecking && streakWeeks < 10) {
       const { start, end } = this.getWeekRange(checkDate);
@@ -44,7 +56,7 @@ export class StreakService {
 
   private getWeekRange(date: Date) {
     const current = new Date(date);
-    const day = current.getDay(); // 0 (Dom) a 6 (Sab)
+    const day = current.getDay();
     
     const diffToSunday = current.getDate() - day; 
     
