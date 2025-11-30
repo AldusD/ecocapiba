@@ -6,7 +6,7 @@ export class StreakController {
 
   async getMultiplier(req: Request, res: Response) {
     try {
-      const { userId } = req.body; 
+      const { userId } = req.params;
 
       if (!userId) {
         return res.status(400).json({ error: "User ID is required" });
@@ -16,8 +16,10 @@ export class StreakController {
 
       return res.status(200).json(result);
     } catch (error) {
-      console.error(error); 
-      return res.status(500).json({ error: "Error calculating streak multiplier" });
+      console.error(error);
+      return res
+        .status(500)
+        .json({ error: "Error calculating streak multiplier" });
     }
   }
 }

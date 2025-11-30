@@ -7,6 +7,8 @@ import { AppRoutes } from './resources/decorator/appRoutesDecorator.js';
 // Theese imports forces decorator @AppRoutes render routes, this is not desired, if youre able to fix it, please do :)
 import './modules/auth/AuthRoutes.js';
 import './modules/quiz/QuizRoutes.js';
+import './modules/recycle/RecycleRoutes.js';
+import './modules/streak/StreakRoutes.js';
 
 @AppRoutes
 export default class App {
