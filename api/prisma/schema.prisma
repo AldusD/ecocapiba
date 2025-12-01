@@ -20,6 +20,7 @@ model User {
   cpf         String        @unique
   password    String
   QuizAttempt QuizAttempt[]
+  RecyclesMade RecyclesMade[]
 }
 
 model Quiz {
@@ -45,4 +46,12 @@ model QuizAttempt {
   createdAt DateTime @default(now())
   Quiz      Quiz     @relation(fields: [quizId], references: [id])
   User      User     @relation(fields: [userId], references: [id])
+}
+
+model RecyclesMade{
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  doneDate DateTime
+
+  User User @relation(fields: [userId], references: [id])
 }

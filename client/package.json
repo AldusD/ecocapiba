@@ -13,6 +13,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.90.10",
     "dotenv": "^17.2.3",
+    "html5-qrcode": "^2.3.8",
     "install": "^0.13.0",
     "npm": "^11.6.2",
     "react": "^18.3.1",
