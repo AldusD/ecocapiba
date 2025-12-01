@@ -71,10 +71,4 @@ export class RecycleRepository {
       },
     });
   }
-
-  async delete(id: string): Promise<RecyclesMade> {
-    return await this.prisma.recyclesMade.delete({
-      where: { id },
-    });
-  }
 }
