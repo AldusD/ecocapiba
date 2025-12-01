@@ -4,20 +4,9 @@ import PrismaService from "../../db/PrismaService.js";
 export class RecycleRepository {
   private prisma = PrismaService.getClient();
 
-  private validateId(id: string): number | null {
-    const parsed = Number(id);
-    return isNaN(parsed) ? null : parsed;
-  }
-
-  async getRecylesById(id: string): Promise<number | null> {
-    const parsedId = this.validateId(id);
-    
-    if (parsedId === null) return null;
-
+  async getRecylesById(id: number): Promise<number | null> {
     const recycleById = await this.prisma.recyclesMade.findUnique({
-      where: { 
-        id: parsedId 
-      },
+      where: { id },
       select: { userId: true },
     });
 
@@ -25,11 +14,9 @@ export class RecycleRepository {
   }
 
   async getRecyclesByDate(
-    userId: string,
+    userId: number,
     doneDate: Date
   ): Promise<Date | null> {
-    const parsedUserId = this.validateId(userId);
-    if (parsedUserId === null) return null; 
 
     const startOfDay = new Date(doneDate);
     startOfDay.setHours(0, 0, 0, 0);
@@ -39,7 +26,7 @@ export class RecycleRepository {
 
     const recycleByDate = await this.prisma.recyclesMade.findFirst({
       where: {
-        userId: parsedUserId,
+        userId: userId,
         doneDate: {
           gte: startOfDay,
           lte: endOfDay,
@@ -50,32 +37,25 @@ export class RecycleRepository {
     return recycleByDate ? recycleByDate.doneDate : null;
   }
 
-  async getRecyclesByUserId(userId: string): Promise<RecyclesMade[] | null> {
-    const parsedUserId = this.validateId(userId);
-    
-    // Se o ID for inválido, retorna lista vazia ou null
-    if (parsedUserId === null) return null;
+  async getRecyclesByUserId(userId: number): Promise<RecyclesMade[] | null> {
 
     return await this.prisma.recyclesMade.findMany({
-      where: { userId: parsedUserId },
+      where: { userId: userId },
       orderBy: { doneDate: "desc" },
     });
   }
 
   async getDaysRecycledInMonth(
-    userId: string,
+    userId: number,
     month: number,
     year: number
   ): Promise<number[]> {
-    const parsedUserId = this.validateId(userId);
-    if (parsedUserId === null) return []; // Retorna array vazio
-
     const startDate = new Date(year, month, 1);
     const endDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
 
     const recycles = await this.prisma.recyclesMade.findMany({
       where: {
-        userId: parsedUserId,
+        userId: userId,
         doneDate: { gte: startDate, lte: endDate },
       },
       select: { doneDate: true },
@@ -84,45 +64,32 @@ export class RecycleRepository {
     return recycles.map((r) => r.doneDate.getDate());
   }
 
-  async create(userId: string, doneDate: Date): Promise<RecyclesMade> {
-    const parsedUserId = this.validateId(userId);
+  async create(userId: number, doneDate: Date): Promise<RecyclesMade> {
     
-    // No create, se o ID for inválido, aqui devemos lançar ERRO
-    if (parsedUserId === null) {
-      throw new Error("Invalid User ID provided for creation");
-    }
-
     return await this.prisma.recyclesMade.create({
       data: {
-        userId: parsedUserId,
+        userId: userId,
         doneDate: doneDate,
       },
     });
   }
 
-  async delete(id: string): Promise<RecyclesMade> {
-    const parsedId = this.validateId(id);
-    
-    if (parsedId === null) {
-       throw new Error("Invalid Recycle ID provided for deletion");
-    }
+  async delete(id: number): Promise<RecyclesMade> {
 
     return await this.prisma.recyclesMade.delete({
-      where: { id: parsedId },
+      where: { id: id },
     });
   }
 
   async hasRecycleInPeriod(
-    userId: string,
+    userId: number,
     startDate: Date,
     endDate: Date
   ): Promise<boolean> {
-    const parsedUserId = this.validateId(userId);
-    if (parsedUserId === null) return false; // ID inválido nunca reciclou
-
+   
     const recycle = await this.prisma.recyclesMade.findFirst({
       where: {
-        userId: parsedUserId,
+        userId: userId,
         doneDate: {
           gte: startDate,
           lte: endDate,

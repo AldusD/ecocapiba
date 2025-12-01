@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine # Usa uma versão leve do Postgres
+    container_name: ecocapiba_db_local
+    ports:
+      - "5432:5432" # Libera a porta padrão
+    environment:
+      POSTGRES_USER: user_docker
+      POSTGRES_PASSWORD: password_docker
+      POSTGRES_DB: ecocapiba_local
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Salva os dados para não perder quando desligar
+
+volumes:
+  postgres_data:

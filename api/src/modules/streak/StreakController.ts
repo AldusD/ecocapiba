@@ -8,11 +8,17 @@ export class StreakController {
     try {
       const { userId } = req.params;
 
+      const parsedUserId = Number(userId);
+      
+      if (isNaN(parsedUserId)) {
+        return res.status(400).json({ error: "Invalid User ID" });
+      }
+
       if (!userId) {
         return res.status(400).json({ error: "User ID is required" });
       }
 
-      const result = await this.streakService.calculateMultiplier(userId);
+      const result = await this.streakService.calculateMultiplier(parsedUserId);
 
       return res.status(200).json(result);
     } catch (error) {

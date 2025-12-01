@@ -7,7 +7,7 @@ export class StreakService {
   private readonly WEEKLY_BONUS = 0.1;
   private readonly MAX_MULTIPLIER = 1.7;
 
-  async calculateMultiplier(userId: string): Promise<{ streakWeeks: number, multiplier: number }> {
+  async calculateMultiplier(userId: number): Promise<{ streakWeeks: number, multiplier: number }> {
     let streakWeeks = 0;
     
     let checkDate = new Date();

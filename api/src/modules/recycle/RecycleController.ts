@@ -8,8 +8,14 @@ export class RecycleController {
     try {
       const { userId, date } = req.body;
 
+      const parsedUserId = Number(userId);
+
+      if (isNaN(parsedUserId)) {
+        return res.status(400).json({ error: "Invalid User ID" });
+      }
+
       const hasRecycled = await this.recycleService.checkRecycle(
-        userId,
+        parsedUserId,
         new Date(date)
       );
 
@@ -22,6 +28,12 @@ export class RecycleController {
   async create(req: Request, res: Response) {
     try {
       const { userId, doneDate } = req.body;
+
+      const parsedUserId = Number(userId);
+
+      if (isNaN(parsedUserId)) {
+        return res.status(400).json({ error: "Invalid User ID" });
+      }
 
       const registerRecycle = await this.recycleService.registerRecycle(
         userId,
