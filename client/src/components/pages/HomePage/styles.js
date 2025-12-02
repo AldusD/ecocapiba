@@ -1,6 +1,15 @@
 import styled, { createGlobalStyle } from "styled-components"
 import enums from "../../../enums";
 
+export default {
+    page: {
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        backgroundColor: enums.COLORS.PAGE_BG
+    }
+}
+
 export const GlobalStyle = createGlobalStyle`
     body {
         background-color: ${enums.COLORS.HOME_BG};

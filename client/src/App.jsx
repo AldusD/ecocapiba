@@ -1,5 +1,9 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 import HomePage from './components/pages/HomePage';
 import NotFoundPage from './components/pages/NotFoundPage';
+import AboutUsPage from  './components/pages/AboutUsPage'
 
 const queryClient = new QueryClient();
 

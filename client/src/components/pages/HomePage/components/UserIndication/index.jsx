@@ -5,6 +5,24 @@ import {
     WhatsAppButton, InstagramButton
 } from "./styles";
 
+const shareToInstagram = async (inviteCode, inviteLink) => {
+  const message = `Olá! Baixe o app usando meu código: ${inviteCode}\n${inviteLink}`;
+  
+  try {
+    // Copiar para área de transferência
+    await navigator.clipboard.writeText(message);
+    
+    // Abrir Instagram Direct
+    window.open('instagram://direct', '_blank');
+    
+    // Mostrar feedback ao usuário
+    alert('Texto copiado! Cole a mensagem no Instagram.');
+  } catch (error) {
+    // Fallback
+    alert(`Copie este convite:\n\n${message}`);
+  }
+};
+
 export default function UserIndication() {
     return (
         <ShareSectionCard>
@@ -20,7 +38,7 @@ export default function UserIndication() {
                     <i className="fab fa-whatsapp"></i> WhatsApp
                 </WhatsAppButton>
                 
-                <InstagramButton href="#" role="button" aria-label="Compartilhar no Instagram">
+                <InstagramButton onClick={shareToInstagram} href="#" role="button" aria-label="Compartilhar no Instagram">
                     <i className="fab fa-instagram"></i> Instagram
                 </InstagramButton>
             </SocialButtons>
