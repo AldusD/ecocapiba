@@ -139,12 +139,6 @@ export default function HomePage() {
           <div className="logo">
             <h1>Ecocapiba</h1>
           </div>
-          <div className="status-ofensiva">
-            <span className="dias-ofensiva"> 
-              <div className="medidor-fogo">
-                {currentStreak >= 1 && <i className="fa-solid fa-fire status-fire-icon"></i>}</div>
-              {currentStreak} semana{currentStreak !== 1 ? 's' : ''} de ofensiva</span>
-          </div>
         </header>
 
         <main>
