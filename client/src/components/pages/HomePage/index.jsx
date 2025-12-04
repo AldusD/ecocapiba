@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import Calendar from "./components/Calendar";
+import Quiz from "./components/Quiz";
 import { StreakService } from "../../../services/StreakService";
 import StreakWidget from "./components/Streak/index.jsx"; 
 
@@ -27,22 +28,19 @@ import {
 } from "./styles";
 
 export default function HomePage() {
-  // --- CONFIGURAÇÃO ---
-  const USER_ID = 1; // ID fixo para teste (depois virá do Login)
+  const USER_ID = 1; // to be changed to userdata
 
   const [xpNumber, setXpNumber] = useState(100); 
   const [xpLimit, setXpLimit] = useState(2000);
   
-  // Estados de recompensas já coletadas
   const [xp300Claimed, setXp300Claimed] = useState(false);
   const [xp1000Claimed, setXp1000Claimed] = useState(false);
   const [xp2500Claimed, setXp2500Claimed] = useState(false);
   
-  const [currentLevel, setCurrentLevel] = useState(0); 
-  const [currentTitle, setCurrentTitle] = useState("Cidadão");
+  const [currentLevel, setCurrentLevel] = useState(0); // to be changed to userdata
+  const [currentTitle, setCurrentTitle] = useState("Cidadão"); // to be changed to userdata
   
-  // --- ESTADOS DA API DE STREAK ---
-  const [currentStreak, setCurrentStreak] = useState(0); 
+  const [currentStreak, setCurrentStreak] = useState(0); // to be changed to userdata
   const [currentMultiplier, setCurrentMultiplier] = useState(1.0);
   const [loadingStreak, setLoadingStreak] = useState(true);
 
@@ -53,17 +51,15 @@ export default function HomePage() {
   const xpString = `${xpNumber} / ${xpLimit} XP`;
   const barPercentage = Math.min(100, (xpNumber / xpLimit) * 100);
 
-  // 1. Busca dados do Backend usando o Service
   useEffect(() => {
     const fetchStreakData = async () => {
       try {
-        // O componente chama o Service. Ele não sabe se vem do localhost ou da lua.
         const data = await StreakService.getMultiplier(USER_ID);
         
         setCurrentStreak(data.streakWeeks);   
         setCurrentMultiplier(data.multiplier); 
       } catch (error) {
-        // O erro já foi logado no service, aqui você pode mostrar um toast se quiser
+        // The error is already logged in the service
       } finally {
         setLoadingStreak(false);
       }
@@ -72,16 +68,13 @@ export default function HomePage() {
     fetchStreakData();
   }, []);
 
-  // 2. Função de ajuste de XP (com useCallback para evitar loop no useEffect)
   const adjust_xp = useCallback((baseXp) => {
     const bonusXp = Math.round(baseXp * currentMultiplier);
     setXpNumber((prev) => prev + bonusXp);
     
-    // Log para você conferir se o multiplicador funcionou
     console.log(`XP Ganho: ${bonusXp} (Base: ${baseXp} * Multiplicador: ${currentMultiplier})`);
   }, [currentMultiplier]);
 
-  // Lógica de Level Up
   useEffect(() => {
     if (xpNumber >= xpLimit) {
       setXpNumber((prev) => prev - xpLimit);
@@ -91,11 +84,12 @@ export default function HomePage() {
     }
   }, [xpNumber, xpLimit]);
 
-  // Lógica do Scanner QR Code
+
   useEffect(() => {
     if (!isScannerVisible) return;
 
     const onScanSuccess = (decodedText, decodedResult) => {
+      // handle the scanned code
       console.log(`Code matched = ${decodedText}`, decodedResult);
       
       if (decodedText === "https://pt.wikipedia.org/wiki/Reciclagem" && !xp300Claimed) {
@@ -113,7 +107,7 @@ export default function HomePage() {
     };
 
     const onScanFailure = (error) => {
-      // Ignora erros de leitura contínua
+      // ignore or log
     };
 
     try {
@@ -218,7 +212,7 @@ export default function HomePage() {
         </main>
 
         <aside>
-          {/* 3. Inserção do Widget de Streak */}
+          
           <StreakWidget 
             streakWeeks={currentStreak} 
             multiplier={currentMultiplier} 
