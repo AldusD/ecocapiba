@@ -1,5 +1,8 @@
 import { type Request, type Response } from "express";
 import { RecycleService } from "./RecycleService.js";
+import { MessagesEnum } from "../shared/enums/messagesEnum.js";
+import { HttpStatusEnum } from "../shared/enums/httpStatusEnum.js";
+
 
 export class RecycleController {
   constructor(private recycleService: RecycleService = new RecycleService()) {}
@@ -19,9 +22,9 @@ export class RecycleController {
         new Date(date)
       );
 
-      return res.status(200).json({ hasRecycled });
+      return res.status(HttpStatusEnum.OK).json({ hasRecycled });
     } catch (error) {
-      return res.status(500).json({ error: "Error checking recycle status" });
+      return res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json(MessagesEnum.ERROR_CHECKING_RECYCLE);
     }
   }
 
@@ -39,9 +42,9 @@ export class RecycleController {
         userId,
         new Date(doneDate)
       );
-      return res.status(200).json({ registerRecycle });
+      return res.status(HttpStatusEnum.CREATED).json({ registerRecycle });
     } catch (error) {
-      return res.status(500).json({ error: "Failed to create recycle!" });
+      return res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json(MessagesEnum.ERROR_CREATING_RECYCLE);
     }
   }
 }
