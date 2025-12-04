@@ -1,7 +1,6 @@
 import styled, { keyframes } from "styled-components";
 import PropTypes from "prop-types";
 
-// --- Estilos do Componente ---
 const pulse = keyframes`
   0% { transform: scale(1); }
   50% { transform: scale(1.2); }
@@ -75,7 +74,7 @@ const StreakText = styled.p`
   
   strong {
     font-weight: 700;
-    color: #ffeb3b; /* Amarelo destaque */
+    color: #ffeb3b; 
   }
 `;
 
@@ -94,7 +93,6 @@ const ProgressBarFill = styled.div`
   transition: width 0.5s ease-out;
 `;
 
-// --- Lógica do Componente ---
 export default function StreakWidget({ streakWeeks, multiplier, loading }) {
   if (loading) {
     return (
@@ -104,8 +102,6 @@ export default function StreakWidget({ streakWeeks, multiplier, loading }) {
     );
   }
 
-  // Calcula a porcentagem da barra (considerando teto de 1.7x)
-  // 1.0x = 0%, 1.7x = 100%
   const percentage = Math.min(100, Math.max(5, ((multiplier - 1) / 0.7) * 100));
 
   return (
@@ -133,7 +129,6 @@ export default function StreakWidget({ streakWeeks, multiplier, loading }) {
   );
 }
 
-// --- Validação de Tipos (Correção do Erro ESLint) ---
 StreakWidget.propTypes = {
   streakWeeks: PropTypes.number,
   multiplier: PropTypes.number,
