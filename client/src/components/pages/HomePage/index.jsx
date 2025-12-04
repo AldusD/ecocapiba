@@ -127,7 +127,7 @@ export default function HomePage() {
         scannerRef.current = null;
       }
     };
-  }, [isScannerVisible, xp300Claimed, xp1000Claimed, xp2500Claimed, adjust_xp]); // adjust_xp incluído nas dependências
+  }, [isScannerVisible, xp300Claimed, xp1000Claimed, xp2500Claimed, adjust_xp]); // adjust_xp included in dependencies
 
   const showScanner = () => setIsScannerVisible(true);
 
@@ -142,10 +142,8 @@ export default function HomePage() {
           <div className="status-ofensiva">
             <span className="dias-ofensiva"> 
               <div className="medidor-fogo">
-                {currentStreak >= 1 && <i className="fa-solid fa-fire status-fire-icon"></i>}
-              </div>
-              {currentStreak} semana{currentStreak !== 1 ? 's' : ''} de ofensiva
-            </span>
+                {currentStreak >= 1 && <i className="fa-solid fa-fire status-fire-icon"></i>}</div>
+              {currentStreak} semana{currentStreak !== 1 ? 's' : ''} de ofensiva</span>
           </div>
         </header>
 
@@ -189,8 +187,7 @@ export default function HomePage() {
               </MapPin>
               <h3>Ação de Reciclagem</h3>
               <p>
-                Leve seus recicláveis a um centro de coleta e registre para ganhar
-                XP 
+                Leve seus recicláveis a um centro de coleta e registre para ganhar XP 
                 {currentMultiplier > 1 && <strong> (Bônus ativo: {currentMultiplier}x)</strong>}.
               </p>
               <ButtonActionRegister onClick={showScanner}>
@@ -203,9 +200,8 @@ export default function HomePage() {
               ref={readerRef}
               style={{
                 display: isScannerVisible ? "block" : "none",
-                width: "100%",
-                maxWidth: "600px",
-                height: "auto",
+                width: "600px",
+                height: "600px",
               }}
             />
           </ActionSection>
@@ -228,13 +224,13 @@ export default function HomePage() {
 
             <XpContainer>
               <XpTrack>
-                <XpFill
+              <XpFill
                   id="xp_bar"
                   style={{ width: `${barPercentage}%` }}
-                />
+              />
               </XpTrack>
               <XpText id="xp_txt">
-                {xpString}
+              {xpString}
               </XpText>
             </XpContainer>
           </CardLevelHighlight>
@@ -242,14 +238,22 @@ export default function HomePage() {
           <Card as="section" className="share-section">
             <h3>Compartilhe e Ganhe!</h3>
             <p>Convide seus amigos e ganhe recompensas juntos.</p>
+
             <ShareLinkBox>eccocapiba.com/convite/1a2b3c</ShareLinkBox>
 
             <SocialButtons>
-              <ButtonSocial href="#" className="btn-whatsapp" role="button">
-                <i className="fab fa-whatsapp"></i> WhatsApp
+              <ButtonSocial 
+              href="#" 
+              className="btn-whatsapp" 
+              role="button"
+              >
+              <i className="fab fa-whatsapp"></i> WhatsApp
               </ButtonSocial>
-              <ButtonSocial href="#" className="btn-instagram" role="button">
-                <i className="fab fa-instagram"></i> Instagram
+              <ButtonSocial 
+              href="#" 
+              className="btn-instagram" 
+              role="button">
+              <i className="fab fa-instagram"></i> Instagram
               </ButtonSocial>
             </SocialButtons>
           </Card>
