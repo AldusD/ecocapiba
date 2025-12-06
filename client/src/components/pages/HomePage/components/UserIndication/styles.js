@@ -82,9 +82,50 @@ export const SocialButtons = styled.div`
 
 export const WhatsAppButton = styled(SocialButton)`
   background-color: ${enums.COLORS.WHATSAPP};
+  transition: all 0.3s ease;
+  
+  &:hover {
+    opacity: 0.85;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
 `;
 
-export const InstagramButton = styled(SocialButton)`
-  background: ${enums.COLORS.INSTAGRAM};
-`;
 
+export const GenericShareButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  color: white;
+  text-decoration: none;
+  font-family: 'Work Sans', sans-serif;
+  gap: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-size: 0.95rem;
+  
+  /* Gradiente moderno e neutro */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  
+  &:hover {
+    opacity: 0.85;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  i {
+    font-size: 1.1em;
+  }
+`;
