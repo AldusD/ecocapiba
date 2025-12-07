@@ -2,14 +2,14 @@ const API = process.env.REACT_APP_API_BASE_URL;
 
 const login = async (userData) => {
   const options = { headers: { 'Content-Type': 'application/json' }, method: 'POST', body: JSON.stringify(userData) };
-  const response = await fetch(`${API}/auth/sign-in`, options);
+  const response = await fetch(`${API}/login`, options);
   const data = response.text();
   return data;
 }
 
 const register = async (userData) => {
   const options = { headers: { 'Content-Type': 'application/json' }, method: 'POST', body: JSON.stringify(userData) };
-  const response = await fetch(`${API}/auth/sign-up`, options);
+  const response = await fetch(`${API}/auth/register`, options);
   const data = response.text();
   return data;
 }
@@ -35,7 +35,7 @@ const getUserData = async () =>  {
       method: 'GET', 
     };
 
-  const response = await fetch(`${API}/auth/data`, options);
+  const response = await fetch(`${API}/auth/profile`, options);
   const data = response.text();
   return data;
 }

@@ -20,6 +20,8 @@ model User {
   cpf            String @unique
   invitationCode String @unique
   password       String
+  xp             Int    @default(0)
+  capibas        Float  @default(0)
 
   QuizAttempt  QuizAttempt[]
   RecyclesMade RecyclesMade[]
@@ -29,9 +31,11 @@ model User {
 }
 
 model InvitationLog {
-  id        Int @id @default(autoincrement())
+  id        Int   @id @default(autoincrement())
   inviterId Int
   invitedId Int
+  xp        Int
+  capibas   Float
 
   createdAt DateTime @default(now())
 

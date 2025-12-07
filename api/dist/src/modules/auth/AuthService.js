@@ -2,6 +2,10 @@ import { AuthRepository } from "./AuthRepository.js";
 import { generateAccessToken } from "../../utils/jwt.utils.js";
 import { generateInvitationCode } from "../../utils/invitationCode.utils.js";
 import bcrypt from "bcrypt";
+import dotenv from "dotenv";
+dotenv.config();
+const CAPIBA_REWARD = Number(process.env.CAPIBA_REWARD);
+const XP_REWARD = Number(process.env.XP_REWARD);
 export class AuthService {
     authRepository = new AuthRepository();
     async authUser(email, password) {
@@ -22,8 +26,9 @@ export class AuthService {
         dbUser = await this.authRepository.getByCPF(cpf);
         if (dbUser)
             throw new Error("CPF already registered!");
+        let inviterUser = null;
         if (invitationCode) {
-            const inviterUser = await this.authRepository.getByInvitationCode(invitationCode);
+            inviterUser = await this.authRepository.getByInvitationCode(invitationCode);
             if (!inviterUser) {
                 throw new Error("Invalid invitation code!");
             }
@@ -35,6 +40,11 @@ export class AuthService {
                 const invitationCode = generateInvitationCode();
                 password = await bcrypt.hash(password, 10);
                 const user = await this.authRepository.create(email, password, cpf, name, invitationCode);
+                // User inviter rewards
+                if (inviterUser) {
+                    await this.authRepository.addReward(inviterUser.id, XP_REWARD, CAPIBA_REWARD);
+                    await this.authRepository.createInvitationLog(inviterUser.id, user.id, XP_REWARD, CAPIBA_REWARD);
+                }
                 const token = generateAccessToken(user.id);
                 return token;
             }

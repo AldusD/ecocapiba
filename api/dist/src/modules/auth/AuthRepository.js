@@ -46,6 +46,17 @@ export class AuthRepository {
             }
         });
     }
+    async addReward(userId, xp, capibas) {
+        return await this.prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                xp: { increment: xp },
+                capibas: { increment: capibas }
+            }
+        });
+    }
     async update(id, data) {
         return await this.prisma.user.update({
             where: { id },
@@ -55,6 +66,16 @@ export class AuthRepository {
     async delete(id) {
         return await this.prisma.user.delete({
             where: { id }
+        });
+    }
+    async createInvitationLog(inviterId, invitedId, xp, capibas) {
+        return await this.prisma.invitationLog.create({
+            data: {
+                inviterId: inviterId,
+                invitedId: invitedId,
+                capibas: capibas,
+                xp: xp
+            }
         });
     }
 }

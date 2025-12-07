@@ -67,6 +67,22 @@ export class AuthRepository {
         })
     }
 
+    async addReward(
+        userId: number,
+        xp: number,
+        capibas: number
+    ) : Promise<User> {
+        return await this.prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                xp: {increment: xp},
+                capibas: {increment: capibas}
+            }
+        })
+    }
+
     async update(id: number, data: Partial<User>): Promise<User> {
         return await this.prisma.user.update({
         where: { id },
@@ -80,11 +96,18 @@ export class AuthRepository {
         });
     }
 
-    async createInvitationLog(inviterId: number, invitedId: number): Promise<InvitationLog> {
+    async createInvitationLog(
+        inviterId: number,
+        invitedId: number,
+        xp: number,
+        capibas: number
+    ): Promise<InvitationLog> {
         return await this.prisma.invitationLog.create({
             data: {
                 inviterId: inviterId,
-                invitedId: invitedId
+                invitedId: invitedId,
+                capibas: capibas,
+                xp: xp
             }
         })
     }

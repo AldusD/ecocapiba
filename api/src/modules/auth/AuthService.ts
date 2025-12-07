@@ -2,6 +2,13 @@ import { AuthRepository } from "./AuthRepository.js";
 import { generateAccessToken } from "../../utils/jwt.utils.js"
 import { generateInvitationCode } from "../../utils/invitationCode.utils.js";
 import bcrypt from "bcrypt";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const CAPIBA_REWARD = Number(process.env.CAPIBA_REWARD as string);
+const XP_REWARD = Number(process.env.XP_REWARD as string);
+
 
 export class AuthService {
     private authRepository = new AuthRepository();
@@ -55,7 +62,9 @@ export class AuthService {
         
                 // User inviter rewards
                 if (inviterUser) {
-                    await this.authRepository.createInvitationLog(inviterUser.id, user.id);
+                    await this.authRepository.addReward(inviterUser.id, XP_REWARD, CAPIBA_REWARD)
+
+                    await this.authRepository.createInvitationLog(inviterUser.id, user.id, XP_REWARD, CAPIBA_REWARD);
                 }
 
                 const token = generateAccessToken(user.id);
