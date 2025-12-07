@@ -110,4 +110,10 @@ export const Days = styled.div`
         border-radius: 50%;
         box-shadow: 0 0 1.5rem rgba(52, 58, 71, 0.78);
     }
+
+    .recycled-day {
+        background-color: #145e12ff;
+        border-radius: 50%;
+        box-shadow: 0 0 1.5rem rgba(35, 95, 58, 0.78);
+    }
 `;

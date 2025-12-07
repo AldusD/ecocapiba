@@ -3,7 +3,8 @@ import { useState, useRef, useEffect } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import Calendar from "./components/Calendar"
 import UserIndication from "./components/UserIndication";
-import Quiz from './components/Quiz'
+import Quiz from "./components/Quiz";
+import PopUp from "./components/PopUp";
 import {
     Dashboard,
     QuizSection,
@@ -26,7 +27,6 @@ import {
 } from "./styles";
 
 export default function HomePage() {
-    const [quizMode, setQuiMode] = useState(false);
   const [xpNumber, setXpNumber] = useState(100); // to be changed to userdata
   const [xpLimit, setXpLimit] = useState(2000);
   const [xp300Claimed, setXp300Claimed] = useState(false);
@@ -36,6 +36,8 @@ export default function HomePage() {
   const [currentTitle, setCurrentTitle] = useState("Cidadão"); // to be changed to userdata
   const [currentStreak, setCurrentStreak] = useState(3); // to be changed to userdata
   const [isScannerVisible, setIsScannerVisible] = useState(false);
+  const [quizMode, setQuizMode] = useState(false);
+  const [recycleDone, setRecycleDone] = useState(false);
   const readerRef = useRef(null);
   const scannerRef = useRef(null);
   const xpString = `${xpNumber} / ${xpLimit} XP`;
@@ -81,6 +83,8 @@ export default function HomePage() {
         adjust_xp(2500);
         setXp2500Claimed(true);
       }
+
+      setRecycleDone(true);
     };
 
     const onScanFailure = (error) => {
@@ -108,7 +112,7 @@ export default function HomePage() {
         scannerRef.current = null;
       }
     };
-  }, [isScannerVisible, xp300Claimed, xp1000Claimed, xp2500Claimed]);
+  }, [isScannerVisible, xp300Claimed, xp1000Claimed, xp2500Claimed, recycleDone]);
 
   const showScanner = () => setIsScannerVisible(true);
 
@@ -136,7 +140,7 @@ export default function HomePage() {
                 <p>Seu próximo desafio:</p>
                 <h3>O Ciclo do Plástico</h3>
                 </div>
-                <Button onClick={()=>{setQuiMode(true)}} className="btn-primary">Começar</Button>
+                <Button onClick={()=>{setQuizMode(true)}} className="btn-primary">Começar</Button>
             </QuizItem>
 
             { quizMode ? <Quiz closeQuiz={() => setQuizMode(false)} /> : <></> }
@@ -186,6 +190,7 @@ export default function HomePage() {
                 height: "600px",
                 }}
             />
+            { recycleDone ? <PopUp closePopUp={() => setRecycleDone(false)} /> : <></> }
             </ActionSection>
         </main>
 

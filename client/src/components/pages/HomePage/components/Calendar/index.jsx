@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Buttons,
   CalendarApp,
@@ -25,25 +24,62 @@ export default function Calendar() {
     "Novembro",
     "Dezembro",
   ];
-  const currentDate = new Date()
-  const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth())
-  const [currentYear, setCurrentYear] = useState(currentDate.getFullYear())
+  const currentDate = new Date();
+  const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth());
+  const [currentYear, setCurrentYear] = useState(currentDate.getFullYear());
 
-  const daysInMonth = new Date(currentYear, currentMonth +1,0).getDate()
-  const firstDayOfMonth = new Date(currentYear, currentMonth,1).getDay()
+  const [recycledDays, setRecycledDays] = useState([]);
 
-  const prevMonth = () =>{
-    setCurrentMonth((prevMonth) => (prevMonth === 0 ? 11 : prevMonth - 1) )
-    setCurrentYear((prevYear) => (currentMonth === 0 ? prevYear - 1 : prevYear) )
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
 
-  }
+  const prevMonth = () => {
+    setCurrentMonth((prevMonth) => (prevMonth === 0 ? 11 : prevMonth - 1));
+    setCurrentYear((prevYear) =>
+      currentMonth === 0 ? prevYear - 1 : prevYear
+    );
+  };
 
-  const nextMonth = () =>{
-    setCurrentMonth((prevMonth) => (prevMonth === 11 ? 0 : prevMonth + 1) )
-    setCurrentYear((prevYear) => (currentMonth === 11 ? prevYear + 1 : prevYear) )
+  const nextMonth = () => {
+    setCurrentMonth((prevMonth) => (prevMonth === 11 ? 0 : prevMonth + 1));
+    setCurrentYear((prevYear) =>
+      currentMonth === 11 ? prevYear + 1 : prevYear
+    );
+  };
 
-  }
+  const isToday = (day) => {
+    return (
+      day === currentDate.getDate() &&
+      currentMonth === currentDate.getMonth() &&
+      currentYear === currentDate.getFullYear()
+    );
+  };
 
+  useEffect(() => {
+    async function fetchRecycles() {
+      try {
+        const response = await fetch(
+          "/../../../../../api/src/modules/auth/AuthController.ts",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: "mockID", // to be added
+              month: currentMonth,
+              year: currentYear,
+            }),
+          }
+        );
+        const data = await response.json();
+
+        setRecycledDays(data.days || []);
+      } catch (error) {
+        console.error("Failed to fetch calendar data", error);
+      }
+    }
+
+    fetchRecycles();
+  }, [currentMonth, currentYear]);
 
   return (
     <CalendarApp>
@@ -58,11 +94,33 @@ export default function Calendar() {
           </Buttons>
         </NavigateDate>
         <Weekdays>
-          {daysOfWeek.map((day) => <span key={day}>{day}</span>)}
+          {daysOfWeek.map((day) => (
+            <span key={day}>{day}</span>
+          ))}
         </Weekdays>
         <Days>
-          {[...Array(firstDayOfMonth).keys()].map((_, index)=> <span key={`empty-${index}`}/>)}
-          {[...Array(daysInMonth).keys()].map((day) => <span key={day + 1} className={day+1 === currentDate.getDate() && currentMonth===currentDate.getMonth() && currentYear === currentDate.getFullYear() ? "current-day":""}>{day + 1}</span>)}
+          {[...Array(firstDayOfMonth).keys()].map((_, index) => (
+            <span key={`empty-${index}`} />
+          ))}
+
+          {[...Array(daysInMonth).keys()].map((day) => {
+            const dayNumber = day + 1;
+
+            // 4. Logic to determine classes
+            const isRecycled = recycledDays.includes(dayNumber);
+            const isCurrentDay = isToday(dayNumber);
+
+            const className = `
+                ${isCurrentDay ? "current-day" : ""} 
+                ${isRecycled ? "recycled-day" : ""}
+            `.trim();
+
+            return (
+              <span key={dayNumber} className={className}>
+                {dayNumber}
+              </span>
+            );
+          })}
         </Days>
       </Wrapper>
     </CalendarApp>

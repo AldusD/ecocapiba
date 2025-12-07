@@ -7,7 +7,7 @@ import {
   GenericShareButton
 } from "./styles";
 
-export default function UserIndication() {
+export default function UserIndication() {  
   const [copied, setCopied] = useState(false);
   const shareUrl = "eccocapiba.com/convite/1a2b3c";
   const shareText = "Venha conhecer a Eccocapiba! Use meu link de convite e ganhe recompensas: ";

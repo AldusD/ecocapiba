@@ -23,6 +23,7 @@ model User {
 
   recyclesMade RecyclesMade[]
   QuizAttempt QuizAttempt[]
+  RecyclesMade RecyclesMade[]
 }
 
 model RecyclesMade {
@@ -57,4 +58,12 @@ model QuizAttempt {
 
   Quiz      Quiz     @relation(fields: [quizId], references: [id])
   User      User     @relation(fields: [userId], references: [id])
+}
+
+model RecyclesMade{
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  doneDate DateTime
+
+  User User @relation(fields: [userId], references: [id])
 }
