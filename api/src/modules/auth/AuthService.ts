@@ -34,25 +34,30 @@ export class AuthService {
         dbUser = await this.authRepository.getByCPF(cpf);
         if (dbUser) throw new Error("CPF already registered!")
         
+        let inviterUser = null
+        if (invitationCode) {
+            inviterUser = await this.authRepository.getByInvitationCode(invitationCode);
             
-            if (invitationCode) {
-                const inviterUser = await this.authRepository.getByInvitationCode(invitationCode);
-                
-                if (!inviterUser) {
-                    throw new Error("Invalid invitation code!");
-                }
-                
+            if (!inviterUser) {
+                throw new Error("Invalid invitation code!");
             }
             
-            let attempts = 0;
-            const maxAttempts = 5;
-            while (attempts < maxAttempts) {
-                try {
-                    const invitationCode = generateInvitationCode();
+        }
+        
+        let attempts = 0;
+        const maxAttempts = 5;
+        while (attempts < maxAttempts) {
+            try {
+                const invitationCode = generateInvitationCode();
+                password = await bcrypt.hash(password, 10);
 
-                    password = await bcrypt.hash(password, 10);
-                    const user = await this.authRepository.create(email, password, cpf, name, invitationCode);
-            
+                const user = await this.authRepository.create(email, password, cpf, name, invitationCode);
+        
+                // User inviter rewards
+                if (inviterUser) {
+                    await this.authRepository.createInvitationLog(inviterUser.id, user.id);
+                }
+
                 const token = generateAccessToken(user.id);
                 return token;
             } catch (err: any) {

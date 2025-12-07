@@ -1,4 +1,4 @@
-import { PrismaClient, type User } from "@prisma/client";
+import { PrismaClient, type User, type InvitationLog } from "@prisma/client";
 
 export type SafeUser = {
     id: number;
@@ -78,5 +78,14 @@ export class AuthRepository {
         return await this.prisma.user.delete({
         where: { id }
         });
+    }
+
+    async createInvitationLog(inviterId: number, invitedId: number): Promise<InvitationLog> {
+        return await this.prisma.invitationLog.create({
+            data: {
+                inviterId: inviterId,
+                invitedId: invitedId
+            }
+        })
     }
 }
