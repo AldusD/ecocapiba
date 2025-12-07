@@ -48,5 +48,12 @@ export class AuthService {
         }
         throw new Error('Could not generate unique invitation code');
     }
+    async profileData(userId) {
+        const user = await this.authRepository.getById(userId);
+        if (!user) {
+            throw new Error("User not found!");
+        }
+        return user;
+    }
 }
 //# sourceMappingURL=AuthService.js.map

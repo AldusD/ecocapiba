@@ -14,20 +14,19 @@ datasource db {
 }
 
 model User {
-  id             Int @id @default(autoincrement())
+  id             Int    @id @default(autoincrement())
   name           String
   email          String @unique
   cpf            String @unique
   invitationCode String @unique
   password       String
 
-  recyclesMade RecyclesMade[]
-  QuizAttempt QuizAttempt[]
+  QuizAttempt  QuizAttempt[]
   RecyclesMade RecyclesMade[]
 }
 
 model RecyclesMade {
-  id       String   @id @default(uuid()) @db.VarChar(36)
+  id       Int      @id @default(autoincrement())
   userId   Int
   doneDate DateTime
 
@@ -56,14 +55,6 @@ model QuizAttempt {
   status    Int
   createdAt DateTime @default(now())
 
-  Quiz      Quiz     @relation(fields: [quizId], references: [id])
-  User      User     @relation(fields: [userId], references: [id])
-}
-
-model RecyclesMade{
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  doneDate DateTime
-
+  Quiz Quiz @relation(fields: [quizId], references: [id])
   User User @relation(fields: [userId], references: [id])
 }

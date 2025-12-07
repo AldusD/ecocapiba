@@ -1,5 +1,13 @@
 import { PrismaClient, type User } from "@prisma/client";
 
+export type SafeUser = {
+    id: number;
+    name: string;
+    email: string;
+    cpf: string;
+    invitationCode: string;
+}
+
 export class AuthRepository {
     private prisma = new PrismaClient();
 
@@ -15,14 +23,28 @@ export class AuthRepository {
         })
     }
 
-    async getById(id: number): Promise<User | null> {
+    async getById(id: number): Promise<SafeUser | null> {
         return await this.prisma.user.findUnique({
-            where: { id }
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                cpf: true,
+                invitationCode: true,
+            },
+            where: { id: id }
         });
     }
 
-    async getByInvitationCode(invitationCode: string): Promise<User | null> {
+    async getByInvitationCode(invitationCode: string): Promise<SafeUser | null> {
         return await this.prisma.user.findUnique({
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                cpf: true,
+                invitationCode: true,
+            },
             where: { invitationCode: invitationCode }
         });
     }

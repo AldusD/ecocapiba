@@ -3,7 +3,7 @@ import { RecycleRepository } from "./RecycleRepository.js";
 export class RecycleService {
   private recycleRepository = new RecycleRepository();
 
-  async checkRecycle(userId: string, dateToCheck: Date) {
+  async checkRecycle(userId: number, dateToCheck: Date) {
     const hasRecycled = await this.recycleRepository.getRecyclesByDate(
       userId,
       dateToCheck
@@ -11,7 +11,7 @@ export class RecycleService {
     return hasRecycled !== null;
   }
 
-  async registerRecycle(userId: string, dateToCheck: Date) {
+  async registerRecycle(userId: number, dateToCheck: Date) {
     try {
       const registerRecyle = await this.recycleRepository.create(
         userId,

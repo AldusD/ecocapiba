@@ -13,11 +13,25 @@ export class AuthRepository {
     }
     async getById(id) {
         return await this.prisma.user.findUnique({
-            where: { id }
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                cpf: true,
+                invitationCode: true,
+            },
+            where: { id: id }
         });
     }
     async getByInvitationCode(invitationCode) {
         return await this.prisma.user.findUnique({
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                cpf: true,
+                invitationCode: true,
+            },
             where: { invitationCode: invitationCode }
         });
     }
