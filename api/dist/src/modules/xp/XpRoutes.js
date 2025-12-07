@@ -5,18 +5,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { Router } from "express";
-import { QuizController } from "./QuizController.js";
+import { XpController } from "./XpController.js";
 import { Route } from "../../resources/decorator/routeDecorator.js";
-let QuizRoutes = class QuizRoutes {
+let XpRoutes = class XpRoutes {
     router;
-    QuizController = new QuizController();
+    xpController = new XpController();
     constructor() {
         this.router = Router();
-        this.router.post('/attempt/:quizId', (req, res) => this.QuizController.registerAttempt(req, res));
+        this.router.get("/", (req, res) => this.xpController.getXp(req, res));
+        this.router.post("/add", (req, res) => this.xpController.addXp(req, res));
     }
 };
-QuizRoutes = __decorate([
-    Route("/quiz")
-], QuizRoutes);
-export { QuizRoutes };
-//# sourceMappingURL=QuizRoutes.js.map
+XpRoutes = __decorate([
+    Route("/xp")
+], XpRoutes);
+export { XpRoutes };
+//# sourceMappingURL=XpRoutes.js.map

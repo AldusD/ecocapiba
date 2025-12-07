@@ -9,5 +9,13 @@ export class AuthService {
         const token = 'jwt';
         return token;
     }
+    getXpByEmail(email) {
+        const dbUser = this.authRepository.getByEmail(email);
+        return User.ofDbUser(dbUser);
+    }
+    updateXp(email, newXp) {
+        const dbUser = this.authRepository.updateXp(email, newXp);
+        return User.ofDbUser(dbUser);
+    }
 }
 //# sourceMappingURL=AuthService.js.map

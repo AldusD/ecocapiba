@@ -4,6 +4,7 @@ import { Html5QrcodeScanner } from "html5-qrcode";
 import Calendar from "./components/Calendar"
 import Quiz from "./components/Quiz";
 import PopUp from "./components/PopUp";
+import enums from "../../../enums/";
 import {
     Dashboard,
     QuizSection,
@@ -27,33 +28,47 @@ import {
 
 export default function HomePage() {
   const [xpNumber, setXpNumber] = useState(100); // to be changed to userdata
-  const [xpLimit, setXpLimit] = useState(2000);
   const [xp300Claimed, setXp300Claimed] = useState(false);
   const [xp1000Claimed, setXp1000Claimed] = useState(false);
   const [xp2500Claimed, setXp2500Claimed] = useState(false);
   const [currentLevel, setCurrentLevel] = useState(0); // to be changed to userdata
-  const [currentTitle, setCurrentTitle] = useState("Cidadão"); // to be changed to userdata
   const [currentStreak, setCurrentStreak] = useState(3); // to be changed to userdata
   const [isScannerVisible, setIsScannerVisible] = useState(false);
   const [quizMode, setQuizMode] = useState(false);
   const [recycleDone, setRecycleDone] = useState(false);
   const readerRef = useRef(null);
   const scannerRef = useRef(null);
-  const xpString = `${xpNumber} / ${xpLimit} XP`;
-  const barPercentage = Math.min(100, (xpNumber / xpLimit) * 100);
+  const titleList = Object.values(enums.TITLES);
+  const xpLimit = Object.values(enums.XP_LIMITS);
+  const xpString = `${xpNumber} / ${xpLimit[currentLevel]} XP`;
+  const barPercentage = Math.min(100, (xpNumber / xpLimit[currentLevel]) * 100);
 
   const adjust_xp = (number) => {
     setXpNumber((prev) => prev + number);
   };
+  
+  useEffect(() => {
+    async function fetchXp() {
+      try {
+        const response = await fetch("http://localhost:8080/auth/getxp");
+        if (response.ok) {
+          const data = await response.json();
+          setXpNumber(data.xp);
+        } else {
+          console.error("Falha ao buscar Xp:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching XP:", error);
+      }
+    }
+    fetchXp();
+  }, []);
 
   useEffect(() => {
-    if (xpNumber >= xpLimit) {
-      setXpNumber((prev) => prev - xpLimit);
-      setXpLimit((prev) => prev * 2);
+    if (xpNumber >= xpLimit[currentLevel]) {
       setCurrentLevel((prev) => prev + 1);
-      setCurrentTitle("Cidadão Consciente");
     }
-  }, [xpNumber, xpLimit]);
+  }, [xpNumber, xpLimit, currentLevel]);
 
   useEffect(() => {
     if (!isScannerVisible) return;
@@ -195,7 +210,7 @@ export default function HomePage() {
         <aside>
             <CardLevelHighlight as="section">
             <h3>Nível da Conta</h3>
-            <h2 id="level_and_title">{`Nível ${currentLevel}: ${currentTitle}`}</h2>
+            <h2 id="level_and_title">{`Nível ${currentLevel}: ${titleList[currentLevel]}`}</h2>
             <p className="continue-text">
                 Continue assim para desbloquear novas recompensas!
             </p>

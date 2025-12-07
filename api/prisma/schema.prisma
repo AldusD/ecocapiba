@@ -19,6 +19,7 @@ model User {
   email       String        @unique
   cpf         String        @unique
   password    String
+  xp          Int
   QuizAttempt QuizAttempt[]
   RecyclesMade RecyclesMade[]
 }

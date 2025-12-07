@@ -50,10 +50,5 @@ export class RecycleRepository {
             },
         });
     }
-    async delete(id) {
-        return await this.prisma.recyclesMade.delete({
-            where: { id },
-        });
-    }
 }
 //# sourceMappingURL=RecycleRepository.js.map
