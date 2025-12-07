@@ -27,7 +27,7 @@ export class AuthController {
         }
     }
 
-    addxp(req: Request, res: Response) {
+    addXp(req: Request, res: Response) {
         try {
             const email = "aa@aa.com";
             const { amount } = req.body;

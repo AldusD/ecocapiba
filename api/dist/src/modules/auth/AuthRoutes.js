@@ -14,7 +14,7 @@ let AuthRoutes = class AuthRoutes {
         this.router = Router();
         this.router.post('/login', (req, res) => this.authController.login(req, res));
         this.router.get("/getxp", (req, res) => this.authController.getXp(req, res));
-        this.router.post("/addxp", (req, res) => this.authController.addxp(req, res));
+        this.router.post("/addxp", (req, res) => this.authController.addXp(req, res));
     }
 };
 AuthRoutes = __decorate([

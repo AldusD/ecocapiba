@@ -27,10 +27,7 @@ import {
 } from "./styles";
 
 export default function HomePage() {
-  const [xpNumber, setXpNumber] = useState(100); // to be changed to userdata
-  const [xp300Claimed, setXp300Claimed] = useState(false);
-  const [xp1000Claimed, setXp1000Claimed] = useState(false);
-  const [xp2500Claimed, setXp2500Claimed] = useState(false);
+  const [xpNumber, setXpNumber] = useState(0); // to be changed to userdata
   const [currentLevel, setCurrentLevel] = useState(0); // to be changed to userdata
   const [currentStreak, setCurrentStreak] = useState(3); // to be changed to userdata
   const [isScannerVisible, setIsScannerVisible] = useState(false);
@@ -43,8 +40,26 @@ export default function HomePage() {
   const xpString = `${xpNumber} / ${xpLimit[currentLevel]} XP`;
   const barPercentage = Math.min(100, (xpNumber / xpLimit[currentLevel]) * 100);
 
-  const adjust_xp = (number) => {
-    setXpNumber((prev) => prev + number);
+  const addXpToBackend = async (amount) => {
+    try {
+      const response = await fetch("http://localhost:8080/auth/addxp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ amount }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setXpNumber(data.xp);
+        return data.xp;
+      } else {
+        console.error("Falha ao adicioanr Xp:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Erro ao adicionar Xp:", error);
+    }
   };
   
   useEffect(() => {
@@ -58,7 +73,7 @@ export default function HomePage() {
           console.error("Falha ao buscar Xp:", response.statusText);
         }
       } catch (error) {
-        console.error("Error fetching XP:", error);
+        console.error("Erro ao buscar Xp:", error);
       }
     }
     fetchXp();
@@ -68,7 +83,7 @@ export default function HomePage() {
     if (xpNumber >= xpLimit[currentLevel]) {
       setCurrentLevel((prev) => prev + 1);
     }
-  }, [xpNumber, xpLimit, currentLevel]);
+  }, [xpNumber, currentLevel, xpLimit]);
 
   useEffect(() => {
     if (!isScannerVisible) return;
@@ -76,29 +91,16 @@ export default function HomePage() {
     const onScanSuccess = (decodedText, decodedResult) => {
       // handle the scanned code
       console.log(`Code matched = ${decodedText}`, decodedResult);
-      if (
-        decodedText === "https://pt.wikipedia.org/wiki/Reciclagem" &&
-        !xp300Claimed
-      ) {
-        adjust_xp(300);
-        setXp300Claimed(true);
+      if (decodedText === "https://pt.wikipedia.org/wiki/Reciclagem") {
+        addXpToBackend(300);
+        setRecycleDone(true);
+      } else if (decodedText === "https://pt.wikipedia.org/wiki/Recife") {
+        addXpToBackend(1000);
+        setRecycleDone(true);
+      } else if (decodedText === "https://pt.wikipedia.org/wiki/Capivara") {
+        addXpToBackend(2500);
+        setRecycleDone(true);
       }
-      if (
-        decodedText === "https://pt.wikipedia.org/wiki/Recife" &&
-        !xp1000Claimed
-      ) {
-        adjust_xp(1000);
-        setXp1000Claimed(true);
-      }
-      if (
-        decodedText === "https://pt.wikipedia.org/wiki/Capivara" &&
-        !xp2500Claimed
-      ) {
-        adjust_xp(2500);
-        setXp2500Claimed(true);
-      }
-
-      setRecycleDone(true);
     };
 
     const onScanFailure = (error) => {
@@ -126,7 +128,7 @@ export default function HomePage() {
         scannerRef.current = null;
       }
     };
-  }, [isScannerVisible, xp300Claimed, xp1000Claimed, xp2500Claimed, recycleDone]);
+  }, [isScannerVisible]);
 
   const showScanner = () => setIsScannerVisible(true);
 
@@ -155,7 +157,7 @@ export default function HomePage() {
                 <h3>O Ciclo do Plástico</h3>
                 </div>
                 <Button onClick={() => {setQuizMode(true)}} >Começar</Button>
-                { quizMode ? <Quiz closeQuiz={() => setQuizMode(false)} /> : <></> }
+                { quizMode ? <Quiz closeQuiz={() => setQuizMode(false)} onQuizComplete={addXpToBackend} /> : <></> }
             </QuizItem>
 
             <p className="fila-title">Próximos na fila:</p>

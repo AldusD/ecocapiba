@@ -28,7 +28,7 @@ export class AuthController {
             res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json({ error: MessagesEnum.ERROR_FETCHING_XP });
         }
     }
-    addxp(req, res) {
+    addXp(req, res) {
         try {
             const email = "aa@aa.com";
             const { amount } = req.body;
