@@ -26,7 +26,7 @@ export const Logo = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 1.5rem;
+  font-size: 1.0rem;
   font-weight: 700;
   color: #67A02C;
 

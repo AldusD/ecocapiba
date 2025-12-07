@@ -123,7 +123,6 @@ export default function EmployeeQRGenerator() {
         </Logo>
         <LogoutButton>
           <LogOut size={18} />
-          <span>Sair</span>
         </LogoutButton>
       </Header>
 
