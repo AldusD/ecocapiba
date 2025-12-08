@@ -1,4 +1,4 @@
-import { PrismaClient } from "../../generated/prisma/client.js";
+import { PrismaClient } from "@prisma/client";
 export class RecycleRepository {
     prisma = new PrismaClient();
     async getRecylesById(id) {
@@ -48,11 +48,6 @@ export class RecycleRepository {
                 userId: userId,
                 doneDate: doneDate,
             },
-        });
-    }
-    async delete(id) {
-        return await this.prisma.recyclesMade.delete({
-            where: { id },
         });
     }
 }
