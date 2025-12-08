@@ -11,4 +11,7 @@ export enum MessagesEnum {
     ERROR_CPF_ALREADY_REGISTERED = "CPF já registrado",
     ERROR_INVALID_INVITATION_CODE = "Código de convite inválido",
     ERROR_GENERATING_INVITATION_CODE = "Falha ao gerar código de convite único",
+    ERROR_USER_NOT_FOUND = "Usuário não encontrado",
+    ERROR_INVALID_TOKEN = "Tokén inválido",
+    ERROR_NO_TOKEN_PROVIDED = "Tokén não fornecido"
 }

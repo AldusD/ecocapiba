@@ -12,5 +12,6 @@ export var MessagesEnum;
     MessagesEnum["ERROR_CPF_ALREADY_REGISTERED"] = "CPF j\u00E1 registrado";
     MessagesEnum["ERROR_INVALID_INVITATION_CODE"] = "C\u00F3digo de convite inv\u00E1lido";
     MessagesEnum["ERROR_GENERATING_INVITATION_CODE"] = "Falha ao gerar c\u00F3digo de convite \u00FAnico";
+    MessagesEnum["ERROR_USER_NOT_FOUND"] = "Usu\u00E1rio n\u00E3o encontrado";
 })(MessagesEnum || (MessagesEnum = {}));
 //# sourceMappingURL=messagesEnum.js.map

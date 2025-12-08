@@ -13,11 +13,25 @@ export class AuthRepository {
     }
     async getById(id) {
         return await this.prisma.user.findUnique({
-            where: { id }
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                cpf: true,
+                invitationCode: true,
+            },
+            where: { id: id }
         });
     }
     async getByInvitationCode(invitationCode) {
         return await this.prisma.user.findUnique({
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                cpf: true,
+                invitationCode: true,
+            },
             where: { invitationCode: invitationCode }
         });
     }
@@ -32,6 +46,17 @@ export class AuthRepository {
             }
         });
     }
+    async addReward(userId, xp, capibas) {
+        return await this.prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                xp: { increment: xp },
+                capibas: { increment: capibas }
+            }
+        });
+    }
     async update(id, data) {
         return await this.prisma.user.update({
             where: { id },
@@ -41,6 +66,16 @@ export class AuthRepository {
     async delete(id) {
         return await this.prisma.user.delete({
             where: { id }
+        });
+    }
+    async createInvitationLog(inviterId, invitedId, xp, capibas) {
+        return await this.prisma.invitationLog.create({
+            data: {
+                inviterId: inviterId,
+                invitedId: invitedId,
+                capibas: capibas,
+                xp: xp
+            }
         });
     }
 }

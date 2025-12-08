@@ -19,7 +19,6 @@ export default class App {
     this.app.use(cors({ origin: "*" }));
     this.app.use(express.json());
     this.port = port;
-    this.app.use(express.json());
     this.setupRoutes();
   }
 

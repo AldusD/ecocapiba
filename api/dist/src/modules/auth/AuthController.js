@@ -26,5 +26,15 @@ export class AuthController {
             res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).send({ error: err.message });
         }
     }
+    async profile(req, res) {
+        try {
+            const userId = Number(res.locals.user);
+            const userData = await this.authService.profileData(userId);
+            res.status(HttpStatusEnum.OK).json(userData);
+        }
+        catch (err) {
+            res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).send({ error: err.message });
+        }
+    }
 }
 //# sourceMappingURL=AuthController.js.map

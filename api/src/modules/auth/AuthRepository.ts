@@ -1,4 +1,12 @@
-import { PrismaClient, type User } from "@prisma/client";
+import { PrismaClient, type User, type InvitationLog } from "@prisma/client";
+
+export type SafeUser = {
+    id: number;
+    name: string;
+    email: string;
+    cpf: string;
+    invitationCode: string;
+}
 
 export class AuthRepository {
     private prisma = new PrismaClient();
@@ -15,14 +23,28 @@ export class AuthRepository {
         })
     }
 
-    async getById(id: number): Promise<User | null> {
+    async getById(id: number): Promise<SafeUser | null> {
         return await this.prisma.user.findUnique({
-            where: { id }
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                cpf: true,
+                invitationCode: true,
+            },
+            where: { id: id }
         });
     }
 
-    async getByInvitationCode(invitationCode: string): Promise<User | null> {
+    async getByInvitationCode(invitationCode: string): Promise<SafeUser | null> {
         return await this.prisma.user.findUnique({
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                cpf: true,
+                invitationCode: true,
+            },
             where: { invitationCode: invitationCode }
         });
     }
@@ -45,6 +67,22 @@ export class AuthRepository {
         })
     }
 
+    async addReward(
+        userId: number,
+        xp: number,
+        capibas: number
+    ) : Promise<User> {
+        return await this.prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                xp: {increment: xp},
+                capibas: {increment: capibas}
+            }
+        })
+    }
+
     async update(id: number, data: Partial<User>): Promise<User> {
         return await this.prisma.user.update({
         where: { id },
@@ -56,5 +94,21 @@ export class AuthRepository {
         return await this.prisma.user.delete({
         where: { id }
         });
+    }
+
+    async createInvitationLog(
+        inviterId: number,
+        invitedId: number,
+        xp: number,
+        capibas: number
+    ): Promise<InvitationLog> {
+        return await this.prisma.invitationLog.create({
+            data: {
+                inviterId: inviterId,
+                invitedId: invitedId,
+                capibas: capibas,
+                xp: xp
+            }
+        })
     }
 }
