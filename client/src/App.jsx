@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import HomePage from './components/pages/HomePage';
 import AboutUsPage from './components/pages/AboutUsPage';
 import NotFoundPage from './components/pages/NotFoundPage';
+import EmployeePage from './components/pages/EmployeePage';
 
 const queryClient = new QueryClient();
 
@@ -15,6 +16,7 @@ export default function App() {
         <Routes>  // order matters, notfound must be last
             <Route path='/' element={ <AboutUsPage /> } />
             <Route path='/home' element={ <HomePage /> } />
+            <Route path='/employee' element={ <EmployeePage /> } />
             <Route path='*' element={ <NotFoundPage /> } />
         </Routes>
     </BrowserRouter>

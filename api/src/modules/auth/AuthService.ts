@@ -1,6 +1,9 @@
 import { AuthRepository } from "./AuthRepository.js";
 import { generateAccessToken } from "../../utils/jwt.utils.js"
 import { generateInvitationCode } from "../../utils/invitationCode.utils.js";
+import { MessagesEnum } from "../shared/enums/messagesEnum.js";
+import { SystemConstantsEnum } from "../shared/enums/systemConstantsEnum.js";
+import { PrismaErrorEnum } from "../shared/enums/prismaErrorEnum.js";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 
@@ -9,7 +12,6 @@ dotenv.config();
 const CAPIBA_REWARD = Number(process.env.CAPIBA_REWARD as string);
 const XP_REWARD = Number(process.env.XP_REWARD as string);
 
-
 export class AuthService {
     private authRepository = new AuthRepository();
 
@@ -17,7 +19,7 @@ export class AuthService {
         const dbUser = await this.authRepository.getByEmail(email);
 
         if (!dbUser || !await bcrypt.compare(password, dbUser.password)) {
-            throw new Error("Invalid credentials!");
+            throw new Error(MessagesEnum.ERROR_INVALID_CREDENTIALS);
         }
         const userId = dbUser.id;
 
@@ -33,33 +35,34 @@ export class AuthService {
         invitationCode: string
     ) : Promise<string> {
 
-        // Email validation
+        // Validação de email
         let dbUser = await this.authRepository.getByEmail(email);
-        if (dbUser) throw new Error("Email already registered!");
+        if (dbUser) throw new Error(MessagesEnum.ERROR_EMAIL_ALREADY_REGISTERED);
 
-        // CPF validation
+        // Validação de CPF
         dbUser = await this.authRepository.getByCPF(cpf);
-        if (dbUser) throw new Error("CPF already registered!")
+        if (dbUser) throw new Error(MessagesEnum.ERROR_CPF_ALREADY_REGISTERED)
         
+            
+        // Validação do código de convite
         let inviterUser = null
         if (invitationCode) {
             inviterUser = await this.authRepository.getByInvitationCode(invitationCode);
             
             if (!inviterUser) {
-                throw new Error("Invalid invitation code!");
+                throw new Error(MessagesEnum.ERROR_INVALID_INVITATION_CODE);
             }
             
         }
-        
+            
         let attempts = 0;
-        const maxAttempts = 5;
-        while (attempts < maxAttempts) {
+        while (attempts < SystemConstantsEnum.INVITATION_MAX_ATTEMPTS) {
             try {
                 const invitationCode = generateInvitationCode();
-                password = await bcrypt.hash(password, 10);
 
+                password = await bcrypt.hash(password, SystemConstantsEnum.BCRYPT_SALT_ROUNDS);
                 const user = await this.authRepository.create(email, password, cpf, name, invitationCode);
-        
+            
                 // User inviter rewards
                 if (inviterUser) {
                     await this.authRepository.addReward(inviterUser.id, XP_REWARD, CAPIBA_REWARD)
@@ -70,22 +73,25 @@ export class AuthService {
                 const token = generateAccessToken(user.id);
                 return token;
             } catch (err: any) {
-                if (err.code === 'P2002') {
+
+                // Erro de 'unique constraint' do prisma
+                if (err.code === PrismaErrorEnum.UNIQUE_CONSTRAINT) {
                     attempts++;
                     continue;
                 }
-                throw err;
+
+                throw new Error(MessagesEnum.ERROR_GENERATING_INVITATION_CODE);
             }
         }
         
-        throw new Error('Could not generate unique invitation code');
+        throw new Error(MessagesEnum.ERROR_GENERATING_INVITATION_CODE);
     }
 
     async profileData(userId: number) {
         const user = await this.authRepository.getById(userId);
 
         if (!user) {
-            throw new Error("User not found!");
+            throw new Error(MessagesEnum.ERROR_USER_NOT_FOUND);
         }
 
         return user;
