@@ -1,11 +1,12 @@
 import styled from 'styled-components';
+import COLORS from '../../../enums/COLORS';
 
 export const AppContainer = styled.div`
   min-height: 100vh;
-  background-color: #011318;
+  background-color: ${COLORS.HOME_BG};
   font-family: 'Poppins', sans-serif;
   padding: 20px;
-  color: white;
+  color: ${COLORS.CARD_BG};
 
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 `;
@@ -17,7 +18,7 @@ export const Header = styled.header`
   max-width: 1000px;
   margin: 0 auto 40px;
   padding: 20px 30px;
-  background-color: #1A1A1A;
+  background-color: ${COLORS.DARK_BG};
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 `;
@@ -28,7 +29,7 @@ export const Logo = styled.div`
   gap: 10px;
   font-size: 1.0rem;
   font-weight: 700;
-  color: #67A02C;
+  color: ${COLORS.PRIMARY_ACTION};
 
   h1 {
     margin: 0;
@@ -36,8 +37,8 @@ export const Logo = styled.div`
 `;
 
 export const LogoutButton = styled.button`
-  background-color: rgba(239, 83, 80, 0.15);
-  color: #ef5350;
+  background-color: ${COLORS.LOGOUT_BG};
+  color: ${COLORS.LOGOUT_TEXT};
   border: none;
   padding: 8px 16px;
   border-radius: 8px;
@@ -49,25 +50,25 @@ export const LogoutButton = styled.button`
   transition: background 0.3s;
 
   &:hover {
-    background-color: rgba(239, 83, 80, 0.25);
+    background-color: ${COLORS.LOGOUT_BG_HOVER};
   }
 `;
 
 export const MainCard = styled.div`
   max-width: 1000px;
   margin: 0 auto;
-  background-color: #ffffff;
+  background-color: ${COLORS.CARD_BG};
   border-radius: 24px;
   padding: 50px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-  color: #1a1a1a;
+  color: ${COLORS.CARD_TEXT};
 `;
 
 export const HeaderContent = styled.div``;
 
 export const SectionTitle = styled.h2`
   font-size: 1.8rem;
-  color: #67A02C;
+  color: ${COLORS.PRIMARY_ACTION};
   margin-bottom: 5px;
   display: flex;
   align-items: center;
@@ -75,7 +76,7 @@ export const SectionTitle = styled.h2`
 `;
 
 export const Subtitle = styled.p`
-  color: #666;
+  color: ${COLORS.SUBTITLE_TEXT};
   margin-bottom: 40px;
   font-size: 1rem;
 `;
@@ -100,7 +101,7 @@ export const InputLabel = styled.label`
   display: block;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #4b5563;
+  color: ${COLORS.LABEL_TEXT};
   margin-bottom: 8px;
   margin-left: 4px;
 `;
@@ -114,40 +115,40 @@ export const InputIcon = styled.div`
   left: 16px;
   top: 50%;
   transform: translateY(-50%);
-  color: #9ca3af;
+  color: ${COLORS.INPUT_ICON};
   pointer-events: none;
 `;
 
 export const ModernInput = styled.input`
   width: 100%;
-  background-color: #f3f4f6;
+  background-color: ${COLORS.INPUT_BG};
   border: 2px solid transparent;
   border-radius: 12px;
   padding: 16px;
   padding-left: 48px;
   font-size: 1rem;
   font-family: inherit;
-  color: #1f2937;
+  color: ${COLORS.INPUT_TEXT};
   transition: all 0.3s ease;
   box-sizing: border-box;
 
   &:focus {
     outline: none;
-    background-color: #ffffff;
-    border-color: #67A02C;
+    background-color: ${COLORS.CARD_BG};
+    border-color: ${COLORS.INPUT_BORDER_FOCUS};
     box-shadow: 0 0 0 4px rgba(103, 160, 44, 0.15);
   }
 `;
 
 export const ModernTextarea = styled.textarea`
   width: 100%;
-  background-color: #f3f4f6;
+  background-color: ${COLORS.INPUT_BG};
   border: 2px solid transparent;
   border-radius: 12px;
   padding: 16px;
   font-size: 1rem;
   font-family: inherit;
-  color: #1f2937;
+  color: ${COLORS.INPUT_TEXT};
   transition: all 0.3s ease;
   box-sizing: border-box;
   min-height: 120px;
@@ -155,8 +156,8 @@ export const ModernTextarea = styled.textarea`
 
   &:focus {
     outline: none;
-    background-color: #ffffff;
-    border-color: #67A02C;
+    background-color: ${COLORS.CARD_BG};
+    border-color: ${COLORS.INPUT_BORDER_FOCUS};
     box-shadow: 0 0 0 4px rgba(103, 160, 44, 0.15);
   }
 `;
@@ -171,17 +172,17 @@ export const XpGrid = styled.div`
 export const XpValue = styled.span`
   font-size: 1.2rem;
   font-weight: 700;
-  color: #374151;
+  color: ${COLORS.XP_TEXT};
 `;
 
 export const XpLabel = styled.span`
   font-size: 0.75rem;
-  color: #6b7280;
+  color: ${COLORS.XP_LABEL};
 `;
 
 export const XpCard = styled.button`
-  background: #ffffff;
-  border: 2px solid #e5e7eb;
+  background: ${COLORS.CARD_BG};
+  border: 2px solid ${COLORS.CARD_BORDER};
   border-radius: 12px;
   padding: 15px;
   cursor: pointer;
@@ -193,30 +194,30 @@ export const XpCard = styled.button`
   gap: 5px;
 
   &:hover {
-    border-color: #a3a3a3;
-    background-color: #f9fafb;
+    border-color: ${COLORS.CARD_HOVER_BORDER};
+    background-color: ${COLORS.CARD_HOVER_BG};
     transform: translateY(-2px);
   }
 
   &.active {
-    background: #f0fdf4;
-    border-color: #67A02C;
+    background: ${COLORS.XP_ACTIVE_BG};
+    border-color: ${COLORS.PRIMARY_ACTION};
     box-shadow: 0 4px 6px -1px rgba(103, 160, 44, 0.2);
     transform: translateY(-2px);
 
     ${XpValue} {
-      color: #4d7c20;
+      color: ${COLORS.XP_ACTIVE_TEXT};
     }
 
     ${XpLabel} {
-      color: #4d7c20;
+      color: ${COLORS.XP_ACTIVE_TEXT};
     }
   }
 `;
 
 export const GenerateButton = styled.button`
-  background: linear-gradient(to right, #67A02C, #558724);
-  color: white;
+  background: linear-gradient(to right, ${COLORS.GRADIENT_START}, ${COLORS.GRADIENT_END});
+  color: ${COLORS.CARD_BG};
   border: none;
   padding: 18px;
   border-radius: 12px;
@@ -245,20 +246,20 @@ export const GenerateButton = styled.button`
 `;
 
 export const ResultColumn = styled.div`
-  background-color: #f8fafc;
+  background-color: ${COLORS.RESULT_BG};
   border-radius: 20px;
   padding: 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 2px dashed #cbd5e1;
+  border: 2px dashed ${COLORS.RESULT_BORDER};
   min-height: 400px;
 `;
 
 export const PlaceholderState = styled.div`
   text-align: center;
-  color: #94a3b8;
+  color: ${COLORS.PLACEHOLDER_TEXT};
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -266,10 +267,10 @@ export const PlaceholderState = styled.div`
 `;
 
 export const PlaceholderIcon = styled.div`
-  background: #e2e8f0;
+  background: ${COLORS.PLACEHOLDER_BG};
   padding: 20px;
   border-radius: 50%;
-  color: #94a3b8;
+  color: ${COLORS.PLACEHOLDER_TEXT};
 `;
 
 export const QrResult = styled.div`
@@ -292,11 +293,11 @@ export const QrResult = styled.div`
 `;
 
 export const QrFrame = styled.div`
-  background: white;
+  background: ${COLORS.CARD_BG};
   padding: 15px;
   border-radius: 16px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  border: 4px solid #67A02C;
+  border: 4px solid ${COLORS.QR_BORDER};
   margin-bottom: 20px;
 
   img {
@@ -318,20 +319,20 @@ export const TicketInfo = styled.div`
 export const TicketXp = styled.div`
   font-size: 2.5rem;
   font-weight: 800;
-  color: #4d7c20;
+  color: ${COLORS.TICKET_XP};
   line-height: 1;
   margin: 10px 0;
 `;
 
 export const TicketMeta = styled.div`
-  color: #64748b;
+  color: ${COLORS.TICKET_META};
   font-size: 0.9rem;
 `;
 
 export const DownloadButton = styled.button`
-  background-color: white;
-  border: 2px solid #67A02C;
-  color: #67A02C;
+  background-color: ${COLORS.CARD_BG};
+  border: 2px solid ${COLORS.PRIMARY_ACTION};
+  color: ${COLORS.PRIMARY_ACTION};
   padding: 12px 24px;
   border-radius: 8px;
   font-weight: 600;
@@ -344,13 +345,13 @@ export const DownloadButton = styled.button`
   justify-content: center;
 
   &:hover {
-    background-color: #f0fdf4;
+    background-color: ${COLORS.DOWNLOAD_HOVER_BG};
   }
 `;
 
 export const HistoryContainer = styled.div`
   margin-top: 60px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid ${COLORS.CARD_BORDER};
   padding-top: 40px;
 `;
 
@@ -364,16 +365,16 @@ export const HistoryRow = styled.div`
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  background: #f8fafc;
+  background: ${COLORS.HISTORY_BG};
   padding: 15px 20px;
   border-radius: 12px;
   gap: 20px;
-  border-left: 4px solid #cbd5e1;
+  border-left: 4px solid ${COLORS.HISTORY_BORDER};
 `;
 
 export const HistoryXp = styled.div`
-  background: #dcfce7;
-  color: #166534;
+  background: ${COLORS.HISTORY_XP_BG};
+  color: ${COLORS.HISTORY_XP_TEXT};
   padding: 5px 12px;
   border-radius: 20px;
   font-weight: bold;
