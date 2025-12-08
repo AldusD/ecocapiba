@@ -1,4 +1,4 @@
-import { PrismaClient } from "../../generated/prisma/client.js";
+import { PrismaClient } from "@prisma/client";
 export class RecycleRepository {
     prisma = new PrismaClient();
     async getRecylesById(id) {
