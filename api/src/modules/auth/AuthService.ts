@@ -2,6 +2,8 @@ import { AuthRepository } from "./AuthRepository.js";
 import { generateAccessToken } from "../../utils/jwt.utils.js"
 import { generateInvitationCode } from "../../utils/invitationCode.utils.js";
 import { MessagesEnum } from "../shared/enums/messagesEnum.js";
+import { SystemConstantsEnum } from "../shared/enums/systemConstantsEnum.js";
+import { PrismaErrorEnum } from "../shared/enums/prismaErrorEnum.js";
 import bcrypt from "bcrypt";
 
 export class AuthService {
@@ -46,19 +48,18 @@ export class AuthService {
         }
             
         let attempts = 0;
-        const maxAttempts = 5;
-        while (attempts < maxAttempts) {
+        while (attempts < SystemConstantsEnum.INVITATION_MAX_ATTEMPTS) {
             try {
                 const invitationCode = generateInvitationCode();
 
-                password = await bcrypt.hash(password, 10);
+                password = await bcrypt.hash(password, SystemConstantsEnum.BCRYPT_SALT_ROUNDS);
                 const user = await this.authRepository.create(email, password, cpf, name, invitationCode);
             
                 const token = generateAccessToken(user.id);
                 return token;
             } catch (err: any) {
                 // Erro de 'unique constraint' do prisma
-                if (err.code === 'P2002') {
+                if (err.code === PrismaErrorEnum.UNIQUE_CONSTRAINT) {
                     attempts++;
                     continue;
                 }
