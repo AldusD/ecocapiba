@@ -1,10 +1,9 @@
-import { PrismaClient } from "../../generated/prisma/client.js";
-import type { RecyclesMade } from "../../generated/prisma/client.js";
+import { PrismaClient, type RecyclesMade } from "@prisma/client";
 
 export class RecycleRepository {
   private prisma = new PrismaClient();
 
-  async getRecylesById(id: string): Promise<string | null> {
+  async getRecylesById(id: number): Promise<number | null> {
     const recycleById = await this.prisma.recyclesMade.findUnique({
       where: { id },
 
@@ -15,7 +14,7 @@ export class RecycleRepository {
   }
 
   async getRecyclesByDate(
-    userId: string,
+    userId: number,
     doneDate: Date
   ): Promise<Date | null> {
     const startOfDay = new Date(doneDate);
@@ -37,7 +36,7 @@ export class RecycleRepository {
     return recycleByDate ? recycleByDate.doneDate : null;
   }
 
-  async getRecyclesByUserId(userId: string): Promise<RecyclesMade[] | null> {
+  async getRecyclesByUserId(userId: number): Promise<RecyclesMade[] | null> {
     return await this.prisma.recyclesMade.findMany({
       where: { userId: userId },
       orderBy: { doneDate: "desc" },
@@ -45,7 +44,7 @@ export class RecycleRepository {
   }
 
   async getDaysRecycledInMonth(
-    userId: string,
+    userId: number,
     month: number,
     year: number
   ): Promise<number[]> {
@@ -63,7 +62,7 @@ export class RecycleRepository {
     return recycles.map((r: { doneDate: Date }) => r.doneDate.getDate());
   }
 
-  async create(userId: string, doneDate: Date): Promise<RecyclesMade> {
+  async create(userId: number, doneDate: Date): Promise<RecyclesMade> {
     return await this.prisma.recyclesMade.create({
       data: {
         userId: userId,
