@@ -12,15 +12,7 @@ import {
   ProgressBarFill
 } from "./styles";
 
-export default function StreakWidget({ streakWeeks, multiplier, loading }) {
-
-  if (loading) {
-    return (
-      <WidgetCard style={{ opacity: 0.7, textAlign: 'center' }}>
-        <p>Carregando bônus...</p>
-      </WidgetCard>
-    );
-  }
+export default function StreakWidget({ streakWeeks, multiplier }) {
 
   const percentage = Math.min(100, Math.max(5, ((multiplier - 1) / 0.7) * 100));
 
@@ -52,5 +44,4 @@ export default function StreakWidget({ streakWeeks, multiplier, loading }) {
 StreakWidget.propTypes = {
   streakWeeks: PropTypes.number,
   multiplier: PropTypes.number,
-  loading: PropTypes.bool,
 };

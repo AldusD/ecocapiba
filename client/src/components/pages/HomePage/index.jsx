@@ -43,7 +43,6 @@ export default function HomePage() {
   
   const [currentStreak, setCurrentStreak] = useState(0); // TODO: to be changed to userdata
   const [currentMultiplier, setCurrentMultiplier] = useState(1.0);
-  const [loadingStreak, setLoadingStreak] = useState(true);
 
   const [isScannerVisible, setIsScannerVisible] = useState(false);
 
@@ -199,7 +198,6 @@ export default function HomePage() {
           <StreakWidget 
             streakWeeks={currentStreak} 
             multiplier={currentMultiplier} 
-            loading={loadingStreak} 
           />
 
           <CardLevelHighlight as="section">
