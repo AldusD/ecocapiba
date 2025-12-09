@@ -8,7 +8,6 @@ import { AppRoutes } from './resources/decorator/appRoutesDecorator.js';
 import './modules/auth/AuthRoutes.js';
 import './modules/quiz/QuizRoutes.js';
 import './modules/recycle/RecycleRoutes.js';
-import './modules/streak/StreakRoutes.js';
 
 @AppRoutes
 export default class App {

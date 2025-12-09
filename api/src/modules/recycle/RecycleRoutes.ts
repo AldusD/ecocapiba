@@ -8,7 +8,8 @@ export class RecycleRoutes {
     private recycleController = new RecycleController();
 
     constructor () {
-        this.router.post('/check-recycle',(req,res) => this.recycleController.checkRecycle(req,res));
-        this.router.post('/', (req,res) => this.recycleController.create(req,res))
+        this.router.post('/check-recycle', (req, res) => this.recycleController.checkRecycle(req, res));
+        this.router.post('/', (req, res) => this.recycleController.create(req, res));
+        this.router.get('/streak/:userId', (req, res) => this.recycleController.getStreak(req, res));
     }
 }
