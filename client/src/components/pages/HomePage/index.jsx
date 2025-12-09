@@ -4,7 +4,6 @@ import { Html5QrcodeScanner } from "html5-qrcode";
 import Calendar from "./components/Calendar"
 import UserIndication from "./components/UserIndication";
 import Quiz from "./components/Quiz";
-import { StreakService } from "../../../services/StreakService";
 import StreakWidget from "./components/Streak/index.jsx"; 
 import PopUp from "./components/PopUp/index.jsx";
 
@@ -56,23 +55,6 @@ export default function HomePage() {
   
   const xpString = `${xpNumber} / ${xpLimit} XP`;
   const barPercentage = Math.min(100, (xpNumber / xpLimit) * 100);
-
-  useEffect(() => {
-    const fetchStreakData = async () => {
-      try {
-        const data = await StreakService.getMultiplier(USER_ID);
-        
-        setCurrentStreak(data.streakWeeks);   
-        setCurrentMultiplier(data.multiplier); 
-      } catch (error) {
-        // The error is already logged in the service
-      } finally {
-        setLoadingStreak(false);
-      }
-    };
-
-    fetchStreakData();
-  }, []);
 
   const adjust_xp = useCallback((baseXp) => {
     const bonusXp = Math.round(baseXp * currentMultiplier);
