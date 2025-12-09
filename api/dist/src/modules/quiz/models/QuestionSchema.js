@@ -1,4 +1,3 @@
-import { UserRolerEnum } from "../../shared/enums/userRolesEnum.js";
 export class QuestionSchema {
     id;
     quizId;

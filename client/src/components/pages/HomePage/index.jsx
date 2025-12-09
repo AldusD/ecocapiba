@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
-import Calendar from "./components/Calendar";
+import Calendar from "./components/Calendar"
+import UserIndication from "./components/UserIndication";
 import Quiz from "./components/Quiz";
 import { StreakService } from "../../../services/StreakService";
 import StreakWidget from "./components/Streak/index.jsx"; 
@@ -149,9 +150,11 @@ export default function HomePage() {
               <div className="quiz-info">
                 <p>Seu próximo desafio:</p>
                 <h3>O Ciclo do Plástico</h3>
-              </div>
-              <Button className="btn-primary">Começar</Button>
+                </div>
+                <Button onClick={()=>{setQuizMode(true)}} className="btn-primary">Começar</Button>
             </QuizItem>
+
+            { quizMode ? <Quiz closeQuiz={() => setQuizMode(false)} /> : <></> }
 
             <p className="fila-title">Próximos na fila:</p>
 
@@ -229,29 +232,10 @@ export default function HomePage() {
             </XpContainer>
           </CardLevelHighlight>
 
-          <Card as="section" className="share-section">
-            <h3>Compartilhe e Ganhe!</h3>
-            <p>Convide seus amigos e ganhe recompensas juntos.</p>
-
-            <ShareLinkBox>eccocapiba.com/convite/1a2b3c</ShareLinkBox>
-
-            <SocialButtons>
-              <ButtonSocial 
-              href="#" 
-              className="btn-whatsapp" 
-              role="button"
-              >
-              <i className="fab fa-whatsapp"></i> WhatsApp
-              </ButtonSocial>
-              <ButtonSocial 
-              href="#" 
-              className="btn-instagram" 
-              role="button">
-              <i className="fab fa-instagram"></i> Instagram
-              </ButtonSocial>
-            </SocialButtons>
-          </Card>
-          <Card><Calendar></Calendar></Card>
+            <Card as="section" className="share-section">
+                <UserIndication></UserIndication>
+            </Card>
+            <Card><Calendar></Calendar></Card>
         </aside>
       </Dashboard>
     </>

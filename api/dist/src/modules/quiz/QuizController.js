@@ -1,4 +1,3 @@
-import {} from "express";
 import { QuizService } from "./QuizService.js";
 import { HttpStatusEnum } from "../shared/enums/httpStatusEnum.js";
 import { MessagesEnum } from "../shared/enums/messagesEnum.js";

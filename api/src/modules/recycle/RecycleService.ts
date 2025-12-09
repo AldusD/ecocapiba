@@ -8,7 +8,7 @@ export class RecycleService {
   private readonly MAX_MULTIPLIER = 1.7;
 
   // Alterado para receber string
-  async checkRecycle(userId: string, currentDate: Date) {
+  async checkRecycle(userId: number, currentDate: Date) {
     const hasRecycled = await this.recycleRepository.getRecyclesByDate(
       userId,
       currentDate

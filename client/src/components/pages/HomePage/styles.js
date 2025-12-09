@@ -1,11 +1,11 @@
 import styled, { createGlobalStyle } from "styled-components"
+import enums from "../../../enums";
 
 export const GlobalStyle = createGlobalStyle`
     body {
-        background-color: #011318;
-        color: #333333;
+        background-color: ${enums.COLORS.HOME_BG};
+        color: ${enums.COLORS.PRIMARY_TEXT};
         line-height: 1.6;
-        font-family: sans-serif;
     }
 `;
 
@@ -140,11 +140,14 @@ export const Button = styled.button`
     text-decoration: none;
     transition: background-color 0.3s ease;
     display: inline-block;
-    background-color: #67A02C;
-    color: white;
     
-    &:hover {
-    background-color: #558724;
+    &.btn-primary {
+        background-color: #67A02C;
+        color: white;
+        
+        &:hover {
+            background-color: #558724;
+        }
     }
 `;
 
