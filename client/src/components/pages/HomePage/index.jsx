@@ -6,6 +6,7 @@ import UserIndication from "./components/UserIndication";
 import Quiz from "./components/Quiz";
 import { StreakService } from "../../../services/StreakService";
 import StreakWidget from "./components/Streak/index.jsx"; 
+import PopUp from "./components/PopUp/index.jsx";
 
 import {
   Dashboard,
@@ -29,7 +30,7 @@ import {
 } from "./styles";
 
 export default function HomePage() {
-  const USER_ID = 1; // to be changed to userdata
+  const USER_ID = 1; // TODO: to be changed to userdata
 
   const [xpNumber, setXpNumber] = useState(100); 
   const [xpLimit, setXpLimit] = useState(2000);
@@ -38,14 +39,18 @@ export default function HomePage() {
   const [xp1000Claimed, setXp1000Claimed] = useState(false);
   const [xp2500Claimed, setXp2500Claimed] = useState(false);
   
-  const [currentLevel, setCurrentLevel] = useState(0); // to be changed to userdata
+  const [currentLevel, setCurrentLevel] = useState(0); // TODO: to be changed to userdata
   const [currentTitle, setCurrentTitle] = useState("Cidadão"); // to be changed to userdata
   
-  const [currentStreak, setCurrentStreak] = useState(0); // to be changed to userdata
+  const [currentStreak, setCurrentStreak] = useState(0); // TODO: to be changed to userdata
   const [currentMultiplier, setCurrentMultiplier] = useState(1.0);
   const [loadingStreak, setLoadingStreak] = useState(true);
 
   const [isScannerVisible, setIsScannerVisible] = useState(false);
+
+  const [quizMode, setQuizMode] = useState(false);
+  const [recycleDone, setRecycleDone] = useState(false);
+
   const readerRef = useRef(null);
   const scannerRef = useRef(null);
   
@@ -105,6 +110,8 @@ export default function HomePage() {
         adjust_xp(2500);
         setXp2500Claimed(true);
       }
+
+      setRecycleDone(true);
     };
 
     const onScanFailure = (error) => {
@@ -128,7 +135,7 @@ export default function HomePage() {
         scannerRef.current = null;
       }
     };
-  }, [isScannerVisible, xp300Claimed, xp1000Claimed, xp2500Claimed, adjust_xp]); // adjust_xp included in dependencies
+  }, [isScannerVisible, xp300Claimed, xp1000Claimed, xp2500Claimed, adjust_xp, recycleDone]); // adjust_xp included in dependencies
 
   const showScanner = () => setIsScannerVisible(true);
 
@@ -201,6 +208,7 @@ export default function HomePage() {
                 height: "600px",
               }}
             />
+            {recycleDone && <PopUp closePopUp={() => setRecycleDone(false)} />}
           </ActionSection>
         </main>
 
