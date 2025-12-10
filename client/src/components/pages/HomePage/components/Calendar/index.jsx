@@ -58,23 +58,25 @@ export default function Calendar() {
   useEffect(() => {
     async function fetchRecycles() {
       try {
+        const token = localStorage.getItem("authToken");
         const response = await fetch(
-          "/../../../../../api/src/modules/auth/AuthController.ts",
+          "http://localhost:8080/recycle/calendar",
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
             body: JSON.stringify({
-              userId: "mockID", // to be added
               month: currentMonth,
               year: currentYear,
             }),
           }
         );
         const data = await response.json();
-
         setRecycledDays(data.days || []);
       } catch (error) {
-        console.error("Failed to fetch calendar data", error);
+        console.error("Falha ao buscar data do calendário", error);
       }
     }
 

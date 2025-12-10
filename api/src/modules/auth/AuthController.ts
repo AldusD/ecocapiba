@@ -1,44 +1,65 @@
 import { type Request, type Response } from "express";
-import { AuthService } from "./AuthService.js";
 import { HttpStatusEnum } from "../shared/enums/httpStatusEnum.js";
+import { AuthService } from "./AuthService.js";
 import { MessagesEnum } from "../shared/enums/messagesEnum.js";
 
 export class AuthController {
     constructor(private authService: AuthService = new AuthService()) {}
 
-    login (req: Request, res: Response) {
+    async login (req: Request, res: Response) {
         try {
-            const email = "aa@aa.com";
-            const password = "topSecret";
-            const token = this.authService.authUser(email, password);
-            res.json({ token });
-        } catch (error) {
-            res.status(HttpStatusEnum.INVALID_CREDENTIALS).send({ error: MessagesEnum.ERROR_INVALID_CREDENTIALS });
+            const { email, password } = req.body;
+            const token = await this.authService.authUser(email, password);
+            res.status(HttpStatusEnum.OK).json({token});
+        } catch(err: any) {
+            res.status(HttpStatusEnum.INVALID_CREDENTIALS).send({ error: err.message });
+        }
+    };
+
+    async register (req: Request, res: Response) {
+        try {
+            const { email, password, cpf, name, invitationCode } = req.body;
+            const token = await this.authService.registerUser(email, password, cpf, name, invitationCode);
+            res.status(HttpStatusEnum.CREATED).json({ token });
+        } catch(err: any) {
+            res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).send({ error: err.message });
         }
     }
 
-    getXp(req: Request, res: Response) {
+    async profile(req: Request, res: Response) {
         try {
-            const email = "aa@aa.com";
-            const user = this.authService.getXpByEmail(email);
-            res.status(HttpStatusEnum.OK).json({ xp: user.getXp() });
-        } catch (error) {
-            res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json({ error: MessagesEnum.ERROR_FETCHING_XP });
+            const userId = Number(res.locals.user);
+            const userData = await this.authService.profileData(userId);
+            res.status(HttpStatusEnum.OK).json(userData);
+        } catch (err: any) {
+            res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).send({error: err.message });
         }
     }
 
-    addXp(req: Request, res: Response) {
+    async getXp(req: Request, res: Response) {
         try {
-            const email = "aa@aa.com";
+            const userId = Number(res.locals.user);
+            const user = await this.authService.profileData(userId);
+            res.status(HttpStatusEnum.OK).json({ xp: user.xp });
+        } catch (error: any) {
+            res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json({ error: error.message });
+        }
+    }
+
+    async addXp(req: Request, res: Response) {
+        try {
+            const userId = Number(res.locals.user);
             const { amount } = req.body;
 
-            const user = this.authService.getXpByEmail(email);
-            const newXp = user.addXp(amount);
-            this.authService.updateXp(email, newXp);
+            if (!amount || amount <= 0) {
+                res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json({ error: "Invalid XP amount" });
+                return;
+            }
 
-            res.status(HttpStatusEnum.OK).json({ xp: newXp });
-        } catch (error) {
-            res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json({ error: MessagesEnum.ERROR_ADDING_XP });
+            const updatedUser = await this.authService.addUserReward(userId, amount, 0);
+            res.status(HttpStatusEnum.OK).json({ xp: updatedUser.xp });
+        } catch (error: any) {
+            res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json({ error: error.message });
         }
     }
 }

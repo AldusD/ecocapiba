@@ -7,4 +7,11 @@ export enum MessagesEnum {
     ERROR_INVALID_CREDENTIALS = "Credenciais inválidas",
     ERROR_FETCHING_XP = "Erro buscando xp",
     ERROR_ADDING_XP = "Erro ao adicionar xp",
+    ERROR_EMAIL_ALREADY_REGISTERED = "Email já registrado",
+    ERROR_CPF_ALREADY_REGISTERED = "CPF já registrado",
+    ERROR_INVALID_INVITATION_CODE = "Código de convite inválido",
+    ERROR_GENERATING_INVITATION_CODE = "Falha ao gerar código de convite único",
+    ERROR_USER_NOT_FOUND = "Usuário não encontrado",
+    ERROR_INVALID_TOKEN = "Tokén inválido",
+    ERROR_NO_TOKEN_PROVIDED = "Tokén não fornecido"
 }

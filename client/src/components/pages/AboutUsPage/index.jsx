@@ -14,11 +14,13 @@ import {
   SectionPreTitle,
   SolutionIntro,
   Container,
+  GlobalStyle,
 } from "./styles";
 
 export default function AboutUsPage(){
     return (
         <>
+            <GlobalStyle/>
             <MainHeader>
                 <div className="logo-area">
                     <h1>EcoCapiba</h1>

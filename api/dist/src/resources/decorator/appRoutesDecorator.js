@@ -1,4 +1,3 @@
-import {} from 'express';
 import { routeRegistry } from './routeDecorator.js';
 export function AppRoutes(target) {
     const original = target;

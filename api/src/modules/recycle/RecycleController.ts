@@ -35,4 +35,24 @@ export class RecycleController {
       return res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json(MessagesEnum.ERROR_CREATING_RECYCLE);
     }
   }
+
+  async getCalendar(req: Request, res: Response) {
+    try {
+      const userId = Number(res.locals.user);
+      const { month, year } = req.body;
+
+      if (month === undefined || year === undefined) {
+        return res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json({ error: "Month and year are required" });
+      }
+
+      const days = await this.recycleService.getDaysRecycledInMonth(
+        userId,
+        month,
+        year
+      );
+      return res.status(HttpStatusEnum.OK).json({ days });
+    } catch (error) {
+      return res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json(MessagesEnum.ERROR_CHECKING_RECYCLE);
+    }
+  }
 }

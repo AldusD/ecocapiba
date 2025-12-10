@@ -1,4 +1,3 @@
-import {} from "express";
 import { RecycleService } from "./RecycleService.js";
 import { MessagesEnum } from "../shared/enums/messagesEnum.js";
 import { HttpStatusEnum } from "../shared/enums/httpStatusEnum.js";

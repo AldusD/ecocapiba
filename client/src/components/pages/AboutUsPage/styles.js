@@ -1,6 +1,12 @@
-import styled from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import titleImage from "../../../assets/recife-pe.webp"
 import challengeImage from "../../../assets/leafs.jpg"
+
+export const GlobalStyle = createGlobalStyle`
+    body {
+        font-family: sans-serif;
+    }
+`;
 
 export const MainHeader = styled.header`
     display: flex;

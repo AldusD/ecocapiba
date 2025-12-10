@@ -2,11 +2,13 @@ import express, { type Application } from 'express';
 import cors from "cors";
 import { AppRoutes } from './resources/decorator/appRoutesDecorator.js';
 
-
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Theese imports forces decorator @AppRoutes render routes, this is not desired, if youre able to fix it, please do :)
 import './modules/auth/AuthRoutes.js';
 import './modules/quiz/QuizRoutes.js';
+import './modules/recycle/RecycleRoutes.js';
 
 @AppRoutes
 export default class App {

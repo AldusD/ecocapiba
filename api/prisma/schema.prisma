@@ -14,14 +14,43 @@ datasource db {
 }
 
 model User {
-  id          Int           @id @default(autoincrement())
-  name        String
-  email       String        @unique
-  cpf         String        @unique
-  password    String
-  xp          Int
-  QuizAttempt QuizAttempt[]
-  RecyclesMade RecyclesMade[]
+  id             Int    @id @default(autoincrement())
+  name           String
+  email          String @unique
+  cpf            String @unique
+  invitationCode String @unique
+  password       String
+  xp             Int    @default(0)
+  capibas        Float  @default(0)
+
+  recyclesMade RecyclesMade[]
+  QuizAttempt  QuizAttempt[]
+
+  inviterLogs InvitationLog[] @relation("UserInviterRelation")
+  invitedLogs InvitationLog[] @relation("UserInvitedRelation")
+}
+
+model InvitationLog {
+  id        Int   @id @default(autoincrement())
+  inviterId Int
+  invitedId Int
+  xp        Int
+  capibas   Float
+
+  createdAt DateTime @default(now())
+
+  inviter User @relation("UserInviterRelation", fields: [inviterId], references: [id])
+  invited User @relation("UserInvitedRelation", fields: [invitedId], references: [id])
+
+  @@unique([invitedId, inviterId])
+}
+
+model RecyclesMade {
+  id       Int      @id @default(autoincrement())
+  userId   Int
+  doneDate DateTime
+
+  User User @relation(fields: [userId], references: [id])
 }
 
 model Quiz {
@@ -45,14 +74,7 @@ model QuizAttempt {
   quizId    Int
   status    Int
   createdAt DateTime @default(now())
-  Quiz      Quiz     @relation(fields: [quizId], references: [id])
-  User      User     @relation(fields: [userId], references: [id])
-}
 
-model RecyclesMade{
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  doneDate DateTime
-
+  Quiz Quiz @relation(fields: [quizId], references: [id])
   User User @relation(fields: [userId], references: [id])
 }

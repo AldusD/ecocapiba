@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import Calendar from "./components/Calendar"
+import UserIndication from "./components/UserIndication";
 import Quiz from "./components/Quiz";
 import PopUp from "./components/PopUp";
 import enums from "../../../enums/";
@@ -42,9 +43,11 @@ export default function HomePage() {
 
   const addXpToBackend = async (amount) => {
     try {
+      const token = localStorage.getItem("authToken");
       const response = await fetch("http://localhost:8080/auth/addxp", {
         method: "POST",
         headers: {
+          "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ amount }),
@@ -65,7 +68,13 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchXp() {
       try {
-        const response = await fetch("http://localhost:8080/auth/getxp");
+        const token = localStorage.getItem("authToken");
+        const response = await fetch("http://localhost:8080/auth/getxp", {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
         if (response.ok) {
           const data = await response.json();
           setXpNumber(data.xp);
@@ -140,11 +149,6 @@ export default function HomePage() {
             <div className="logo">
             <h1>Ecocapiba</h1>
             </div>
-            <div className="status-ofensiva">
-            <span className="dias-ofensiva"> 
-              <div className="medidor-fogo">{currentStreak >= 1 && <i className="fa-solid fa-fire status-fire-icon"></i>}</div>
-              {currentStreak} dia{currentStreak!==1 ? 's': ''}  de ofensiva</span>
-            </div>
         </header>
 
         <main>
@@ -156,9 +160,11 @@ export default function HomePage() {
                 <p>Seu próximo desafio:</p>
                 <h3>O Ciclo do Plástico</h3>
                 </div>
-                <Button onClick={() => {setQuizMode(true)}} >Começar</Button>
+                <Button className='btn-primary' onClick={() => {setQuizMode(true)}} >Começar</Button>
                 { quizMode ? <Quiz closeQuiz={() => setQuizMode(false)} onQuizComplete={addXpToBackend} /> : <></> }
             </QuizItem>
+
+            { quizMode ? <Quiz closeQuiz={() => setQuizMode(false)} /> : <></> }
 
             <p className="fila-title">Próximos na fila:</p>
 
@@ -231,31 +237,9 @@ export default function HomePage() {
             </CardLevelHighlight>
 
             <Card as="section" className="share-section">
-            <h3>Compartilhe e Ganhe!</h3>
-            <p>Convide seus amigos e ganhe recompensas juntos.</p>
-
-            <ShareLinkBox>eccocapiba.com/convite/1a2b3c</ShareLinkBox>
-
-            <SocialButtons>
-                <ButtonSocial
-                href="#"
-                className="btn-whatsapp"
-                role="button"
-                aria-label="Compartilhar no WhatsApp"
-                >
-                <i className="fab fa-whatsapp"></i> WhatsApp
-                </ButtonSocial>
-                <ButtonSocial
-                href="#"
-                className="btn-instagram"
-                role="button"
-                aria-label="Compartilhar no Instagram"
-                >
-                <i className="fab fa-instagram"></i> Instagram
-                </ButtonSocial>
-            </SocialButtons>
+                <UserIndication></UserIndication>
             </Card>
-            <Card><Calendar/></Card>
+            <Card><Calendar></Calendar></Card>
         </aside>
         </Dashboard>
     </>

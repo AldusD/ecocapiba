@@ -1,4 +1,3 @@
-import { Router } from 'express';
 export const routeRegistry = [];
 export function Route(prefix) {
     return function (target) {

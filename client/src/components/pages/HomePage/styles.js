@@ -141,11 +141,14 @@ export const Button = styled.button`
     text-decoration: none;
     transition: background-color 0.3s ease;
     display: inline-block;
-    background-color: #67A02C;
-    color: white;
     
-    &:hover {
-    background-color: #558724;
+    &.btn-primary {
+        background-color: #67A02C;
+        color: white;
+        
+        &:hover {
+            background-color: #558724;
+        }
     }
 `;
 
