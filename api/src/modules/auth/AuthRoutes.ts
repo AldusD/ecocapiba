@@ -5,11 +5,10 @@ import { authenticate } from "../../middleware/authenticate.js";
 
 @Route("/auth")
 export class AuthRoutes {
-    public router: Router;
+    public router = Router()
     private authController = new AuthController();
 
     constructor () {
-        this.router = Router();
         this.router.post('/login', (req, res) => this.authController.login(req, res));
         this.router.post('/register', (req, res) => this.authController.register(req, res));
         this.router.get('/profile', authenticate, (req, res) => this.authController.profile(req, res));
