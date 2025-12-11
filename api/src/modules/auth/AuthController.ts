@@ -18,8 +18,8 @@ export class AuthController {
 
     async register (req: Request, res: Response) {
         try {
-            const { email, password, cpf, name, invitationCode } = req.body;
-            const token = await this.authService.registerUser(email, password, cpf, name, invitationCode);
+            const { email, password, cpf, name, invitationCode, xp, capibas } = req.body;
+            const token = await this.authService.registerUser(email, password, cpf, name, invitationCode, xp, capibas);
             res.status(HttpStatusEnum.CREATED).json({ token });
         } catch(err: any) {
             res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).send({ error: err.message });

@@ -32,7 +32,9 @@ export class AuthService {
         password: string,
         cpf: string,
         name: string,
-        invitationCode: string
+        invitationCode: string,
+        xp: number,
+        capibas: number,
     ) : Promise<string> {
 
         // Validação de email
@@ -61,7 +63,7 @@ export class AuthService {
                 const invitationCode = generateInvitationCode();
 
                 password = await bcrypt.hash(password, SystemConstantsEnum.BCRYPT_SALT_ROUNDS);
-                const user = await this.authRepository.create(email, password, cpf, name, invitationCode);
+                const user = await this.authRepository.create(email, password, cpf, name, invitationCode, xp, capibas);
             
                 // User inviter rewards
                 if (inviterUser) {
