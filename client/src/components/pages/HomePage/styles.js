@@ -1,11 +1,13 @@
 import styled, { createGlobalStyle } from "styled-components"
-import enums from "../../../enums";
+import enums from "../../../enums/";
+
 
 export const GlobalStyle = createGlobalStyle`
     body {
         background-color: ${enums.COLORS.HOME_BG};
         color: ${enums.COLORS.PRIMARY_TEXT};
         line-height: 1.6;
+        font-family: sans-serif;
     }
 `;
 
@@ -23,7 +25,7 @@ export const Dashboard = styled.div`
 
     header { 
         grid-area: header;
-        color: #75B03B
+        color: ${enums.COLORS.LIGHT_ACTION};
     }
     main { grid-area: main-content; }
     aside { grid-area: sidebar; }
@@ -34,12 +36,11 @@ export const Dashboard = styled.div`
         top: -5px; 
         left: 50%;
         transform: translateX(-50%);
-        color: #fce205; /* Cor amarela do fogo */
     }
 `;
 
 export const Card = styled.section`
-    background-color: #FFFFFF;
+    background-color: ${enums.COLORS.CARD_BG};
     border-radius: 10px;
     padding: 25px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
@@ -47,7 +48,7 @@ export const Card = styled.section`
 `;
 
 export const CardLevelHighlight = styled(Card)`
-    background-color: #478426;
+    background-color: ${enums.COLORS.PROGRESS_BG};
     color: #FFFFFF;
     
     h2, h3, p {

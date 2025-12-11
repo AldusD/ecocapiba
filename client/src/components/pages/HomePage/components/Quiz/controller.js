@@ -18,7 +18,8 @@ export default function controller({
     correctCount, setCorrectCount,
     timeEnded, setTimeEnded,
     quizData, setQuizData,
-    isLastQuestion}
+    isLastQuestion,
+    onQuizComplete}
 ) {
     function getNextQuestion() {
       setTimeout(() => {
@@ -33,6 +34,11 @@ export default function controller({
     async function sendQuizAttempt() {
       const reponse = await useQuizServer.postQuizAttempt({ correctCount, quizId: quizData.id });
       console.log("todo roque", reponse, { correctCount, quizId: quizData.id }); // todo roque remover
+      
+      // Award XP if user passed the quiz
+      if (correctCount >= ANSWER_BENCHMARK && onQuizComplete) {
+        onQuizComplete(XP_PER_QUIZ);
+      }
     }
 
     function choiceImage() {

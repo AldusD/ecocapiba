@@ -7,7 +7,6 @@ export class RecycleService {
   private readonly WEEKLY_BONUS = 0.1;
   private readonly MAX_MULTIPLIER = 1.7;
 
-  // Alterado para receber string
   async checkRecycle(userId: number, currentDate: Date) {
     const hasRecycled = await this.recycleRepository.getRecyclesByDate(
       userId,
@@ -16,8 +15,7 @@ export class RecycleService {
     return hasRecycled !== null;
   }
 
-  // Alterado para receber string
-  async registerRecycle(userId: string, currentDate: Date) {
+  async registerRecycle(userId: number, currentDate: Date) {
     try {
       return await this.recycleRepository.create(
         userId,
@@ -28,8 +26,7 @@ export class RecycleService {
     }
   }
 
-  // Alterado para receber string
-  async getStreakMultiplier(userId: string): Promise<{ streakWeeks: number, multiplier: number }> {
+  async getStreakMultiplier(userId: number): Promise<{ streakWeeks: number, multiplier: number }> {
     let streakWeeks = 0;
     let checkDate = new Date();
 
@@ -90,4 +87,7 @@ export class RecycleService {
 
     return { start: startOfWeek, end: endOfWeek };
   }
+  
+  async getDaysRecycledInMonth(userId: number, month: number, year: number) {
+    return await this.recycleRepository.getDaysRecycledInMonth(userId, month, year);}
 }

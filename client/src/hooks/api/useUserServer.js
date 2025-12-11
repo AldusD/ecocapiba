@@ -2,7 +2,7 @@ const API = process.env.REACT_APP_API_BASE_URL;
 
 const login = async (userData) => {
   const options = { headers: { 'Content-Type': 'application/json' }, method: 'POST', body: JSON.stringify(userData) };
-  const response = await fetch(`${API}/login`, options);
+  const response = await fetch(`${API}/auth/login`, options);
   const data = response.text();
   return data;
 }

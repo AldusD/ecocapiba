@@ -11,7 +11,7 @@ const queryClient = new QueryClient();
 export default function App() {
 
   return (
-    <QueryClientProvider client={queryClient} >
+    <QueryClientProvider client={queryClient} > {}
     <BrowserRouter >
         <Routes>  {/* order matters, notfound must be last */}
             <Route path='/' element={ <AboutUsPage /> } />

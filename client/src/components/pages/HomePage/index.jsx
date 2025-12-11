@@ -4,9 +4,9 @@ import { Html5QrcodeScanner } from "html5-qrcode";
 import Calendar from "./components/Calendar"
 import UserIndication from "./components/UserIndication";
 import Quiz from "./components/Quiz";
+import PopUp from "./components/PopUp";
+import enums from "../../../enums/";
 import StreakWidget from "./components/Streak/index.jsx"; 
-import PopUp from "./components/PopUp/index.jsx";
-
 import {
   Dashboard,
   QuizSection,
@@ -22,28 +22,16 @@ import {
   XpFill,
   XpText,
   Card,
-  ShareLinkBox,
-  SocialButtons,
-  ButtonSocial,
   GlobalStyle
 } from "./styles";
 
+const API = import.meta.env.VITE_API_URL;
+
 export default function HomePage() {
-  const USER_ID = 1; // TODO: to be changed to userdata
-
-  const [xpNumber, setXpNumber] = useState(100); 
-  const [xpLimit, setXpLimit] = useState(2000);
-  
-  const [xp300Claimed, setXp300Claimed] = useState(false);
-  const [xp1000Claimed, setXp1000Claimed] = useState(false);
-  const [xp2500Claimed, setXp2500Claimed] = useState(false);
-  
-  const [currentLevel, setCurrentLevel] = useState(0); // TODO: to be changed to userdata
-  const [currentTitle, setCurrentTitle] = useState("Cidadão"); // to be changed to userdata
-  
-  const [currentStreak, setCurrentStreak] = useState(0); // TODO: to be changed to userdata
+  const [xpNumber, setXpNumber] = useState(0); // to be changed to userdata
+  const [currentLevel, setCurrentLevel] = useState(0); // to be changed to userdata
+  const [currentStreak, setCurrentStreak] = useState(3); // to be changed to userdata
   const [currentMultiplier, setCurrentMultiplier] = useState(1.0);
-
   const [isScannerVisible, setIsScannerVisible] = useState(false);
 
   const [quizMode, setQuizMode] = useState(false);
@@ -51,25 +39,89 @@ export default function HomePage() {
 
   const readerRef = useRef(null);
   const scannerRef = useRef(null);
-  
-  const xpString = `${xpNumber} / ${xpLimit} XP`;
-  const barPercentage = Math.min(100, (xpNumber / xpLimit) * 100);
-
-  const adjust_xp = useCallback((baseXp) => {
-    const bonusXp = Math.round(baseXp * currentMultiplier);
-    setXpNumber((prev) => prev + bonusXp);
-    
-    console.log(`XP Ganho: ${bonusXp} (Base: ${baseXp} * Multiplicador: ${currentMultiplier})`);
-  }, [currentMultiplier]);
+  const titleList = Object.values(enums.TITLES);
+  const xpLimit = Object.values(enums.XP_LIMITS);
+  const xpString = `${xpNumber} / ${xpLimit[currentLevel]} XP`;
+  const barPercentage = Math.min(100, (xpNumber / xpLimit[currentLevel]) * 100);
 
   useEffect(() => {
-    if (xpNumber >= xpLimit) {
-      setXpNumber((prev) => prev - xpLimit);
-      setXpLimit((prev) => prev * 2);
-      setCurrentLevel((prev) => prev + 1);
-      setCurrentTitle("Cidadão Consciente");
+    async function fetchStreak() {
+      try {
+        const token = localStorage.getItem("authToken");
+        const response = await fetch(`${API}/recycle/streak`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setCurrentStreak(data.streakWeeks);
+          setCurrentMultiplier(data.multiplier);
+        } else {
+          console.error("Falha ao buscar streak:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar streak:", error);
+      }
     }
-  }, [xpNumber, xpLimit]);
+    fetchStreak();
+  }, []);
+  
+  const addXpToBackend = useCallback(async (amount, multiplier = currentMultiplier) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      amount = Math.round(amount * multiplier);
+      const response = await fetch(`${API}/auth/addxp`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ amount }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setXpNumber(data.xp);
+        return data.xp;
+      } else {
+        console.error("Falha ao adicioanr Xp:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Erro ao adicionar Xp:", error);
+    }
+  }, [currentMultiplier]);
+  
+  useEffect(() => {
+    async function fetchXp() {
+      try {
+        const token = localStorage.getItem("authToken");
+        const response = await fetch(`${API}/auth/getxp`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setXpNumber(data.xp);
+        } else {
+          console.error("Falha ao buscar Xp:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar Xp:", error);
+      }
+    }
+    fetchXp();
+  }, []);
+
+  useEffect(() => {
+    if (xpNumber >= xpLimit[currentLevel]) {
+      setCurrentLevel((prev) => prev + 1);
+    }
+  }, [xpNumber, currentLevel, xpLimit]);
 
 
   useEffect(() => {
@@ -78,21 +130,16 @@ export default function HomePage() {
     const onScanSuccess = (decodedText, decodedResult) => {
       // handle the scanned code
       console.log(`Code matched = ${decodedText}`, decodedResult);
-      
-      if (decodedText === "https://pt.wikipedia.org/wiki/Reciclagem" && !xp300Claimed) {
-        adjust_xp(300);
-        setXp300Claimed(true);
+      if (decodedText === "https://pt.wikipedia.org/wiki/Reciclagem") {
+        addXpToBackend(300, currentMultiplier);
+        setRecycleDone(true);
+      } else if (decodedText === "https://pt.wikipedia.org/wiki/Recife") {
+        addXpToBackend(1000, currentMultiplier);
+        setRecycleDone(true);
+      } else if (decodedText === "https://pt.wikipedia.org/wiki/Capivara") {
+        addXpToBackend(2500, currentMultiplier);
+        setRecycleDone(true);
       }
-      if (decodedText === "https://pt.wikipedia.org/wiki/Recife" && !xp1000Claimed) {
-        adjust_xp(1000);
-        setXp1000Claimed(true);
-      }
-      if (decodedText === "https://pt.wikipedia.org/wiki/Capivara" && !xp2500Claimed) {
-        adjust_xp(2500);
-        setXp2500Claimed(true);
-      }
-
-      setRecycleDone(true);
     };
 
     const onScanFailure = (error) => {
@@ -116,7 +163,7 @@ export default function HomePage() {
         scannerRef.current = null;
       }
     };
-  }, [isScannerVisible, xp300Claimed, xp1000Claimed, xp2500Claimed, adjust_xp, recycleDone]); // adjust_xp included in dependencies
+  }, [isScannerVisible, currentMultiplier, addXpToBackend]);
 
   const showScanner = () => setIsScannerVisible(true);
 
@@ -127,7 +174,7 @@ export default function HomePage() {
         <header>
           <div className="logo">
             <h1>Ecocapiba</h1>
-          </div>
+            </div>
         </header>
 
         <main>
@@ -139,7 +186,8 @@ export default function HomePage() {
                 <p>Seu próximo desafio:</p>
                 <h3>O Ciclo do Plástico</h3>
                 </div>
-                <Button onClick={()=>{setQuizMode(true)}} className="btn-primary">Começar</Button>
+                <Button className='btn-primary' onClick={() => {setQuizMode(true)}} >Começar</Button>
+                { quizMode ? <Quiz closeQuiz={() => setQuizMode(false)} onQuizComplete={addXpToBackend} /> : <></> }
             </QuizItem>
 
             { quizMode ? <Quiz closeQuiz={() => setQuizMode(false)} /> : <></> }
@@ -202,7 +250,7 @@ export default function HomePage() {
 
           <CardLevelHighlight as="section">
             <h3>Nível da Conta</h3>
-            <h2 id="level_and_title">{`Nível ${currentLevel}: ${currentTitle}`}</h2>
+            <h2 id="level_and_title">{`Nível ${currentLevel}: ${titleList[currentLevel]}`}</h2>
             <p className="continue-text">
               Continue assim para desbloquear novas recompensas!
             </p>
