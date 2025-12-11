@@ -15,7 +15,7 @@ export default Object.freeze({
     SECONDARY_TEXT: "#555555",
     HIGHLIGHT: "#E0E0E0",
     BORDER: "#D0D0D0",
-    
+
     DARK_BG: "#1A1A1A",
     LOGOUT_BG: "rgba(239, 83, 80, 0.15)",
     LOGOUT_BG_HOVER: "rgba(239, 83, 80, 0.25)",
@@ -48,4 +48,11 @@ export default Object.freeze({
     HISTORY_BORDER: "#cbd5e1",
     HISTORY_XP_BG: "#dcfce7",
     HISTORY_XP_TEXT: "#166534",
+
+    WIDGET_GRADIENT_START: "#2e7d32",
+    WIDGET_GRADIENT_END: "#4caf50",
+    WHITE_TRANSPARENT_20: "rgba(255,255,255,0.2)",
+    BLACK_TRANSPARENT_10: "rgba(0,0,0,0.1)",
+    BLACK_TRANSPARENT_20: "rgba(0,0,0,0.2)",
+    YELLOW_HIGHLIGHT: "#ffeb3b",
 });

@@ -13,7 +13,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient} >
     <BrowserRouter >
-        <Routes>  // order matters, notfound must be last
+        <Routes>  {/* order matters, notfound must be last */}
             <Route path='/' element={ <AboutUsPage /> } />
             <Route path='/home' element={ <HomePage /> } />
             <Route path='/employee' element={ <EmployeePage /> } />

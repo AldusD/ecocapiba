@@ -37,7 +37,7 @@ export default function StreakWidget({ streakWeeks, multiplier }) {
           <ProgressBarFill style={{ width: `${percentage}%` }} />
         </ProgressBarContainer>
       </StatsContainer>
-    </WidgetCard>
+    </WidgetCard>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
   );
 }
 
