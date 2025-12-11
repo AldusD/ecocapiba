@@ -8,6 +8,8 @@ import {
   Wrapper,
 } from "./styles";
 
+const API = import.meta.env.VITE_API_URL;
+
 export default function Calendar() {
   const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
   const monthsOfYear = [
@@ -60,7 +62,7 @@ export default function Calendar() {
       try {
         const token = localStorage.getItem("authToken");
         const response = await fetch(
-          "http://localhost:8080/recycle/calendar",
+          `${API}/recycle/calendar`,
           {
             method: "POST",
             headers: {

@@ -5,8 +5,7 @@ export class RecycleRepository {
 
   async getRecylesById(id: number): Promise<number | null> {
     const recycleById = await this.prisma.recyclesMade.findUnique({
-      where: { id },
-
+      where: { id: Number(id) },
       select: { userId: true },
     });
 
@@ -25,7 +24,7 @@ export class RecycleRepository {
 
     const recycleByDate = await this.prisma.recyclesMade.findFirst({
       where: {
-        userId: userId,
+        userId: Number(userId),
         doneDate: {
           gte: startOfDay,
           lte: endOfDay,
@@ -38,7 +37,7 @@ export class RecycleRepository {
 
   async getRecyclesByUserId(userId: number): Promise<RecyclesMade[] | null> {
     return await this.prisma.recyclesMade.findMany({
-      where: { userId: userId },
+      where: { userId: Number(userId) },
       orderBy: { doneDate: "desc" },
     });
   }
@@ -49,25 +48,51 @@ export class RecycleRepository {
     year: number
   ): Promise<number[]> {
     const startDate = new Date(year, month, 1);
-    const endDate = new Date(year, month + 1, 0, 23, 59, 59);
+    const endDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
 
     const recycles = await this.prisma.recyclesMade.findMany({
       where: {
-        userId: userId,
+        userId: Number(userId),
         doneDate: { gte: startDate, lte: endDate },
       },
       select: { doneDate: true },
     });
 
-    return recycles.map((r: { doneDate: Date }) => r.doneDate.getDate());
+    return recycles.map((r) => r.doneDate.getDate());
   }
 
   async create(userId: number, doneDate: Date): Promise<RecyclesMade> {
     return await this.prisma.recyclesMade.create({
       data: {
-        userId: userId,
+        userId: Number(userId),
         doneDate: doneDate,
       },
     });
+  }
+
+  async delete(id: string): Promise<RecyclesMade> {
+    return await this.prisma.recyclesMade.delete({
+      where: { id: Number(id) },
+    });
+  }
+
+  // Método usado pela Streak
+  async hasRecycleInPeriod(
+    userId: number,
+    startDate: Date,
+    endDate: Date
+  ): Promise<boolean> {
+    const recycle = await this.prisma.recyclesMade.findFirst({
+      where: {
+        userId: Number(userId),
+        doneDate: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      select: { id: true },
+    });
+
+    return recycle !== null;
   }
 }
