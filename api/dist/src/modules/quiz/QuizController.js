@@ -10,7 +10,7 @@ export class QuizController {
         try {
             const { quizId } = req.params;
             const { correctCount } = req.body;
-            const userId = 2; // TODO get from sessionToken
+            const userId = Number(res.locals.user);
             await this.quizService.handleAttempt(userId, Number(quizId), correctCount);
             res.status(HttpStatusEnum.CREATED).json();
         }

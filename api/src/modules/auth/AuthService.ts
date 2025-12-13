@@ -6,17 +6,29 @@ import { SystemConstantsEnum } from "../shared/enums/systemConstantsEnum.js";
 import { PrismaErrorEnum } from "../shared/enums/prismaErrorEnum.js";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
+import type { User } from "./models/User.js";
 
 dotenv.config();
 
 const CAPIBA_REWARD = Number(process.env.CAPIBA_REWARD as string);
 const XP_REWARD = Number(process.env.XP_REWARD as string);
 
+interface AuthResult {
+    token: string;
+    user: User;
+    newUserCreated: boolean;
+}
+
+interface CpfAuthInput {
+    cpf: string;
+    email?: string;
+}
+
 export class AuthService {
     private authRepository = new AuthRepository();
 
-    async authUser (email: string, password: string) : Promise<string> {
-        const dbUser = await this.authRepository.getByEmail(email);
+    async authUser (cpf: string, password: string) : Promise<string> {
+        const dbUser = await this.authRepository.getByCPF(cpf);
 
         if (!dbUser || !await bcrypt.compare(password, dbUser.password)) {
             throw new Error(MessagesEnum.ERROR_INVALID_CREDENTIALS);

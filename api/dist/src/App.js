@@ -12,6 +12,7 @@ dotenv.config();
 // Theese imports forces decorator @AppRoutes render routes, this is not desired, if youre able to fix it, please do :)
 import './modules/auth/AuthRoutes.js';
 import './modules/quiz/QuizRoutes.js';
+import './modules/recycle/RecycleRoutes.js';
 let App = class App {
     app;
     port;
@@ -20,7 +21,6 @@ let App = class App {
         this.app.use(cors({ origin: "*" }));
         this.app.use(express.json());
         this.port = port;
-        this.app.use(express.json());
         this.setupRoutes();
     }
     setupRoutes() {
