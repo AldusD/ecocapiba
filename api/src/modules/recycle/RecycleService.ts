@@ -1,4 +1,5 @@
 import { RecycleRepository } from "./RecycleRepository.js";
+import { MessagesEnum } from "../shared/enums/messagesEnum.js";
 
 export class RecycleService {
   private recycleRepository = new RecycleRepository();
@@ -7,14 +8,6 @@ export class RecycleService {
   private readonly WEEKLY_BONUS = 0.1;
   private readonly MAX_MULTIPLIER = 1.7;
 
-  async checkRecycle(userId: number, currentDate: Date) {
-    const hasRecycled = await this.recycleRepository.getRecyclesByDate(
-      userId,
-      currentDate
-    );
-    return hasRecycled !== null;
-  }
-
   async registerRecycle(userId: number, currentDate: Date) {
     try {
       return await this.recycleRepository.create(
@@ -22,7 +15,7 @@ export class RecycleService {
         currentDate
       );
     } catch (error) {
-      throw new Error("Failed to register recycle!");
+      throw new Error(MessagesEnum.ERROR_CREATING_RECYCLE);
     }
   }
 

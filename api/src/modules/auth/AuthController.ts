@@ -52,7 +52,7 @@ export class AuthController {
             const { amount } = req.body;
 
             if (!amount || amount <= 0) {
-                res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json({ error: "Quantidade de xp inválida" });
+                res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json({ error: true, message: MessagesEnum.ERROR_INVALID_XP_AMOUNT });
                 return;
             }
 
