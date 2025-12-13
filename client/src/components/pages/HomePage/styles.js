@@ -37,6 +37,17 @@ export const Dashboard = styled.div`
         left: 50%;
         transform: translateX(-50%);
     }
+    
+    @media (max-width: 850px) {
+        grid-template-columns: 1fr;
+        grid-template-areas: 
+            "header" 
+            "sidebar" 
+            "main-content";
+        gap: 20px;
+        padding: 0 15px;
+        margin-top: 20px;
+    }
 `;
 
 export const Card = styled.section`
@@ -236,14 +247,3 @@ export const XpText = styled.span`
     color: #FFFFFF;
 `;
 
-export const GlobalMediaQuery = `
-    @media (max-width: 850px) {
-        ${Dashboard} {
-            grid-template-columns: 1fr;
-            grid-template-areas: "header" "sidebar" "main-content";
-            gap: 20px;
-            padding: 0 15px;
-            margin-top: 20px;
-        }
-    }
-`;

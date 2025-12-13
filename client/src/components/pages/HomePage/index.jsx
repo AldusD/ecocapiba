@@ -22,7 +22,7 @@ import {
   XpFill,
   XpText,
   Card,
-  GlobalStyle
+  GlobalStyle,
 } from "./styles";
 
 const API = import.meta.env.VITE_API_URL;
@@ -30,7 +30,7 @@ const API = import.meta.env.VITE_API_URL;
 export default function HomePage() {
   const [xpNumber, setXpNumber] = useState(0); // to be changed to userdata
   const [currentLevel, setCurrentLevel] = useState(0); // to be changed to userdata
-  const [currentStreak, setCurrentStreak] = useState(3); // to be changed to userdata
+  const [currentStreak, setCurrentStreak] = useState(0); // to be changed to userdata
   const [currentMultiplier, setCurrentMultiplier] = useState(1.0);
   const [isScannerVisible, setIsScannerVisible] = useState(false);
 
@@ -60,6 +60,7 @@ export default function HomePage() {
           setCurrentStreak(data.streakWeeks);
           setCurrentMultiplier(data.multiplier);
         } else {
+          setCurrentStreak(0)
           console.error("Falha ao buscar streak:", response.statusText);
         }
       } catch (error) {
