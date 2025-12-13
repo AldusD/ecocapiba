@@ -6,7 +6,7 @@ import Timer from "./Timer";
 import controller, { ANSWER_BENCHMARK, CAPIBAS_PER_QUIZ, TIME_TO_ANSWER, XP_PER_QUIZ } from "./controller";
 import Icons from "../../../../shared/Icons";
 
-export default function Quiz({ closeQuiz }) {
+export default function Quiz({ closeQuiz, onQuizComplete }) {
   const [selected, setSelected] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
@@ -30,7 +30,8 @@ export default function Quiz({ closeQuiz }) {
     imageStr, setImageStr,
     timeEnded, setTimeEnded,
     quizData, setQuizData,
-    isLastQuestion: () => {currentIndex === quizData.questions.length - 1}
+    isLastQuestion: () => {currentIndex === quizData.questions.length - 1},
+    onQuizComplete
   });
 
   useEffect(() => {

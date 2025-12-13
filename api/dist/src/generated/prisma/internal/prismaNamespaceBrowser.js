@@ -39,10 +39,14 @@ export const JsonNull = runtime.objectEnumValues.instances.JsonNull;
 export const AnyNull = runtime.objectEnumValues.instances.AnyNull;
 export const ModelName = {
     User: 'User',
+<<<<<<< HEAD
+    RecyclesMade: 'RecyclesMade'
+=======
     RecyclesMade: 'RecyclesMade',
     Quiz: 'Quiz',
     Question: 'Question',
     QuizAttempt: 'QuizAttempt'
+>>>>>>> b509defe8054189460f3895086c162d1bb49bfc8
 };
 /*
  * Enums
@@ -67,22 +71,10 @@ export const RecyclesMadeScalarFieldEnum = {
     doneDate: 'doneDate',
     password: 'password'
 };
-export const QuizScalarFieldEnum = {
-    id: 'id',
-    type: 'type'
-};
-export const QuestionScalarFieldEnum = {
-    id: 'id',
-    quizId: 'quizId',
-    title: 'title',
-    alternatives: 'alternatives'
-};
-export const QuizAttemptScalarFieldEnum = {
+export const RecyclesMadeScalarFieldEnum = {
     id: 'id',
     userId: 'userId',
-    quizId: 'quizId',
-    status: 'status',
-    createdAt: 'createdAt'
+    doneDate: 'doneDate'
 };
 export const SortOrder = {
     asc: 'asc',

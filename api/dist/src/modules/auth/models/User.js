@@ -4,15 +4,24 @@ export class User {
     email; // TODO change to specific email class??
     password;
     role;
-    constructor(email, password, role = UserRolerEnum.COMMON) {
+    xp;
+    constructor(email, password, role = UserRolerEnum.COMMON, xp) {
         this.email = email;
         this.password = password;
         this.role = role;
+        this.xp = xp;
     }
     static ofDbUser(dbUser) {
-        const user = new User(dbUser.getEmail(), dbUser.getPassword(), dbUser.getRole());
+        const user = new User(dbUser.getEmail(), dbUser.getPassword(), dbUser.getRole(), dbUser.getXp());
         user.setId(dbUser.getId());
         return user;
+    }
+    addXp(amount) {
+        this.xp += amount;
+        return this.xp;
+    }
+    getXp() {
+        return this.xp;
     }
     checkBalance() {
         // implements logic with no link to prisma representation
@@ -20,6 +29,10 @@ export class User {
     }
     setId(id) {
         this.id = id;
+    }
+    setXp(amount) {
+        this.xp = amount;
+        return this.xp;
     }
 }
 //# sourceMappingURL=User.js.map

@@ -8,9 +8,10 @@ import { Router } from "express";
 import { QuizController } from "./QuizController.js";
 import { Route } from "../../resources/decorator/routeDecorator.js";
 let QuizRoutes = class QuizRoutes {
-    router = Router();
+    router;
     QuizController = new QuizController();
     constructor() {
+        this.router = Router();
         this.router.post('/attempt/:quizId', (req, res) => this.QuizController.registerAttempt(req, res));
     }
 };

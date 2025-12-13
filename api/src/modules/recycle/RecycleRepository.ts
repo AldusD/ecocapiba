@@ -78,7 +78,7 @@ export class RecycleRepository {
 
   // Método usado pela Streak
   async hasRecycleInPeriod(
-    userId: string,
+    userId: number,
     startDate: Date,
     endDate: Date
   ): Promise<boolean> {

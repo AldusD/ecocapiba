@@ -37,9 +37,29 @@ export class RecycleController {
     }
   }
 
-  public async getStreak(req: Request, res: Response) {
+  async getCalendar(req: Request, res: Response) {
     try {
-      const { userId } = req.params;
+      const userId = Number(res.locals.user);
+      const { month, year } = req.body;
+
+      if (month === undefined || year === undefined) {
+        return res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json({ error: "Mês e ano são necessários" });
+      }
+
+      const days = await this.recycleService.getDaysRecycledInMonth(
+        userId,
+        month,
+        year
+      );
+      return res.status(HttpStatusEnum.OK).json({ days });
+    } catch (error) {
+      return res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json(MessagesEnum.ERROR_CHECKING_RECYCLE);
+    }
+  }
+
+    public async getStreak(req: Request, res: Response) {
+    try {
+      const userId = Number(res.locals.user)
 
       if (!userId) {
         return res.status(HttpStatusEnum.UNPROCESSABLE_ENTITY).json(MessagesEnum.ERROR_INVALID_BODY);

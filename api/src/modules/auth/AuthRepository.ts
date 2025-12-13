@@ -6,6 +6,8 @@ export type SafeUser = {
     email: string;
     cpf: string;
     invitationCode: string;
+    xp: number;
+    capibas: number;
 }
 
 export class AuthRepository {
@@ -31,6 +33,8 @@ export class AuthRepository {
                 email: true,
                 cpf: true,
                 invitationCode: true,
+                xp: true,
+                capibas: true,
             },
             where: { id: id }
         });
@@ -44,6 +48,8 @@ export class AuthRepository {
                 email: true,
                 cpf: true,
                 invitationCode: true,
+                xp: true,
+                capibas: true,
             },
             where: { invitationCode: invitationCode }
         });
@@ -54,7 +60,9 @@ export class AuthRepository {
         password: string,
         cpf: string,
         name: string,
-        invitationCode: string
+        invitationCode: string,
+        xp: number,
+        capibas: number,
     ) : Promise<User>  {
         return await this.prisma.user.create({
             data: {
@@ -62,7 +70,7 @@ export class AuthRepository {
                 password: password,
                 cpf: cpf,
                 name: name,
-                invitationCode: invitationCode
+                invitationCode: invitationCode,
             }
         })
     }

@@ -20,6 +20,15 @@ export class AuthService {
         const token = generateAccessToken(userId);
         return token;
     }
+<<<<<<< HEAD
+    getXpByEmail(email) {
+        const dbUser = this.authRepository.getByEmail(email);
+        return User.ofDbUser(dbUser);
+    }
+    updateXp(email, newXp) {
+        const dbUser = this.authRepository.updateXp(email, newXp);
+        return User.ofDbUser(dbUser);
+=======
     async registerUser(email, password, cpf, name, invitationCode) {
         // Validação de email
         let dbUser = await this.authRepository.getByEmail(email);
@@ -68,6 +77,7 @@ export class AuthService {
             throw new Error(MessagesEnum.ERROR_USER_NOT_FOUND);
         }
         return user;
+>>>>>>> b509defe8054189460f3895086c162d1bb49bfc8
     }
 }
 //# sourceMappingURL=AuthService.js.map
