@@ -28,9 +28,9 @@ import {
 
 export default function HomePage() {
   // State Definitions
-  const [xpNumber, setXpNumber] = useState(0);
-  const [currentLevel, setCurrentLevel] = useState(0);
-  const [currentStreak, setCurrentStreak] = useState(0); // Iniciando com 0 para refletir carregamento real
+  const [xpNumber, setXpNumber] = useState(0); //to be changed to userdata
+  const [currentLevel, setCurrentLevel] = useState(0); //to be changed to userdata
+  const [currentStreak, setCurrentStreak] = useState(0);  //to be changed to userdata
   const [currentMultiplier, setCurrentMultiplier] = useState(1.0);
   const [isScannerVisible, setIsScannerVisible] = useState(false);
   const [quizMode, setQuizMode] = useState(false);
@@ -153,7 +153,6 @@ export default function HomePage() {
                 display: isScannerVisible ? "block" : "none",
                 width: "600px",
                 height: "600px",
-                margin: "0 auto"
               }}
             />
             {recycleDone && <PopUp closePopUp={() => setRecycleDone(false)} />}
