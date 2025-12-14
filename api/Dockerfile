@@ -22,9 +22,6 @@ COPY . .
 # Gerar Prisma Client
 RUN npx prisma generate
 
-# Se usar TypeScript, descomente a linha abaixo:
-# RUN npm run build
-
 # Etapa 4: Production
 FROM base AS production
 
