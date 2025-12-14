@@ -15,7 +15,7 @@ export default class App {
   private app: Application;
   private port: number;
 
-  constructor(port = 8080) {
+  constructor(port = 3001) {
     this.app = express();
     this.app.use(cors({ origin: "*" }));
     this.app.use(express.json());
@@ -36,5 +36,5 @@ export default class App {
   }
 }
 
-const app = new App(8080);
+const app = new App(3001);
 app.start();

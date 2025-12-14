@@ -20,16 +20,7 @@ export class AuthService {
         const token = generateAccessToken(userId);
         return token;
     }
-<<<<<<< HEAD
-    getXpByEmail(email) {
-        const dbUser = this.authRepository.getByEmail(email);
-        return User.ofDbUser(dbUser);
-    }
-    updateXp(email, newXp) {
-        const dbUser = this.authRepository.updateXp(email, newXp);
-        return User.ofDbUser(dbUser);
-=======
-    async registerUser(email, password, cpf, name, invitationCode) {
+    async registerUser(email, password, cpf, name, invitationCode, xp, capibas) {
         // Validação de email
         let dbUser = await this.authRepository.getByEmail(email);
         if (dbUser)
@@ -51,7 +42,7 @@ export class AuthService {
             try {
                 const invitationCode = generateInvitationCode();
                 password = await bcrypt.hash(password, SystemConstantsEnum.BCRYPT_SALT_ROUNDS);
-                const user = await this.authRepository.create(email, password, cpf, name, invitationCode);
+                const user = await this.authRepository.create(email, password, cpf, name, invitationCode, xp, capibas);
                 // User inviter rewards
                 if (inviterUser) {
                     await this.authRepository.addReward(inviterUser.id, XP_REWARD, CAPIBA_REWARD);
@@ -77,7 +68,10 @@ export class AuthService {
             throw new Error(MessagesEnum.ERROR_USER_NOT_FOUND);
         }
         return user;
->>>>>>> b509defe8054189460f3895086c162d1bb49bfc8
+    }
+    async addUserReward(userId, xp, capibas) {
+        const user = await this.authRepository.addReward(userId, xp, capibas);
+        return user;
     }
 }
 //# sourceMappingURL=AuthService.js.map
