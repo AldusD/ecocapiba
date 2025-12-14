@@ -1,13 +1,14 @@
-FROM node:20
+FROM node:20-alpine
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY package*.json ./
-# Use npm ci when a lockfile exists for reproducible installs; fallback to npm install
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+COPY package.json package-lock.json* ./
+RUN npm install
 
 COPY . .
+RUN npm run build
+
+RUN npm install -g serve
 
 EXPOSE 3000
-
-CMD ["npm", "start"]
+CMD ["serve", "-s", "dist", "-l", "3000"]
