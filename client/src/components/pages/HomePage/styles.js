@@ -37,7 +37,11 @@ export const Dashboard = styled.div`
         left: 50%;
         transform: translateX(-50%);
     }
+<<<<<<< Updated upstream
     
+=======
+
+>>>>>>> Stashed changes
     @media (max-width: 850px) {
         grid-template-columns: 1fr;
         grid-template-areas: 
@@ -246,4 +250,7 @@ export const XpText = styled.span`
     text-align: right;
     color: #FFFFFF;
 `;
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
