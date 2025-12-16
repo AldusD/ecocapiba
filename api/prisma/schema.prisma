@@ -28,6 +28,7 @@ model User {
 
   inviterLogs InvitationLog[] @relation("UserInviterRelation")
   invitedLogs InvitationLog[] @relation("UserInvitedRelation")
+  rewardLogs  RewardLog[]
 }
 
 model InvitationLog {
@@ -77,4 +78,18 @@ model QuizAttempt {
 
   Quiz Quiz @relation(fields: [quizId], references: [id])
   User User @relation(fields: [userId], references: [id])
+}
+
+model RewardLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  xp        Int
+  capibas   Float
+  reason    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  User User @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
 }

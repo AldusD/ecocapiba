@@ -78,17 +78,32 @@ export class AuthRepository {
     async addReward(
         userId: number,
         xp: number,
-        capibas: number
+        capibas: number,
+        reason = "generic_reward",
+        metadata?: Record<string, unknown>
     ) : Promise<User> {
-        return await this.prisma.user.update({
-            where: {
-                id: userId
-            },
-            data: {
-                xp: {increment: xp},
-                capibas: {increment: capibas}
-            }
-        })
+        const [user] = await this.prisma.$transaction([
+            this.prisma.user.update({
+                where: {
+                    id: userId
+                },
+                data: {
+                    xp: {increment: xp},
+                    capibas: {increment: capibas}
+                }
+            }),
+            this.prisma.rewardLog.create({
+                data: {
+                    userId: userId,
+                    xp: xp,
+                    capibas: capibas,
+                    reason: reason,
+                    metadata: metadata ?? undefined
+                }
+            })
+        ]);
+
+        return user;
     }
 
     async update(id: number, data: Partial<User>): Promise<User> {
