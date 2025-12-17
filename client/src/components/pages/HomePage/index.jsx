@@ -1,12 +1,13 @@
 /* eslint-disable no-unused-vars */
-import { useState, useRef, useEffect, useCallback } from "react";
-import { Html5QrcodeScanner } from "html5-qrcode";
-import Calendar from "./components/Calendar"
+import { useState, useRef, useEffect } from "react";
+import Calendar from "./components/Calendar";
 import UserIndication from "./components/UserIndication";
 import Quiz from "./components/Quiz";
 import PopUp from "./components/PopUp";
 import enums from "../../../enums/";
-import StreakWidget from "./components/Streak/index.jsx"; 
+import StreakWidget from "./components/Streak/index.jsx";
+import useHomePageController from "./controller"; // Importando o controller
+
 import {
   Dashboard,
   QuizSection,
@@ -25,147 +26,60 @@ import {
   GlobalStyle
 } from "./styles";
 
-const API = import.meta.env.VITE_API_URL;
-
 export default function HomePage() {
-  const [xpNumber, setXpNumber] = useState(0); // to be changed to userdata
-  const [currentLevel, setCurrentLevel] = useState(0); // to be changed to userdata
-  const [currentStreak, setCurrentStreak] = useState(3); // to be changed to userdata
+  // State Definitions
+  const [xpNumber, setXpNumber] = useState(0); //to be changed to userdata
+  const [currentLevel, setCurrentLevel] = useState(0); //to be changed to userdata
+  const [currentStreak, setCurrentStreak] = useState(0);  //to be changed to userdata
   const [currentMultiplier, setCurrentMultiplier] = useState(1.0);
   const [isScannerVisible, setIsScannerVisible] = useState(false);
-
   const [quizMode, setQuizMode] = useState(false);
   const [recycleDone, setRecycleDone] = useState(false);
 
+  // Refs
   const readerRef = useRef(null);
   const scannerRef = useRef(null);
+
+  // Constants
   const titleList = Object.values(enums.TITLES);
   const xpLimit = Object.values(enums.XP_LIMITS);
+  
+  // Initialize Controller
+  const homeController = useHomePageController({
+    setXpNumber, xpNumber,
+    setCurrentLevel, currentLevel,
+    setCurrentStreak,
+    setCurrentMultiplier, currentMultiplier,
+    setIsScannerVisible, isScannerVisible,
+    setRecycleDone,
+    scannerRef, readerRef,
+    xpLimit
+  });
+
+
   const xpString = `${xpNumber} / ${xpLimit[currentLevel]} XP`;
   const barPercentage = Math.min(100, (xpNumber / xpLimit[currentLevel]) * 100);
 
   useEffect(() => {
-    async function fetchStreak() {
-      try {
-        const token = localStorage.getItem("authToken");
-        const response = await fetch(`${API}/recycle/streak`, {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setCurrentStreak(data.streakWeeks);
-          setCurrentMultiplier(data.multiplier);
-        } else {
-          console.error("Falha ao buscar streak:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Erro ao buscar streak:", error);
-      }
-    }
-    fetchStreak();
-  }, []);
-  
-  const addXpToBackend = useCallback(async (amount, multiplier = currentMultiplier) => {
-    try {
-      const token = localStorage.getItem("authToken");
-      amount = Math.round(amount * multiplier);
-      const response = await fetch(`${API}/auth/addxp`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ amount }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setXpNumber(data.xp);
-        return data.xp;
-      } else {
-        console.error("Falha ao adicioanr Xp:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Erro ao adicionar Xp:", error);
-    }
-  }, [currentMultiplier]);
-  
-  useEffect(() => {
-    async function fetchXp() {
-      try {
-        const token = localStorage.getItem("authToken");
-        const response = await fetch(`${API}/auth/getxp`, {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setXpNumber(data.xp);
-        } else {
-          console.error("Falha ao buscar Xp:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Erro ao buscar Xp:", error);
-      }
-    }
-    fetchXp();
+    homeController.fetchUserData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (xpNumber >= xpLimit[currentLevel]) {
-      setCurrentLevel((prev) => prev + 1);
-    }
-  }, [xpNumber, currentLevel, xpLimit]);
-
+    homeController.checkLevelUp();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [xpNumber, currentLevel]);
 
   useEffect(() => {
-    if (!isScannerVisible) return;
-
-    const onScanSuccess = (decodedText, decodedResult) => {
-      // handle the scanned code
-      console.log(`Code matched = ${decodedText}`, decodedResult);
-      if (decodedText === "https://pt.wikipedia.org/wiki/Reciclagem") {
-        addXpToBackend(300, currentMultiplier);
-        setRecycleDone(true);
-      } else if (decodedText === "https://pt.wikipedia.org/wiki/Recife") {
-        addXpToBackend(1000, currentMultiplier);
-        setRecycleDone(true);
-      } else if (decodedText === "https://pt.wikipedia.org/wiki/Capivara") {
-        addXpToBackend(2500, currentMultiplier);
-        setRecycleDone(true);
-      }
-    };
-
-    const onScanFailure = (error) => {
-      // ignore or log
-    };
-
-    try {
-      scannerRef.current = new Html5QrcodeScanner(
-        readerRef.current?.id ?? "reader",
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        false
-      );
-      scannerRef.current.render(onScanSuccess, onScanFailure);
-    } catch (e) {
-      console.error(e);
+    if (isScannerVisible) {
+        homeController.initializeScanner();
     }
-
+    
     return () => {
-      if (scannerRef.current) {
-        try { scannerRef.current.clear(); } catch (e) { /* ignore */ }
-        scannerRef.current = null;
-      }
+        homeController.cleanupScanner();
     };
-  }, [isScannerVisible, currentMultiplier, addXpToBackend]);
-
-  const showScanner = () => setIsScannerVisible(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isScannerVisible]); 
 
   return (
     <>
@@ -174,7 +88,7 @@ export default function HomePage() {
         <header>
           <div className="logo">
             <h1>Ecocapiba</h1>
-            </div>
+          </div>
         </header>
 
         <main>
@@ -185,12 +99,16 @@ export default function HomePage() {
               <div className="quiz-info">
                 <p>Seu próximo desafio:</p>
                 <h3>O Ciclo do Plástico</h3>
-                </div>
-                <Button className='btn-primary' onClick={() => {setQuizMode(true)}} >Começar</Button>
-                { quizMode ? <Quiz closeQuiz={() => setQuizMode(false)} onQuizComplete={addXpToBackend} /> : <></> }
+              </div>
+              <Button className='btn-primary' onClick={() => setQuizMode(true)}>Começar</Button>
+              
+              {quizMode && (
+                <Quiz 
+                  closeQuiz={() => setQuizMode(false)} 
+                  onQuizComplete={homeController.addXpToBackend} 
+                />
+              )}
             </QuizItem>
-
-            { quizMode ? <Quiz closeQuiz={() => setQuizMode(false)} /> : <></> }
 
             <p className="fila-title">Próximos na fila:</p>
 
@@ -223,8 +141,8 @@ export default function HomePage() {
                 Leve seus recicláveis a um centro de coleta e registre para ganhar XP 
                 {currentMultiplier > 1 && <strong> (Bônus ativo: {currentMultiplier}x)</strong>}.
               </p>
-              <ButtonActionRegister onClick={showScanner}>
-                Registrar Ação Ecológica
+              <ButtonActionRegister onClick={homeController.toggleScanner}>
+                {isScannerVisible ? "Fechar Câmera" : "Registrar Ação Ecológica"}
               </ButtonActionRegister>
             </div>
 
@@ -242,7 +160,6 @@ export default function HomePage() {
         </main>
 
         <aside>
-          
           <StreakWidget 
             streakWeeks={currentStreak} 
             multiplier={currentMultiplier} 
@@ -257,21 +174,23 @@ export default function HomePage() {
 
             <XpContainer>
               <XpTrack>
-              <XpFill
+                <XpFill
                   id="xp_bar"
                   style={{ width: `${barPercentage}%` }}
-              />
+                />
               </XpTrack>
               <XpText id="xp_txt">
-              {xpString}
+                {xpString}
               </XpText>
             </XpContainer>
           </CardLevelHighlight>
 
-            <Card as="section" className="share-section">
-                <UserIndication></UserIndication>
-            </Card>
-            <Card><Calendar></Calendar></Card>
+          <Card as="section" className="share-section">
+            <UserIndication />
+          </Card>
+          <Card>
+            <Calendar />
+          </Card>
         </aside>
       </Dashboard>
     </>
