@@ -103,4 +103,8 @@ export class AuthService {
         const user = await this.authRepository.addReward(userId, xp, capibas);
         return user;
     }
+
+    async capibasHistory(userId: number, limit = 20) {
+        return await this.authRepository.getCapibasHistory(userId, limit);
+    }
 }

@@ -15,7 +15,7 @@ export default function CapibasHistory({ items = [] }) {
       <HistoryTitle>Ações anteriores</HistoryTitle>
       <HistoryList>
         {items.map((item) => (
-          <HistoryItem key={item.title}>
+          <HistoryItem key={item.id ?? `${item.title}-${item.date}`}>
             <ActionInfo>
               <ActionIcon aria-hidden="true">♻</ActionIcon>
               <div>

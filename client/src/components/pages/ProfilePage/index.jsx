@@ -19,27 +19,10 @@ import {
 } from "../HomePage/styles";
 import CapibasHistory from "./components/CapibasHistory";
 
-const historyData = [
-  {
-    title: "Reciclagem de Plástico",
-    date: "05 de Out, 2025",
-    amount: 120,
-  },
-  {
-    title: "Reciclagem de Papelão",
-    date: "28 de Set, 2025",
-    amount: 250,
-  },
-  {
-    title: "Reciclagem de Latinhas",
-    date: "15 de Set, 2025",
-    amount: 185,
-  },
-];
-
 export default function ProfilePage() {
   const [xpNumber, setXpNumber] = useState(0);
   const [currentLevel, setCurrentLevel] = useState(0);
+  const [historyItems, setHistoryItems] = useState([]);
 
   const titleList = Object.values(enums.TITLES);
   const xpLimit = Object.values(enums.XP_LIMITS);
@@ -73,6 +56,50 @@ export default function ProfilePage() {
       }
     }
     fetchXp();
+  }, [API]);
+
+  useEffect(() => {
+    async function fetchCapibasHistory() {
+      try {
+        const token = localStorage.getItem("authToken");
+        const response = await fetch(`${API}/auth/capibas-history?limit=20`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          console.error("Falha ao buscar histórico:", response.statusText);
+          return;
+        }
+
+        const data = await response.json();
+        const items = (data.history ?? []).map((entry) => {
+          const createdAt = entry.createdAt ? new Date(entry.createdAt) : null;
+          const date = createdAt
+            ? createdAt.toLocaleDateString("pt-BR", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })
+            : "";
+
+          return {
+            id: entry.id,
+            title: entry.title ?? "Recompensa",
+            date,
+            amount: entry.capibas ?? 0,
+          };
+        });
+
+        setHistoryItems(items);
+      } catch (error) {
+        console.error("Erro ao buscar histórico:", error);
+      }
+    }
+
+    fetchCapibasHistory();
   }, [API]);
 
   useEffect(() => {
@@ -112,7 +139,7 @@ export default function ProfilePage() {
             </XpContainer>
           </CardLevelHighlight>
 
-          <CapibasHistory items={historyData} />
+          <CapibasHistory items={historyItems} />
         </ProfileCard>
       </PageContainer>
     </>

@@ -62,4 +62,20 @@ export class AuthController {
             res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json({ error: error.message });
         }
     }
+
+    async capibasHistory(req: Request, res: Response) {
+        try {
+            const userId = Number(res.locals.user);
+            const limit = req.query.limit ? Number(req.query.limit) : 20;
+
+            if (!userId) {
+                return res.status(HttpStatusEnum.UNPROCESSABLE_ENTITY).json(MessagesEnum.ERROR_INVALID_BODY);
+            }
+
+            const history = await this.authService.capibasHistory(userId, limit);
+            return res.status(HttpStatusEnum.OK).json({ history });
+        } catch (error: any) {
+            return res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json(MessagesEnum.ERROR_SERVER);
+        }
+    }
 }
