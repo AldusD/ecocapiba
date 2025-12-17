@@ -1,4 +1,4 @@
-import { PrismaClient, type User, type InvitationLog } from "@prisma/client";
+import { PrismaClient, type User, type InvitationLog, Prisma } from "@prisma/client";
 
 export type SafeUser = {
     id: number;
@@ -162,7 +162,7 @@ export class AuthRepository {
         xp: number,
         capibas: number,
         reason = "generic_reward",
-        metadata?: Record<string, unknown>
+        metadata?: Prisma.InputJsonValue | undefined
     ) : Promise<User> {
         const [user] = await this.prisma.$transaction([
             this.prisma.user.update({
@@ -180,7 +180,7 @@ export class AuthRepository {
                     xp: xp,
                     capibas: capibas,
                     reason: reason,
-                    metadata: metadata ?? undefined
+                    ...(metadata !== undefined ? { metadata: metadata } : {})
                 }
             })
         ]);
