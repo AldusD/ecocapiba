@@ -25,6 +25,9 @@ import {
   Card,
   GlobalStyle
 } from "./styles";
+import { Link } from "react-router-dom";
+
+const API = import.meta.env.VITE_API_URL;
 
 export default function HomePage() {
   // State Definitions
@@ -89,6 +92,9 @@ export default function HomePage() {
           <div className="logo">
             <h1>Ecocapiba</h1>
           </div>
+          <Link to="/profile" className="user-avatar" aria-label="Perfil do usuário">
+            U
+          </Link>
         </header>
 
         <main>
