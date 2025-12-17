@@ -10,6 +10,7 @@ import AboutUsPage from './components/pages/AboutUsPage';
 import NotFoundPage from './components/pages/NotFoundPage';
 import EmployeePage from './components/pages/EmployeePage';
 import LoginPage from './components/pages/LoginPage/LoginPage';
+import ProfilePage from './components/pages/ProfilePage';
 
 const queryClient = new QueryClient();
 
@@ -35,21 +36,22 @@ export default function App() {
     const isAuthenticated = !!userData || !!localStorage.getItem('accessToken');
     return !isAuthenticated ? <Element {...rest} /> : <Navigate to="/home" replace />;
   }
-
+  
   return (
-    <QueryClientProvider client={queryClient} >
+    <QueryClientProvider client={queryClient}>
       <UserProvider>
         <BrowserRouter>
           <Routes>
             <Route path='/' element={<RootRedirect />} />
             <Route path='/login' element={ <PublicRoute element={LoginPage} /> } />
             <Route path='/home' element={ <ProtectedRoute element={HomePage} /> } />
+            <Route path='/profile' element={ <ProtectedRoute element={ProfilePage} /> } />
             <Route path='/employee' element={ <ProtectedRoute element={EmployeePage} /> } />
             <Route path='/aboutus' element={ <AboutUsPage /> } />
             <Route path='*' element={ <NotFoundPage /> } />
           </Routes>
         </BrowserRouter>
       </UserProvider>
-    </QueryClientProvider> 
+    </QueryClientProvider>
   );
 }

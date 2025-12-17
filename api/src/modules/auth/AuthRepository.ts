@@ -1,4 +1,4 @@
-import { PrismaClient, type User, type InvitationLog } from "@prisma/client";
+import { PrismaClient, type User, type InvitationLog, Prisma } from "@prisma/client";
 
 export type SafeUser = {
     id: number;
@@ -12,6 +12,88 @@ export type SafeUser = {
 
 export class AuthRepository {
     private prisma = new PrismaClient();
+
+    async getCapibasHistory(userId: number, limit = 20) {
+        const [genericLogs, recycleLogs, quizLogs] = await Promise.all([
+            this.prisma.rewardLog.findMany({
+                where: { userId },
+                orderBy: { createdAt: "desc" },
+                take: limit,
+                select: {
+                    id: true,
+                    capibas: true,
+                    xp: true,
+                    reason: true,
+                    metadata: true,
+                    createdAt: true,
+                },
+            }),
+            this.prisma.recycleRewardLog.findMany({
+                where: { userId },
+                orderBy: { createdAt: "desc" },
+                take: limit,
+                select: {
+                    id: true,
+                    capibas: true,
+                    xp: true,
+                    metadata: true,
+                    createdAt: true,
+                    recyclesMadeId: true,
+                    RecyclesMade: { select: { doneDate: true } },
+                },
+            }),
+            this.prisma.quizAttemptRewardLog.findMany({
+                where: { userId },
+                orderBy: { createdAt: "desc" },
+                take: limit,
+                select: {
+                    id: true,
+                    capibas: true,
+                    xp: true,
+                    metadata: true,
+                    createdAt: true,
+                    quizAttemptId: true,
+                    QuizAttempt: { select: { quizId: true, status: true } },
+                },
+            }),
+        ]);
+
+        const normalized = [
+            ...genericLogs.map((log) => ({
+                id: `reward:${log.id}`,
+                type: "reward" as const,
+                title: String(log.reason ?? "reward"),
+                capibas: log.capibas,
+                xp: log.xp,
+                createdAt: log.createdAt,
+                source: null as null,
+                metadata: log.metadata ?? null,
+            })),
+            ...recycleLogs.map((log) => ({
+                id: `recycle:${log.id}`,
+                type: "recycle" as const,
+                title: "Reciclagem",
+                capibas: log.capibas,
+                xp: log.xp,
+                createdAt: log.createdAt,
+                source: { recyclesMadeId: log.recyclesMadeId, doneDate: log.RecyclesMade?.doneDate ?? null },
+                metadata: log.metadata ?? null,
+            })),
+            ...quizLogs.map((log) => ({
+                id: `quiz:${log.id}`,
+                type: "quiz" as const,
+                title: "Quiz",
+                capibas: log.capibas,
+                xp: log.xp,
+                createdAt: log.createdAt,
+                source: { quizAttemptId: log.quizAttemptId, quizId: log.QuizAttempt?.quizId ?? null, status: log.QuizAttempt?.status ?? null },
+                metadata: log.metadata ?? null,
+            })),
+        ];
+
+        normalized.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        return normalized.slice(0, limit);
+    }
 
     async getByEmail (email: string) : Promise<User | null> {
         return await this.prisma.user.findUnique({
@@ -78,17 +160,32 @@ export class AuthRepository {
     async addReward(
         userId: number,
         xp: number,
-        capibas: number
+        capibas: number,
+        reason = "generic_reward",
+        metadata?: Prisma.InputJsonValue | undefined
     ) : Promise<User> {
-        return await this.prisma.user.update({
-            where: {
-                id: userId
-            },
-            data: {
-                xp: {increment: xp},
-                capibas: {increment: capibas}
-            }
-        })
+        const [user] = await this.prisma.$transaction([
+            this.prisma.user.update({
+                where: {
+                    id: userId
+                },
+                data: {
+                    xp: {increment: xp},
+                    capibas: {increment: capibas}
+                }
+            }),
+            this.prisma.rewardLog.create({
+                data: {
+                    userId: userId,
+                    xp: xp,
+                    capibas: capibas,
+                    reason: reason,
+                    ...(metadata !== undefined ? { metadata: metadata } : {})
+                }
+            })
+        ]);
+
+        return user;
     }
 
     async update(id: number, data: Partial<User>): Promise<User> {
