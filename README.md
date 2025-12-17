@@ -251,8 +251,6 @@ Authorization: Bearer <seu-token-jwt>
 
 ## 👥 Equipe
 
-Projeto desenvolvido por alunos de Sistemas de Informação do 2º período de 2025, sob a tutela do docente **Kiev Gama** e em parceria com a **Prefeitura do Recife**.
-
 <div align="center">
     <table style="margin: 0 auto;">
         <tr>
