@@ -122,7 +122,37 @@ export function useSignin () {
 }
 
 export function useSignup () {
-    return useMutation({ mutationFn: register }); 	
+    const { setUserData } = useUser();
+
+    const navigateToHome = async (data, variables) => {
+        // If register response includes tokens and user, use them
+        if (data && data.trim().startsWith('{')) {
+            const parsed = JSON.parse(data);
+            if (parsed.token) {
+                localStorage.setItem("accessToken", parsed.token.accessToken);
+                localStorage.setItem("refreshToken", parsed.token.refreshToken);
+                setUserData({ ...parsed.user });
+                return;
+            }
+        }
+
+        // Otherwise, try to login immediately with the same credentials
+        try {
+            const loginResp = await login(variables);
+            if (loginResp && loginResp.trim().startsWith('{')) {
+                const parsedLogin = JSON.parse(loginResp);
+                if (parsedLogin.token) {
+                    localStorage.setItem("accessToken", parsedLogin.token.accessToken);
+                    localStorage.setItem("refreshToken", parsedLogin.token.refreshToken);
+                    setUserData({ ...parsedLogin.user });
+                }
+            }
+        } catch (err) {
+            // ignore: caller can handle navigation/errors
+        }
+    }
+
+    return useMutation({ mutationFn: register, onSuccess: navigateToHome }); 	
 }
 
 export function useLogout () {
