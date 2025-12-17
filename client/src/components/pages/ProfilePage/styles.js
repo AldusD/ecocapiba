@@ -116,6 +116,23 @@ export const HistoryItem = styled.article`
     }
 `;
 
+export const EmptyState = styled(HistoryItem)`
+    justify-content: center;
+    text-align: center;
+    border-style: dashed;
+
+    &:hover {
+        background: ${enums.COLORS.CARD_BG};
+        border-color: ${enums.COLORS.HISTORY_BORDER};
+    }
+
+    p {
+        margin: 0;
+        color: ${enums.COLORS.SECONDARY_TEXT};
+        font-size: 0.95rem;
+    }
+`;
+
 export const ActionInfo = styled.div`
     display: flex;
     align-items: center;

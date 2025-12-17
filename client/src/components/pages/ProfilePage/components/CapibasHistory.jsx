@@ -3,6 +3,7 @@ import {
   HistoryTitle,
   HistoryList,
   HistoryItem,
+  EmptyState,
   ActionIcon,
   ActionInfo,
   ActionMeta,
@@ -14,6 +15,11 @@ export default function CapibasHistory({ items = [] }) {
     <HistorySection>
       <HistoryTitle>Ações anteriores</HistoryTitle>
       <HistoryList>
+        {items.length === 0 ? (
+          <EmptyState>
+            <p>Nenhuma ação registrada ainda.</p>
+          </EmptyState>
+        ) : null}
         {items.map((item) => (
           <HistoryItem key={item.id ?? `${item.title}-${item.date}`}>
             <ActionInfo>
