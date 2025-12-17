@@ -1,1 +1,0 @@
-{"version":3,"file":"routeDecorator.d.ts","sourceRoot":"","sources":["../../../../../src/resources/decorator/routeDecorator.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,MAAM,SAAS,CAAC;AAEjC,MAAM,WAAW,eAAe;IAC9B,MAAM,EAAE,MAAM,CAAC;IACf,MAAM,EAAE,MAAM,CAAC;CAChB;AAED,eAAO,MAAM,aAAa,EAAE,eAAe,EAAO,CAAC;AAEnD,wBAAgB,KAAK,CAAC,MAAM,EAAE,MAAM,GAAG,cAAc,CAapD"}
