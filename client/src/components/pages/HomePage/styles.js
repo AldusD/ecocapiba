@@ -26,6 +26,28 @@ export const Dashboard = styled.div`
     header { 
         grid-area: header;
         color: ${enums.COLORS.LIGHT_ACTION};
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+
+        .logo h1 {
+            margin: 0;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: ${enums.COLORS.LIGHT_ACTION};
+            color: ${enums.COLORS.CARD_BG};
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
     }
     main { grid-area: main-content; }
     aside { grid-area: sidebar; }

@@ -1,0 +1,41 @@
+import {
+  HistorySection,
+  HistoryTitle,
+  HistoryList,
+  HistoryItem,
+  EmptyState,
+  ActionIcon,
+  ActionInfo,
+  ActionMeta,
+  ActionValue,
+} from "../styles";
+
+export default function CapibasHistory({ items = [] }) {
+  return (
+    <HistorySection>
+      <HistoryTitle>Ações anteriores</HistoryTitle>
+      <HistoryList>
+        {items.length === 0 ? (
+          <EmptyState>
+            <p>Nenhuma ação registrada ainda.</p>
+          </EmptyState>
+        ) : null}
+        {items.map((item) => (
+          <HistoryItem key={item.id ?? `${item.title}-${item.date}`}>
+            <ActionInfo>
+              <ActionIcon aria-hidden="true">♻</ActionIcon>
+              <div>
+                <h3>{item.title}</h3>
+                <span className="date">{item.date}</span>
+              </div>
+            </ActionInfo>
+            <ActionMeta>
+              <ActionValue>+{item.amount}</ActionValue>
+              <span className="label">Capibas</span>
+            </ActionMeta>
+          </HistoryItem>
+        ))}
+      </HistoryList>
+    </HistorySection>
+  );
+}

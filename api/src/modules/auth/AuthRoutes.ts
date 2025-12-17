@@ -13,6 +13,7 @@ export class AuthRoutes {
         this.router.post('/register', (req, res) => this.authController.register(req, res));
         this.router.get('/profile', authenticate, (req, res) => this.authController.profile(req, res));
         this.router.get("/getxp", authenticate, (req, res) => this.authController.getXp(req, res));
+        this.router.get("/capibas-history", authenticate, (req, res) => this.authController.capibasHistory(req, res));
         this.router.post("/addxp", authenticate, (req, res) => this.authController.addXp(req, res));
     }
 }
