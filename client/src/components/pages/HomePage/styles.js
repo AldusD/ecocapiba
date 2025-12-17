@@ -26,6 +26,28 @@ export const Dashboard = styled.div`
     header { 
         grid-area: header;
         color: ${enums.COLORS.LIGHT_ACTION};
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+
+        .logo h1 {
+            margin: 0;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: ${enums.COLORS.LIGHT_ACTION};
+            color: ${enums.COLORS.CARD_BG};
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
     }
     main { grid-area: main-content; }
     aside { grid-area: sidebar; }
@@ -89,7 +111,6 @@ export const QuizSection = styled(Card)`
     h2 {
         margin-bottom: 15px;
     }
-    display: none;
 `;
 
 export const QuizItem = styled.div`
@@ -258,4 +279,16 @@ export const XpText = styled.span`
     display: block;
     text-align: right;
     color: #FFFFFF;
+`;
+
+export const GlobalMediaQuery = `
+    @media (max-width: 850px) {
+        ${Dashboard} {
+            grid-template-columns: 1fr;
+            grid-template-areas: "header" "sidebar" "main-content";
+            gap: 20px;
+            padding: 0 15px;
+            margin-top: 20px;
+        }
+    }
 `;

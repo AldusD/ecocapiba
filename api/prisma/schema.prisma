@@ -28,6 +28,7 @@ model User {
 
   inviterLogs InvitationLog[] @relation("UserInviterRelation")
   invitedLogs InvitationLog[] @relation("UserInvitedRelation")
+  rewardLogs  RewardLog[]
 }
 
 model InvitationLog {
@@ -51,6 +52,7 @@ model RecyclesMade {
   doneDate DateTime
 
   User User @relation(fields: [userId], references: [id])
+  recycleRewardLogs RecycleRewardLog[]
 }
 
 model Quiz {
@@ -77,4 +79,51 @@ model QuizAttempt {
 
   Quiz Quiz @relation(fields: [quizId], references: [id])
   User User @relation(fields: [userId], references: [id])
+  quizAttemptRewardLogs QuizAttemptRewardLog[]
+}
+
+model RewardLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  xp        Int
+  capibas   Float
+  reason    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  User User @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+}
+
+model RecycleRewardLog {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  recyclesMadeId Int
+  xp            Int
+  capibas       Float
+  metadata      Json?
+  createdAt     DateTime @default(now())
+
+  User        User        @relation(fields: [userId], references: [id])
+  RecyclesMade RecyclesMade @relation(fields: [recyclesMadeId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([recyclesMadeId])
+}
+
+model QuizAttemptRewardLog {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  quizAttemptId Int
+  xp           Int
+  capibas      Float
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  User       User       @relation(fields: [userId], references: [id])
+  QuizAttempt QuizAttempt @relation(fields: [quizAttemptId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([quizAttemptId])
 }

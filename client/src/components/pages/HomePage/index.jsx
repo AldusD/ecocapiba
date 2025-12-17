@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState, useRef, useEffect } from "react";
 import Calendar from "./components/Calendar";
 import UserIndication from "./components/UserIndication";
@@ -25,6 +26,9 @@ import {
   GlobalStyle,
   Logo
 } from "./styles";
+import { Link } from "react-router-dom";
+
+const API = import.meta.env.VITE_API_URL;
 
 export default function HomePage() {
   // State Definitions
@@ -87,6 +91,9 @@ export default function HomePage() {
       <Dashboard>
         <header>
           <Logo/>
+          <Link to="/profile" className="user-avatar" aria-label="Perfil do usuário">
+            U
+          </Link>
         </header>
 
         <main>

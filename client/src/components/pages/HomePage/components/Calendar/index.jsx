@@ -88,7 +88,7 @@ export default function Calendar() {
   return (
     <CalendarApp>
       <Wrapper>
-        <h3 className="heading">Calendário</h3>
+        <h3 className="heading">Calendário de Reciclagem</h3>
         <NavigateDate>
           <h4 className="month">{monthsOfYear[currentMonth]}</h4>
           <h4 className="year">{currentYear}</h4>

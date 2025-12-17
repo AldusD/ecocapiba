@@ -1,22 +1,26 @@
 import styled from "styled-components"
+import enums from "../../../../../enums";
 
 export const CalendarApp = styled.div`
-
     width: 463px;
     height: 690px;
     display: grid;
-    display: none;
 `;
 
 export const Wrapper = styled.div`
-
     column-gap: 1.5 rem;
     width: 100%;
-    aspect-ratio: 2/3;
     background-color: #1e242d;
     border: 0.3rem solid #0f1319;
     border-radius: 1rem;
     
+    @media (max-width: ${enums.SCREEN_WIDTHS.MAX_MOBILE}) {
+        aspect-ratio: 2/3;
+    }
+    
+    @media (min-width: ${enums.SCREEN_WIDTHS.MAX_MOBILE}) {
+        aspect-ratio: 4/3;
+    }
     
     h3 {
         font-size: clamp(2rem, 1.9cqi, 3rem);
@@ -24,6 +28,7 @@ export const Wrapper = styled.div`
         letter-spacing: 0.1rem;
         padding-left: 1.3rem;
     }
+        
 `;
 
 export const NavigateDate = styled.div`
