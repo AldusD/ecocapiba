@@ -253,14 +253,59 @@ Authorization: Bearer <seu-token-jwt>
 
 Projeto desenvolvido por alunos de Sistemas de Informação do 2º período de 2025, sob a tutela do docente **Kiev Gama** e em parceria com a **Prefeitura do Recife**.
 
-**Desenvolvedores:**
-- Gabriel Nóbrega
-- Aldus Daniel
-- Igor Soares
-- Helington Wilamy
-- Luis Miguel
-- João Vitor Lins
-- João Vitor Valentim
+<div align="center">
+    <table style="margin: 0 auto;">
+        <tr>
+            <td align="center" style="padding: 10px;">
+                <a href="https://github.com/helington">
+                    <img src="https://avatars.githubusercontent.com/u/78865806?v=4" width="120px" style="border-radius: 50%; border: 3px solid #4CAF50;"><br />
+                    <sub><b>Helington Willamy</b></sub>
+                </a>
+            </td>
+            <td align="center" style="padding: 10px;">
+                <a href="https://github.com/GabrielNSB007">
+                    <img src="https://avatars.githubusercontent.com/u/154392376?v=4" width="120px" style="border-radius: 50%; border: 3px solid #4CAF50;"><br />
+                    <sub><b>Gabriel Nóbrega</b></sub>
+                </a>
+            </td>
+            <td align="center" style="padding: 10px;">
+                <a href="https://github.com/luismiguuel">
+                    <img src="https://avatars.githubusercontent.com/u/224866738?v=4" width="120px" style="border-radius: 50%; border: 3px solid #4CAF50;"><br />
+                    <sub><b>Luis Miguel</b></sub>
+                </a>
+            </td>
+            <td align="center" style="padding: 10px;">
+                <a href="https://github.com/vitorlins0">
+                    <img src="https://avatars.githubusercontent.com/u/224650528?v=4" width="120px" style="border-radius: 50%; border: 3px solid #4CAF50;"><br />
+                    <sub><b>João Vitor Lins</b></sub>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td align="center" style="padding: 10px;">
+                <a href="https://github.com/Igor-a-Soares">
+                    <img src="https://avatars.githubusercontent.com/u/223944470?v=4" width="120px" style="border-radius: 50%; border: 3px solid #4CAF50;"><br />
+                    <sub><b>Igor Soares</b></sub>
+                </a>
+            </td>
+            <td align="center" style="padding: 10px;">
+                <a href="https://github.com/AldusD">
+                    <img src="https://avatars.githubusercontent.com/u/98439753?v=4" width="120px" style="border-radius: 50%; border: 3px solid #4CAF50;"><br />
+                    <sub><b>Aldus Daniel</b></sub>
+                </a>
+            </td>
+            <td align="center" style="padding: 10px;">
+                <a href="https://github.com/joao-valentim-dias">
+                    <img src="https://avatars.githubusercontent.com/u/176482867?v=4" width="120px" style="border-radius: 50%; border: 3px solid #4CAF50;"><br />
+                    <sub><b>João Vitor Valentim</b></sub>
+                </a>
+            </td>
+            <td align="center" style="padding: 10px;">
+                <!-- Espaço vazio para manter alinhamento -->
+            </td>
+        </tr>
+    </table>
+</div>
 
 ## 📝 Licença
 
