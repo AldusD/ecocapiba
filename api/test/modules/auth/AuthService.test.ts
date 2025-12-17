@@ -1,19 +1,14 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
+
+// Mock AuthRepository
+jest.mock('../../../src/modules/auth/AuthRepository.js');
+
 import { AuthService } from '../../../src/modules/auth/AuthService.js';
 import { AuthRepository } from '../../../src/modules/auth/AuthRepository.js';
 import { MessagesEnum } from '../../../src/modules/shared/enums/messagesEnum.js';
 import { PrismaErrorEnum } from '../../../src/modules/shared/enums/prismaErrorEnum.js';
 import { mockUser, mockSafeUser, mockInviterUser } from '../../helpers/mockData.js';
 import bcrypt from 'bcrypt';
-
-// Mock AuthRepository
-jest.mock('../../../src/modules/auth/AuthRepository.js');
-
-// Mock jwt utils
-const mockGenerateAccessToken = jest.fn();
-jest.mock('../../../src/utils/jwt.utils.js', () => ({
-  generateAccessToken: jest.fn((userId: number) => `token-${userId}`),
-}));
 
 describe('AuthService', () => {
   let authService: AuthService;
