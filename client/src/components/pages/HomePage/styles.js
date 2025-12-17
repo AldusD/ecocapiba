@@ -1,6 +1,6 @@
 import styled, { createGlobalStyle } from "styled-components"
 import enums from "../../../enums/";
-
+import LogoImage from "../../../assets/Logo.png"
 
 export const GlobalStyle = createGlobalStyle`
     body {
@@ -37,11 +37,7 @@ export const Dashboard = styled.div`
         left: 50%;
         transform: translateX(-50%);
     }
-<<<<<<< Updated upstream
     
-=======
-
->>>>>>> Stashed changes
     @media (max-width: 850px) {
         grid-template-columns: 1fr;
         grid-template-areas: 
@@ -52,6 +48,17 @@ export const Dashboard = styled.div`
         padding: 0 15px;
         margin-top: 20px;
     }
+`;
+
+export const Logo = styled.div`
+    
+    width: 25%;
+    height: 80px;    
+
+    background-image: url(${LogoImage});
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
 `;
 
 export const Card = styled.section`
@@ -75,12 +82,14 @@ export const CardLevelHighlight = styled(Card)`
         font-size: 1.8em;
         font-weight: 700;
     }
+    
 `;
 
 export const QuizSection = styled(Card)`
     h2 {
         margin-bottom: 15px;
     }
+    display: none;
 `;
 
 export const QuizItem = styled.div`
@@ -250,7 +259,3 @@ export const XpText = styled.span`
     text-align: right;
     color: #FFFFFF;
 `;
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes

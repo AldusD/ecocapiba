@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useRef, useEffect } from "react";
 import Calendar from "./components/Calendar";
 import UserIndication from "./components/UserIndication";
@@ -24,19 +23,14 @@ import {
   XpText,
   Card,
   GlobalStyle,
+  Logo
 } from "./styles";
 
 export default function HomePage() {
-<<<<<<< HEAD
-  const [xpNumber, setXpNumber] = useState(0); // to be changed to userdata
-  const [currentLevel, setCurrentLevel] = useState(0); // to be changed to userdata
-  const [currentStreak, setCurrentStreak] = useState(0); // to be changed to userdata
-=======
   // State Definitions
   const [xpNumber, setXpNumber] = useState(0); //to be changed to userdata
   const [currentLevel, setCurrentLevel] = useState(0); //to be changed to userdata
   const [currentStreak, setCurrentStreak] = useState(0);  //to be changed to userdata
->>>>>>> cb5b521328029e69b54f5e3c731a2f1c657bb0bf
   const [currentMultiplier, setCurrentMultiplier] = useState(1.0);
   const [isScannerVisible, setIsScannerVisible] = useState(false);
   const [quizMode, setQuizMode] = useState(false);
@@ -67,82 +61,8 @@ export default function HomePage() {
   const barPercentage = Math.min(100, (xpNumber / xpLimit[currentLevel]) * 100);
 
   useEffect(() => {
-<<<<<<< HEAD
-    async function fetchStreak() {
-      try {
-        const token = localStorage.getItem("authToken");
-        const response = await fetch(`${API}/recycle/streak`, {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setCurrentStreak(data.streakWeeks);
-          setCurrentMultiplier(data.multiplier);
-        } else {
-          setCurrentStreak(0)
-          console.error("Falha ao buscar streak:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Erro ao buscar streak:", error);
-      }
-    }
-    fetchStreak();
-  }, []);
-  
-  const addXpToBackend = useCallback(async (amount, multiplier = currentMultiplier) => {
-    try {
-      const token = localStorage.getItem("authToken");
-      amount = Math.round(amount * multiplier);
-      const response = await fetch(`${API}/auth/addxp`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ amount }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setXpNumber(data.xp);
-        return data.xp;
-      } else {
-        console.error("Falha ao adicioanr Xp:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Erro ao adicionar Xp:", error);
-    }
-  }, [currentMultiplier]);
-  
-  useEffect(() => {
-    async function fetchXp() {
-      try {
-        const token = localStorage.getItem("authToken");
-        const response = await fetch(`${API}/auth/getxp`, {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setXpNumber(data.xp);
-        } else {
-          console.error("Falha ao buscar Xp:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Erro ao buscar Xp:", error);
-      }
-    }
-    fetchXp();
-=======
     homeController.fetchUserData();
   // eslint-disable-next-line react-hooks/exhaustive-deps
->>>>>>> cb5b521328029e69b54f5e3c731a2f1c657bb0bf
   }, []);
 
   useEffect(() => {
@@ -166,9 +86,7 @@ export default function HomePage() {
       <GlobalStyle />
       <Dashboard>
         <header>
-          <div className="logo">
-            <h1>Ecocapiba</h1>
-          </div>
+          <Logo/>
         </header>
 
         <main>
@@ -265,10 +183,10 @@ export default function HomePage() {
             </XpContainer>
           </CardLevelHighlight>
 
-          <Card as="section" className="share-section">
+          <Card as="section" className="share-section" style={{ display: 'none' }}>
             <UserIndication />
           </Card>
-          <Card>
+          <Card style={{ display: 'none' }}>
             <Calendar />
           </Card>
         </aside>

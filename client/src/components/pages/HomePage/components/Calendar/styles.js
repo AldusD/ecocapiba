@@ -5,6 +5,7 @@ export const CalendarApp = styled.div`
     width: 463px;
     height: 690px;
     display: grid;
+    display: none;
 `;
 
 export const Wrapper = styled.div`
