@@ -76,7 +76,7 @@ export class AuthService {
 
                 password = await bcrypt.hash(password, SystemConstantsEnum.BCRYPT_SALT_ROUNDS);
                 const user = await this.authRepository.create(email, password, cpf, name, invitationCode, xp, capibas);
-            
+
                 // User inviter rewards
                 if (inviterUser) {
                     await this.authRepository.addReward(
@@ -93,7 +93,6 @@ export class AuthService {
                 const token = generateAccessToken(user.id);
                 return token;
             } catch (err: any) {
-
                 // Erro de 'unique constraint' do prisma
                 if (err.code === PrismaErrorEnum.UNIQUE_CONSTRAINT) {
                     attempts++;

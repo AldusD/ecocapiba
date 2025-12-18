@@ -3,7 +3,6 @@
 const API = import.meta.env.VITE_API_URL;
 
 async function getQuiz(quizType) {
-  console.log(API); // todo roque remover
   const token = localStorage.getItem('authToken');
   const options = { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, method: 'GET' };
   const response = await fetch(`${API}/quizzes/${quizType}`, options);
