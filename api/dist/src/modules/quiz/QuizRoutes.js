@@ -7,12 +7,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { Router } from "express";
 import { QuizController } from "./QuizController.js";
 import { Route } from "../../resources/decorator/routeDecorator.js";
+import { authenticate } from "../../middleware/authenticate.js";
 let QuizRoutes = class QuizRoutes {
-    router;
+    router = Router();
     QuizController = new QuizController();
     constructor() {
-        this.router = Router();
-        this.router.post('/attempt/:quizId', (req, res) => this.QuizController.registerAttempt(req, res));
+        this.router.post('/attempt/:quizId', authenticate, (req, res) => this.QuizController.registerAttempt(req, res));
     }
 };
 QuizRoutes = __decorate([

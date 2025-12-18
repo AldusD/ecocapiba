@@ -123,6 +123,17 @@ export default function HomePage() {
     }
   }, [xpNumber, currentLevel, xpLimit]);
 
+  useEffect(() => { //relacionado a receber pontos do qrcoce
+    const full_parameter = new URLSearchParams(window.location.search);
+    const received_code = full_parameter.get("code");
+
+    if (!codeFromUrl) return;
+    try{
+      
+
+    }
+
+  }, []);
 
   useEffect(() => {
     if (!isScannerVisible) return;
@@ -276,4 +287,6 @@ export default function HomePage() {
       </Dashboard>
     </>
   );
+
+  
 }

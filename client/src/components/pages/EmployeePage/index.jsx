@@ -81,7 +81,8 @@ export default function EmployeeQRGenerator() {
 
       const jsonString = JSON.stringify(qrData);
       const encodedData = encodeURIComponent(jsonString);
-      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodedData}&color=67A02C&bgcolor=ffffff&margin=10`;
+      const fart = 'https://pt.wikipedia.org/wiki/Capivara';
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${fart}&color=67A02C&bgcolor=ffffff&margin=10`; //encodedData
 
       setQrCodeUrl(qrUrl);
       setCurrentQRData(qrData);
@@ -182,7 +183,7 @@ export default function EmployeeQRGenerator() {
                 </InputIcon>
                 <ModernInput 
                   type="text" 
-                  placeholder="Ex: Praça de Boa Viagem"
+                  placeholder="Ex: Praça de Boa Viagem do mal"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                 />
