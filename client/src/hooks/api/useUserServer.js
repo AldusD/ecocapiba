@@ -228,7 +228,11 @@ export function useUserData () {
         return;
     }
 
-    return useMutation({ mutationFn: getUserData, onSuccess: fillUserData });
+    return useMutation({ 
+        mutationFn: getUserData, 
+        onSuccess: fillUserData
+        // onError será tratado pelo componente que chama (UserDataLoader)
+    });
 }
 
 export function useNewTokens () {

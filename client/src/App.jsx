@@ -19,9 +19,21 @@ const queryClient = new QueryClient();
 
 export default function App() {
   const RootRedirect = () => {
-    const { userData } = useUser();
-    const isAuthenticated = !!userData || !!localStorage.getItem('accessToken');
-    return isAuthenticated ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />;
+    // Verificar apenas se existe token no localStorage
+    // Se não tem token, redireciona para login
+    // Se tem token, redireciona para home (o UserDataLoader vai validar o token)
+    // Se o token for inválido, o UserDataLoader vai limpar e as rotas protegidas vão redirecionar de volta
+    const token = localStorage.getItem('accessToken');
+    
+    if (!token) {
+      return <Navigate to="/login" replace />;
+    }
+    
+    // Se tem token, redireciona para home
+    // O UserDataLoader vai tentar carregar os dados do usuário
+    // Se o token for inválido, o UserDataLoader vai limpar o token
+    // e as rotas protegidas vão redirecionar de volta para login
+    return <Navigate to="/home" replace />;
   }
 
   const ProtectedRoute = ({ element: Element, ...rest }) => {
