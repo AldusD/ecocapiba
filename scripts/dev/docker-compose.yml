@@ -29,7 +29,7 @@ services:
     build: ../../client
     container_name: frontend-ecocapiba
     environment:
-      VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+      VITE_API_URL: ${VITE_API_URL}
     restart: always
     ports:
       - "3000:3000"
