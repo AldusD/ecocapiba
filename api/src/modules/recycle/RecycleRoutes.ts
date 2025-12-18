@@ -13,5 +13,6 @@ export class RecycleRoutes {
         this.router.post('/', (req,res) => this.recycleController.create(req,res));
         this.router.post('/calendar', authenticate, (req,res) => this.recycleController.getCalendar(req,res));
         this.router.get('/streak', authenticate, (req, res) => this.recycleController.getStreak(req, res));
+        this.router.post('/validate-qr', authenticate, (req, res) => this.recycleController.validateQRCode(req, res));
     }
 }

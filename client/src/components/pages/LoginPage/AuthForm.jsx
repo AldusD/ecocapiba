@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useSignin, useSignup } from '../../../hooks/api/useUserServer'; 
-import { FormContainer, Card, Title, Input, Button, ErrorMessage } from './AuthForm.styled';
+import { FormContainer, Card, Title, Input, Button, ErrorMessage, EmployeeLink } from './AuthForm.styled';
 
 const formatCpf = (value) => {
     const cleaned = value.replace(/\D/g, '').substring(0, 11);
@@ -274,6 +274,10 @@ const AuthForm = ({ invitationCode }) => {
                         Você foi convidado! Complete seu cadastro para começar.
                     </p>
                 )}
+
+                <EmployeeLink>
+                    <Link to="/employee/login">Você é funcionário?</Link>
+                </EmployeeLink>
 
             </Card>
         </FormContainer>

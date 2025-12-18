@@ -9,6 +9,7 @@ dotenv.config();
 import './modules/auth/AuthRoutes.js';
 import './modules/quiz/QuizRoutes.js';
 import './modules/recycle/RecycleRoutes.js';
+import './modules/employee/EmployeeRoutes.js';
 
 @AppRoutes
 export default class App {
