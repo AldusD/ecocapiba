@@ -31,6 +31,7 @@ model User {
   inviterLogs InvitationLog[] @relation("UserInviterRelation")
   invitedLogs InvitationLog[] @relation("UserInvitedRelation")
   rewardLogs  RewardLog[]
+  recycleQRCodes RecycleQRCode[]
 }
 
 model InvitationLog {
@@ -128,4 +129,42 @@ model QuizAttemptRewardLog {
 
   @@index([userId, createdAt])
   @@index([quizAttemptId])
+}
+
+model Employee {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  employeeId String @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  recycleQRCodes RecycleQRCode[]
+
+  @@index([email])
+  @@index([employeeId])
+}
+
+model RecycleQRCode {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  employeeId  Int
+  xp          Int
+  capibas     Float    @default(250)
+  location    String?
+  notes       String?
+  used        Boolean  @default(false)
+  usedBy      Int?
+  usedAt      DateTime?
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime?
+
+  Employee Employee @relation(fields: [employeeId], references: [id])
+  User     User?    @relation(fields: [usedBy], references: [id])
+
+  @@index([code])
+  @@index([employeeId])
+  @@index([used])
+  @@index([usedBy])
 }

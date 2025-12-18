@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useImperativeHandle, forwardRef } from "react";
 import {
   Buttons,
   CalendarApp,
@@ -10,7 +10,7 @@ import {
 
 const API = import.meta.env.VITE_API_BASE_URL;
 
-export default function Calendar() {
+const Calendar = forwardRef((props, ref) => {
   const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
   const monthsOfYear = [
     "Janeiro",
@@ -57,33 +57,55 @@ export default function Calendar() {
     );
   };
 
-  useEffect(() => {
-    async function fetchRecycles() {
-      try {
-        const token = localStorage.getItem("authToken");
-        const response = await fetch(
-          `${API}/recycle/calendar`,
-          {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              month: currentMonth,
-              year: currentYear,
-            }),
-          }
-        );
-        const data = await response.json();
-        setRecycledDays(data.days || []);
-      } catch (error) {
-        console.error("Falha ao buscar data do calendário", error);
+  const fetchRecycles = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        console.warn("Token não encontrado para buscar calendário");
+        return;
       }
-    }
 
+      const response = await fetch(
+        `${API}/recycle/calendar`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            month: currentMonth,
+            year: currentYear,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        console.error("Erro ao buscar calendário:", response.status, response.statusText);
+        return;
+      }
+
+      const data = await response.json();
+      // A API retorna um array de números (dias do mês)
+      if (data.days && Array.isArray(data.days)) {
+        setRecycledDays(data.days);
+      } else {
+        setRecycledDays([]);
+      }
+    } catch (error) {
+      console.error("Falha ao buscar data do calendário", error);
+      setRecycledDays([]);
+    }
+  };
+
+  // Expor função para atualizar o calendário
+  useImperativeHandle(ref, () => ({
+    refresh: fetchRecycles
+  }));
+
+  useEffect(() => {
     fetchRecycles();
-  }, [currentMonth, currentYear]);
+  }, [currentMonth, currentYear, API]);
 
   return (
     <CalendarApp>
@@ -129,4 +151,8 @@ export default function Calendar() {
       </Wrapper>
     </CalendarApp>
   );
-}
+});
+
+Calendar.displayName = 'Calendar';
+
+export default Calendar;

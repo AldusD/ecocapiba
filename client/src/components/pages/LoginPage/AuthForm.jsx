@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useSignin, useSignup } from '../../../hooks/api/useUserServer'; 
-import { FormContainer, Card, Title, Input, Button, ErrorMessage } from './AuthForm.styled';
+import { FormContainer, Card, Title, Input, Button, ErrorMessage, EmployeeLink } from './AuthForm.styled';
 
 const formatCpf = (value) => {
     const cleaned = value.replace(/\D/g, '').substring(0, 11);
@@ -46,12 +46,20 @@ const validateCpf = (rawCpf) => {
 
 const MIN_PASSWORD_LENGTH = 6;
 
-const AuthForm = () => {
-    const [mode, setMode] = useState('login');
+const AuthForm = ({ invitationCode }) => {
+    const [mode, setMode] = useState(invitationCode ? 'register' : 'login');
     const [cpf, setCpf] = useState('');
     const [password, setPassword] = useState(''); 
     const [name, setName] = useState(''); 
     const [email, setEmail] = useState(''); 
+    const [inviteCode, setInviteCode] = useState(invitationCode || '');
+    
+    // Atualizar o código de convite se vier da URL
+    useEffect(() => {
+        if (invitationCode) {
+            setInviteCode(invitationCode);
+        }
+    }, [invitationCode]);
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
@@ -110,7 +118,9 @@ const AuthForm = () => {
                 setError('Nome e Email são obrigatórios para o Cadastro.');
                 return;
             }
-            Object.assign(userData, { name, email });
+            // Usar o código de convite da URL se disponível, senão usar o do campo
+            const finalInviteCode = invitationCode || inviteCode || '';
+            Object.assign(userData, { name, email, invitationCode: finalInviteCode, xp: 0, capibas: 0 });
         }
         
         mutation.mutate(userData, {
@@ -125,11 +135,16 @@ const AuthForm = () => {
     };
 
     const toggleMode = () => {
+        // Se houver código de convite, não permitir voltar para login
+        if (invitationCode) {
+            return;
+        }
         setMode(isLoginMode ? 'register' : 'login');
         setError('');
         setName(''); 
         setEmail('');
         setPassword('');
+        setInviteCode('');
     };
 
     const formTitle = isLoginMode ? 'Acessar sua Conta' : 'Criar Nova Conta';
@@ -165,6 +180,27 @@ const AuthForm = () => {
                                 required
                                 disabled={isLoading}
                             />
+                            <Input
+                                type="text"
+                                placeholder="Código de Convite (opcional)"
+                                value={inviteCode}
+                                onChange={(e) => setInviteCode(e.target.value)}
+                                disabled={isLoading || !!invitationCode}
+                                style={{
+                                    backgroundColor: invitationCode ? '#f0f0f0' : '',
+                                    cursor: invitationCode ? 'not-allowed' : 'text'
+                                }}
+                            />
+                            {invitationCode && (
+                                <p style={{ 
+                                    fontSize: '0.8rem', 
+                                    color: 'green',
+                                    marginTop: '-10px',
+                                    marginBottom: '10px'
+                                }}>
+                                    ✓ Código de convite aplicado!
+                                </p>
+                            )}
                         </>
                     )}
 
@@ -224,13 +260,24 @@ const AuthForm = () => {
                     </Button>
                 </form>
                 
-                <p style={{ marginTop: '15px', fontSize: '0.9rem', textAlign: 'center' }}>
-                    {isLoginMode ? 'Não tem uma conta?' : 'Já possui uma conta?'}
-                    {' '}
-                    <a href="#" onClick={toggleMode}>
-                        {isLoginMode ? 'Crie uma conta' : 'Fazer Login'}
-                    </a>
-                </p>
+                {!invitationCode && (
+                    <p style={{ marginTop: '15px', fontSize: '0.9rem', textAlign: 'center' }}>
+                        {isLoginMode ? 'Não tem uma conta?' : 'Já possui uma conta?'}
+                        {' '}
+                        <a href="#" onClick={toggleMode}>
+                            {isLoginMode ? 'Crie uma conta' : 'Fazer Login'}
+                        </a>
+                    </p>
+                )}
+                {invitationCode && (
+                    <p style={{ marginTop: '15px', fontSize: '0.9rem', textAlign: 'center', color: '#666' }}>
+                        Você foi convidado! Complete seu cadastro para começar.
+                    </p>
+                )}
+
+                <EmployeeLink>
+                    <Link to="/employee/login">Você é funcionário?</Link>
+                </EmployeeLink>
 
             </Card>
         </FormContainer>

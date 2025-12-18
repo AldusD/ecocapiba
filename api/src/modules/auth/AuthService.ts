@@ -76,10 +76,16 @@ export class AuthService {
 
                 password = await bcrypt.hash(password, SystemConstantsEnum.BCRYPT_SALT_ROUNDS);
                 const user = await this.authRepository.create(email, password, cpf, name, invitationCode, xp, capibas);
-            
+
                 // User inviter rewards
                 if (inviterUser) {
-                    await this.authRepository.addReward(inviterUser.id, XP_REWARD, CAPIBA_REWARD)
+                    await this.authRepository.addReward(
+                        inviterUser.id, 
+                        XP_REWARD, 
+                        CAPIBA_REWARD,
+                        "invitation_reward",
+                        { description: "Bônus por convidar um amigo" }
+                    )
 
                     await this.authRepository.createInvitationLog(inviterUser.id, user.id, XP_REWARD, CAPIBA_REWARD);
                 }
@@ -87,7 +93,6 @@ export class AuthService {
                 const token = generateAccessToken(user.id);
                 return token;
             } catch (err: any) {
-
                 // Erro de 'unique constraint' do prisma
                 if (err.code === PrismaErrorEnum.UNIQUE_CONSTRAINT) {
                     attempts++;
@@ -111,8 +116,8 @@ export class AuthService {
         return user;
     }
 
-    async addUserReward(userId: number, xp: number, capibas: number) {
-        const user = await this.authRepository.addReward(userId, xp, capibas);
+    async addUserReward(userId: number, xp: number, capibas: number, reason?: string, metadata?: any) {
+        const user = await this.authRepository.addReward(userId, xp, capibas, reason, metadata);
         return user;
     }
 

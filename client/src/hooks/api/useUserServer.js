@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useUser } from '../../context/UserContext';
 
-const API = import.meta.env.VITE_API_BASE_URL;
+const API = import.meta.env.VITE_API_URL;
 
 const parseResponse = async (response) => {
     const textData = await response.text();
@@ -48,14 +48,26 @@ const logout = async () => {
 }
 
 const getUserData = async () => 	{
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        throw new Error('Token não encontrado');
+    }
+
     const options = { 
         headers: { 
             'Content-Type': 'application/json', 
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}` }, 
-            method: 'GET', 
-        };
+            Authorization: `Bearer ${token}` 
+        }, 
+        method: 'GET', 
+    };
 
     const response = await fetch(`${API}/auth/profile`, options);
+    
+    if (!response.ok) {
+        const errorData = await parseResponse(response);
+        throw new Error(errorData.message || errorData.error || `Erro HTTP: ${response.status} ao buscar dados do usuário.`);
+    }
+
     return response.text();
 }
 
@@ -111,25 +123,22 @@ export function useSignin () {
     const navigateToHome = async (data) => {
         if (data && data.trim().startsWith('{')) {
             const parsedData = JSON.parse(data);
-            // Backend returns { token: "JWT_STRING" }
-            if (parsedData.token) {
-                localStorage.setItem("authToken", parsedData.token);
-                
-                // Fetch user profile data to populate context
-                try {
-                    const profileResponse = await fetch(`${API}/auth/profile`, {
-                        headers: {
-                            'Authorization': `Bearer ${parsedData.token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    if (profileResponse.ok) {
-                        const userData = await profileResponse.json();
-                        setUserData(userData);
-                    }
-                } catch (err) {
-                    console.error("Erro ao buscar dados do usuário:", err);
+            const token = parsedData.token;
+            
+            // Salvar token
+            if (token) {
+                localStorage.setItem("accessToken", token);
+            }
+            
+            // Buscar dados completos do usuário
+            try {
+                const userDataResponse = await getUserData();
+                if (userDataResponse && userDataResponse.trim().startsWith('{')) {
+                    const userData = JSON.parse(userDataResponse);
+                    setUserData(userData);
                 }
+            } catch (error) {
+                console.error("Erro ao buscar dados do usuário:", error);
             }
         }
         return;
@@ -142,29 +151,53 @@ export function useSignup () {
     const { setUserData } = useUser();
 
     const navigateToHome = async (data, variables) => {
-        // Register returns { token: "JWT_STRING" }
+        // If register response includes token, save it and fetch user data
         if (data && data.trim().startsWith('{')) {
             const parsed = JSON.parse(data);
-            if (parsed.token) {
-                localStorage.setItem("authToken", parsed.token);
+            const token = parsed.token;
+            
+            if (token) {
+                localStorage.setItem("accessToken", token);
                 
-                // Fetch user profile data
+                // Buscar dados completos do usuário
                 try {
-                    const profileResponse = await fetch(`${API}/auth/profile`, {
-                        headers: {
-                            'Authorization': `Bearer ${parsed.token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    if (profileResponse.ok) {
-                        const userData = await profileResponse.json();
+                    const userDataResponse = await getUserData();
+                    if (userDataResponse && userDataResponse.trim().startsWith('{')) {
+                        const userData = JSON.parse(userDataResponse);
                         setUserData(userData);
+                        return;
                     }
-                } catch (err) {
-                    console.error("Erro ao buscar dados do usuário:", err);
+                } catch (error) {
+                    console.error("Erro ao buscar dados do usuário após registro:", error);
                 }
-                return;
             }
+        }
+
+        // Fallback: try to login immediately with the same credentials
+        try {
+            const loginResp = await login(variables);
+            if (loginResp && loginResp.trim().startsWith('{')) {
+                const parsedLogin = JSON.parse(loginResp);
+                const token = parsedLogin.token;
+                
+                if (token) {
+                    localStorage.setItem("accessToken", token);
+                    
+                    // Buscar dados completos do usuário
+                    try {
+                        const userDataResponse = await getUserData();
+                        if (userDataResponse && userDataResponse.trim().startsWith('{')) {
+                            const userData = JSON.parse(userDataResponse);
+                            setUserData(userData);
+                        }
+                    } catch (error) {
+                        console.error("Erro ao buscar dados do usuário após login:", error);
+                    }
+                }
+            }
+        } catch (err) {
+            console.error("Erro ao fazer login após registro:", err);
+            // ignore: caller can handle navigation/errors
         }
     }
     
@@ -172,9 +205,11 @@ export function useSignup () {
 }
 
 export function useLogout () {
+    const { setUserData } = useUser();
+    
     const clearStorage = () => {
-        localStorage.removeItem("authToken");
-        const { setUserData } = useUser();
+        localStorage.setItem("accessToken", '');
+        localStorage.setItem("refreshToken",'');
         setUserData(null); 
         return;
     }
@@ -187,12 +222,17 @@ export function useUserData () {
     
     const fillUserData = (data) => {
         if (data && data.trim().startsWith('{')) { 
-            setUserData({ ...JSON.parse(data).user });
+            const userData = JSON.parse(data);
+            setUserData(userData);
         }
         return;
     }
 
-    return useMutation({ mutationFn: getUserData, onSuccess: fillUserData });
+    return useMutation({ 
+        mutationFn: getUserData, 
+        onSuccess: fillUserData
+        // onError será tratado pelo componente que chama (UserDataLoader)
+    });
 }
 
 export function useNewTokens () {
@@ -213,25 +253,22 @@ export function useCpfAuth (onRequiresEmail) {
     const navigateToHome = async (data) => {
         if (data && data.trim().startsWith('{')) {
             const parsedData = JSON.parse(data);
-            if (parsedData.token) {
-                localStorage.setItem("authToken", parsedData.token);
+            const token = parsedData.token;
 
-                // Fetch user profile
-                try {
-                    const profileResponse = await fetch(`${API}/auth/profile`, {
-                        headers: {
-                            'Authorization': `Bearer ${parsedData.token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    if (profileResponse.ok) {
-                        const userData = await profileResponse.json();
-                        setUserData(userData);
-                    }
-                } catch (err) {
-                    console.error("Erro ao buscar dados do usuário:", err);
+            if (token) {
+                localStorage.setItem("accessToken", token);
+            }
+
+            // Buscar dados completos do usuário
+            try {
+                const userDataResponse = await getUserData();
+                if (userDataResponse && userDataResponse.trim().startsWith('{')) {
+                    const userData = JSON.parse(userDataResponse);
+                    setUserData(userData);
+                    return parsedData;
                 }
-                return parsedData;
+            } catch (error) {
+                console.error("Erro ao buscar dados do usuário:", error);
             }
         }
     }

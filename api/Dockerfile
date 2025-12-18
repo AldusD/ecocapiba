@@ -8,9 +8,6 @@ RUN npm ci
 
 COPY . .
 
-ARG VITE_API_URL
-ENV VITE_API_URL=$VITE_API_URL
-
-EXPOSE 5173
+EXPOSE 8080
 
 CMD ["npm", "start"]

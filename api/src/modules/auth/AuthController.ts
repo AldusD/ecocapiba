@@ -49,15 +49,15 @@ export class AuthController {
     async addXp(req: Request, res: Response) {
         try {
             const userId = Number(res.locals.user);
-            const { amount } = req.body;
+            const { amount, capibas = 0, reason, metadata } = req.body;
 
             if (!amount || amount <= 0) {
                 res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json({ error: true, message: MessagesEnum.ERROR_INVALID_XP_AMOUNT });
                 return;
             }
 
-            const updatedUser = await this.authService.addUserReward(userId, amount, 0);
-            res.status(HttpStatusEnum.OK).json({ xp: updatedUser.xp });
+            const updatedUser = await this.authService.addUserReward(userId, amount, capibas || 0, reason, metadata);
+            res.status(HttpStatusEnum.OK).json({ xp: updatedUser.xp, capibas: updatedUser.capibas });
         } catch (error: any) {
             res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json({ error: error.message });
         }

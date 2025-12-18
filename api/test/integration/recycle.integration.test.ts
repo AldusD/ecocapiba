@@ -24,38 +24,6 @@ describe('Recycle Integration Tests', () => {
     validToken = jwt.sign({ id: 1 }, JWT_SECRET_KEY, { expiresIn: '1h' });
   });
 
-  describe('POST /recycle/check-recycle', () => {
-    it('deve retornar erro quando userId não é fornecido', async () => {
-      const response = await request(app)
-        .post('/recycle/check-recycle')
-        .send({ date: '2024-01-15' });
-
-      // O controller não valida campos obrigatórios, então pode retornar OK ou erro dependendo do service
-      expect([HttpStatusEnum.OK, HttpStatusEnum.INTERNAL_SERVER_ERROR]).toContain(response.status);
-    });
-
-    it('deve retornar erro quando date não é fornecido', async () => {
-      const response = await request(app)
-        .post('/recycle/check-recycle')
-        .send({ userId: 1 });
-
-      // O controller não valida campos obrigatórios, então pode retornar OK ou erro dependendo do service
-      expect([HttpStatusEnum.OK, HttpStatusEnum.INTERNAL_SERVER_ERROR]).toContain(response.status);
-    });
-
-    it('deve aceitar requisição válida (mesmo que falhe no service por falta de dados no banco)', async () => {
-      const response = await request(app)
-        .post('/recycle/check-recycle')
-        .send({
-          userId: 1,
-          date: '2024-01-15',
-        });
-
-      // Pode retornar erro de servidor se não houver dados no banco, mas a rota está funcionando
-      expect([HttpStatusEnum.OK, HttpStatusEnum.INTERNAL_SERVER_ERROR]).toContain(response.status);
-    });
-  });
-
   describe('POST /recycle', () => {
     it('deve retornar erro quando userId não é fornecido', async () => {
       const response = await request(app)

@@ -9,9 +9,9 @@ export class RecycleRoutes {
     private recycleController = new RecycleController();
 
     constructor () {
-        this.router.post('/check-recycle',(req,res) => this.recycleController.checkRecycle(req,res));
         this.router.post('/', authenticate, (req,res) => this.recycleController.create(req,res));
         this.router.post('/calendar', authenticate, (req,res) => this.recycleController.getCalendar(req,res));
         this.router.get('/streak', authenticate, (req, res) => this.recycleController.getStreak(req, res));
+        this.router.post('/validate-qr', authenticate, (req, res) => this.recycleController.validateQRCode(req, res));
     }
 }
