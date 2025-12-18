@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import enums from "../../../../../enums/index";
 import { Options, QuizStyles, Option, Filter, QuizReport } from "./styles";
 import quizMock from "./mock";
@@ -116,12 +117,11 @@ export default function Quiz({ closeQuiz, onQuizComplete }) {
   );
   }
 
-  return (
+  return createPortal(
     <Filter>
-      {
-        render()
-      }
-    </Filter>
+      {render()}
+    </Filter>,
+    document.body
+  );
     
-  )
 }

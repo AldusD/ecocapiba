@@ -15,13 +15,8 @@ import {
   UserInfo,
   LogoutButton,
 } from "./styles";
-import {
-  CardLevelHighlight,
-  XpContainer,
-  XpTrack,
-  XpFill,
-  XpText,
-} from "../HomePage/styles";
+import Calendar from "../HomePage/components/Calendar";
+import UserIndication from "../HomePage/components/UserIndication";
 import CapibasHistory from "./components/CapibasHistory";
 
 export default function ProfilePage() {
@@ -31,14 +26,6 @@ export default function ProfilePage() {
   const [xpNumber, setXpNumber] = useState(userData?.xp || 0);
   const [currentLevel, setCurrentLevel] = useState(calculateLevel(userData?.xp || 0));
   const [historyItems, setHistoryItems] = useState([]);
-
-  const titleList = Object.values(enums.TITLES);
-  const xpLimit = Object.values(enums.XP_LIMITS);
-  const xpString = `${xpNumber} / ${xpLimit[currentLevel]} XP`;
-  const barPercentage = Math.min(
-    100,
-    (xpNumber / xpLimit[currentLevel]) * 100
-  );
 
   const API = import.meta.env.VITE_API_URL;
 
@@ -172,20 +159,11 @@ export default function ProfilePage() {
             </UserInfo>
           </ProfileHeader>
 
-          <CardLevelHighlight as="section">
-            <h3>Nível da Conta</h3>
-            <h2 id="level_and_title">{`Nível ${currentLevel}: ${titleList[currentLevel]}`}</h2>
-            <p className="continue-text">
-              Continue assim para desbloquear novas recompensas!
-            </p>
-
-            <XpContainer>
-              <XpTrack>
-            <XpFill id="xp_bar" style={{ width: `${barPercentage}%` }} />
-              </XpTrack>
-              <XpText id="xp_txt">{xpString}</XpText>
-            </XpContainer>
-          </CardLevelHighlight>
+          <div style={{display: "flex", justifyContent: 'center', alignItems: 'center'}}>
+            <Calendar/>
+          </div>
+          
+          <UserIndication/>
 
           <CapibasHistory items={historyItems} />
 

@@ -25,7 +25,8 @@ import {
   XpFill,
   XpText,
   Card,
-  GlobalStyle
+  GlobalStyle,
+  Logo
 } from "./styles";
 import { Link } from "react-router-dom";
 import { CAPIBAS_PER_QUIZ } from "./components/Quiz/controller";
@@ -43,6 +44,7 @@ export default function HomePage() {
   const [isScannerVisible, setIsScannerVisible] = useState(false);
   const [quizMode, setQuizMode] = useState(false);
   const [recycleDone, setRecycleDone] = useState(false);
+  const [refreshCalendar, setRefreshCalendar] = useState(false);
 
   // Refs
   const readerRef = useRef(null);
@@ -54,6 +56,10 @@ export default function HomePage() {
   const xpLimit = Object.values(enums.XP_LIMITS);
   
   const { setUserData } = useUser();
+  
+  const handleRecycleRegistered = () => {
+    setRefreshCalendar(prev => !prev);
+  };
   
   // Initialize Controller
   const homeController = useHomePageController({
@@ -67,7 +73,8 @@ export default function HomePage() {
     xpLimit,
     setUserData,
     userData,
-    calendarRef
+    calendarRef,
+    onRecycleRegistered: handleRecycleRegistered
   });
 
 
@@ -109,9 +116,7 @@ export default function HomePage() {
       <GlobalStyle />
       <Dashboard>
         <header>
-          <div className="logo">
-            <h1>Ecocapiba</h1>
-          </div>
+          <Logo/>
           <Link to="/profile" className="user-avatar" aria-label="Perfil do usuário">
             {userData?.name ? userData.name.charAt(0).toUpperCase() : 'U'}
           </Link>
@@ -213,11 +218,11 @@ export default function HomePage() {
             </XpContainer>
           </CardLevelHighlight>
 
-          <Card as="section" className="share-section">
+          <Card as="section" className="share-section" style={{ display: 'none' }}>
             <UserIndication />
           </Card>
-          <Card>
-            <Calendar ref={calendarRef} />
+          <Card style={{ display: 'none' }} key={refreshCalendar}>
+            <Calendar />
           </Card>
         </aside>
       </Dashboard>

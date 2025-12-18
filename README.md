@@ -236,7 +236,6 @@ npm test -- --watch
 - `POST /quiz/attempt/:quizId` - Registrar tentativa de quiz (requer autenticação)
 
 #### Reciclagem
-- `POST /recycle/check-recycle` - Verificar se usuário reciclou em uma data
 - `POST /recycle` - Registrar nova reciclagem
 - `POST /recycle/calendar` - Obter calendário de reciclagens do mês (requer autenticação)
 - `GET /recycle/streak` - Obter streak e multiplicador (requer autenticação)

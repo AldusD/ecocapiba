@@ -1,13 +1,17 @@
-import styled from 'styled-components';
+import {styled, createGlobalStyle} from 'styled-components';
 import COLORS from '../../../enums/COLORS';
 
 const PrimaryAction = COLORS.PRIMARY_ACTION;
 const PrimaryText = COLORS.PRIMARY_TEXT;
 const ErrorColor = COLORS.WRONG_RED;
 const CardBackground = COLORS.CARD_BG;
-const PageBackground = COLORS.PRIMARY_BG;
+const PageBackground = COLORS.HOME_BG;
 const InputBorderFocus = COLORS.INPUT_BORDER_FOCUS;
 const BorderColor = COLORS.BORDER;
+
+export const GlobalStyle = createGlobalStyle`
+      font-family: sans-serif;
+`;
 
 export const FormContainer = styled.div`
   display: flex;

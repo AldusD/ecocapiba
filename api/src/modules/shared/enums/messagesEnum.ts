@@ -13,5 +13,9 @@ export enum MessagesEnum {
     ERROR_GENERATING_INVITATION_CODE = "Falha ao gerar código de convite único",
     ERROR_USER_NOT_FOUND = "Usuário não encontrado",
     ERROR_INVALID_TOKEN = "Tokén inválido",
-    ERROR_NO_TOKEN_PROVIDED = "Tokén não fornecido"
+    ERROR_NO_TOKEN_PROVIDED = "Tokén não fornecido",
+    ERROR_INVALID_MONTH_YEAR = "Mês e ano são necessários",
+    ERROR_INVALID_XP_AMOUNT = "Quantidade de xp inválida",
+    
+
 }

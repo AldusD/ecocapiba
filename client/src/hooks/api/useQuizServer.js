@@ -3,8 +3,7 @@
 const API = import.meta.env.VITE_API_URL;
 
 async function getQuiz(quizType) {
-  console.log(API); // todo roque remover
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('accessToken');
   const options = { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, method: 'GET' };
   const response = await fetch(`${API}/quizzes/${quizType}`, options);
   const data = response.text();
@@ -12,7 +11,7 @@ async function getQuiz(quizType) {
 }
 
 export async function postQuizAttempt(attemptData) {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('accessToken');
   if (!token) return null;
   const options = { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, method: 'POST', body: JSON.stringify({correctCount: attemptData.correctCount}) };
   const response = await fetch(`${API}/quiz/attempt/${attemptData.quizId}`, options);

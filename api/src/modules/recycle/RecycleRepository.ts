@@ -3,15 +3,6 @@ import { PrismaClient, type RecyclesMade } from "@prisma/client";
 export class RecycleRepository {
   private prisma = new PrismaClient();
 
-  async getRecylesById(id: number): Promise<number | null> {
-    const recycleById = await this.prisma.recyclesMade.findUnique({
-      where: { id: Number(id) },
-      select: { userId: true },
-    });
-
-    return recycleById ? recycleById.userId : null;
-  }
-
   async getRecyclesByDate(
     userId: number,
     doneDate: Date
@@ -33,6 +24,15 @@ export class RecycleRepository {
     });
 
     return recycleByDate ? recycleByDate.doneDate : null;
+  }
+
+    async getRecylesById(id: number): Promise<number | null> {
+    const recycleById = await this.prisma.recyclesMade.findUnique({
+      where: { id: Number(id) },
+      select: { userId: true },
+    });
+
+    return recycleById ? recycleById.userId : null;
   }
 
   async getRecyclesByUserId(userId: number): Promise<RecyclesMade[] | null> {
@@ -67,12 +67,6 @@ export class RecycleRepository {
         userId: Number(userId),
         doneDate: doneDate,
       },
-    });
-  }
-
-  async delete(id: string): Promise<RecyclesMade> {
-    return await this.prisma.recyclesMade.delete({
-      where: { id: Number(id) },
     });
   }
 

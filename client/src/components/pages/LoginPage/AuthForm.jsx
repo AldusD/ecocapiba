@@ -14,7 +14,7 @@ const formatCpf = (value) => {
     if (parts[3]) formatted += '.' + parts[3];
     if (parts[4]) formatted += '-' + parts[4];
     
-    return formatted.replace(/\.$/, '').replace(/-$/, '').replace(/\.\-/, '.');
+    return formatted.replace(/\.$/, '').replace(/-$/, '').replace(/\.-/, '.');
 };
 
 const validateCpf = (rawCpf) => {

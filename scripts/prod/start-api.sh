@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-REQUIRED_VARS=("DATABASE_URL")
+REQUIRED_VARS=("DATABASE_URL", "JWT_SECRET_KEY")
 for VAR in "${REQUIRED_VARS[@]}"; do
   if [ -z "${!VAR}" ]; then
     echo "❌ $VAR is not set"

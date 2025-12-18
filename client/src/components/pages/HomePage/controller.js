@@ -27,7 +27,8 @@ export default function controller({
   xpLimit,
   setUserData,
   userData,
-  calendarRef
+  calendarRef,
+  onRecycleRegistered
 }) {
 
     // --- API CALLS ---
@@ -81,6 +82,40 @@ export default function controller({
     }
   }
 
+  async function registerRecycleToBackend(xpAmount) {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/recycle`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          doneDate: today.toISOString(),
+          xpAmount: xpAmount
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Refresh user data (streak and XP) after registering recycle
+        await fetchUserData();
+        
+        if (onRecycleRegistered) {
+          onRecycleRegistered();
+        }
+        return data;
+      }
+    } catch (error) {
+      console.error("Erro ao registrar reciclagem:", error);
+    }
+  }
+
   // --- LOGIC & CALCULATIONS ---
 
   function checkLevelUp() {
@@ -96,16 +131,18 @@ export default function controller({
 
   async function registerRecycle() {
     try {
+      const token = localStorage.getItem("accessToken");
       if (!userData || !userData.id) {
         console.error('Dados do usuário não disponíveis para registrar reciclagem');
         return false;
       }
-
+ // roque
       const API = import.meta.env.VITE_API_URL;
       const response = await fetch(`${API}/recycle`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
           userId: userData.id,
@@ -276,6 +313,7 @@ export default function controller({
   return {
     fetchUserData,
     addXpToBackend,
+    registerRecycleToBackend,
     checkLevelUp,
     initializeScanner,
     cleanupScanner,

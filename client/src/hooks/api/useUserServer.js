@@ -200,8 +200,8 @@ export function useSignup () {
             // ignore: caller can handle navigation/errors
         }
     }
-
-    return useMutation({ mutationFn: register, onSuccess: navigateToHome }); 	
+    
+    return useMutation({ mutationFn: register, onSuccess: navigateToHome });
 }
 
 export function useLogout () {
@@ -238,8 +238,8 @@ export function useUserData () {
 export function useNewTokens () {
     const fillTokens = (data) => {
         if (data && data.trim().startsWith('{')) {
-            localStorage.setItem("accessToken", JSON.parse(data).token.accessToken);
-            localStorage.setItem("refreshToken", JSON.parse(data).token.refreshToken);
+            const parsed = JSON.parse(data);
+            localStorage.setItem("accessToken", parsed.token);
         }
         return;
     }
