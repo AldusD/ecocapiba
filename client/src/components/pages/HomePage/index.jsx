@@ -7,6 +7,8 @@ import PopUp from "./components/PopUp";
 import enums from "../../../enums/";
 import StreakWidget from "./components/Streak/index.jsx";
 import useHomePageController from "./controller"; // Importando o controller
+import { useUser } from "../../../context/UserContext";
+import { calculateLevel } from "../../../utils/levelUtils";
 
 import {
   Dashboard,
@@ -26,14 +28,17 @@ import {
   GlobalStyle
 } from "./styles";
 import { Link } from "react-router-dom";
+import { CAPIBAS_PER_QUIZ } from "./components/Quiz/controller";
 
 const API = import.meta.env.VITE_API_URL;
 
 export default function HomePage() {
+  const { userData } = useUser();
+  
   // State Definitions
-  const [xpNumber, setXpNumber] = useState(0); //to be changed to userdata
-  const [currentLevel, setCurrentLevel] = useState(0); //to be changed to userdata
-  const [currentStreak, setCurrentStreak] = useState(0);  //to be changed to userdata
+  const [xpNumber, setXpNumber] = useState(userData?.xp || 0);
+  const [currentLevel, setCurrentLevel] = useState(calculateLevel(userData?.xp || 0));
+  const [currentStreak, setCurrentStreak] = useState(0);
   const [currentMultiplier, setCurrentMultiplier] = useState(1.0);
   const [isScannerVisible, setIsScannerVisible] = useState(false);
   const [quizMode, setQuizMode] = useState(false);
@@ -42,10 +47,13 @@ export default function HomePage() {
   // Refs
   const readerRef = useRef(null);
   const scannerRef = useRef(null);
+  const calendarRef = useRef(null);
 
   // Constants
   const titleList = Object.values(enums.TITLES);
   const xpLimit = Object.values(enums.XP_LIMITS);
+  
+  const { setUserData } = useUser();
   
   // Initialize Controller
   const homeController = useHomePageController({
@@ -56,12 +64,24 @@ export default function HomePage() {
     setIsScannerVisible, isScannerVisible,
     setRecycleDone,
     scannerRef, readerRef,
-    xpLimit
+    xpLimit,
+    setUserData,
+    userData,
+    calendarRef
   });
 
 
   const xpString = `${xpNumber} / ${xpLimit[currentLevel]} XP`;
   const barPercentage = Math.min(100, (xpNumber / xpLimit[currentLevel]) * 100);
+
+  // Atualizar dados quando userData mudar
+  useEffect(() => {
+    if (userData) {
+      const userXp = userData.xp || 0;
+      setXpNumber(userXp);
+      setCurrentLevel(calculateLevel(userXp));
+    }
+  }, [userData]);
 
   useEffect(() => {
     homeController.fetchUserData();
@@ -93,7 +113,7 @@ export default function HomePage() {
             <h1>Ecocapiba</h1>
           </div>
           <Link to="/profile" className="user-avatar" aria-label="Perfil do usuário">
-            U
+            {userData?.name ? userData.name.charAt(0).toUpperCase() : 'U'}
           </Link>
         </header>
 
@@ -111,7 +131,9 @@ export default function HomePage() {
               {quizMode && (
                 <Quiz 
                   closeQuiz={() => setQuizMode(false)} 
-                  onQuizComplete={homeController.addXpToBackend} 
+                  onQuizComplete={(amount) => {
+                    homeController.addXpToBackend(amount, currentMultiplier, "quiz_reward", { description: "Recompensa por completar quiz" }, CAPIBAS_PER_QUIZ);
+                  }} 
                 />
               )}
             </QuizItem>
@@ -195,7 +217,7 @@ export default function HomePage() {
             <UserIndication />
           </Card>
           <Card>
-            <Calendar />
+            <Calendar ref={calendarRef} />
           </Card>
         </aside>
       </Dashboard>

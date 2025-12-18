@@ -1,5 +1,6 @@
 import { Html5QrcodeScanner } from "html5-qrcode";
 import useHomeServer from "../../../hooks/api/useHomeServer.js";
+import { calculateLevel } from "../../../utils/levelUtils.js";
 
 const RECYCLE_URLS = {
   RECICLAGEM: "https://pt.wikipedia.org/wiki/Reciclagem",
@@ -13,6 +14,8 @@ const REWARD_VALUES = {
   [RECYCLE_URLS.CAPIVARA]: 2500
 };
 
+const CAPIBAS_PER_RECYCLE = 250;
+
 export default function controller({
   setXpNumber, xpNumber,
   setCurrentLevel, currentLevel,
@@ -21,7 +24,10 @@ export default function controller({
   setIsScannerVisible, isScannerVisible,
   setRecycleDone,
   scannerRef, readerRef,
-  xpLimit
+  xpLimit,
+  setUserData,
+  userData,
+  calendarRef
 }) {
 
     // --- API CALLS ---
@@ -46,15 +52,29 @@ export default function controller({
     }
   }
 
-  async function addXpToBackend(amount, multiplier = currentMultiplier) {
+  async function addXpToBackend(amount, multiplier = currentMultiplier, reason = "generic_reward", metadata = null, capibas = 0) {
     try {
       const finalAmount = Math.round(amount * multiplier);
       
-      const data = await useHomeServer.postAddXp(finalAmount);
+      const data = await useHomeServer.postAddXp(finalAmount, capibas, reason, metadata);
       
       if (data) {
-        setXpNumber(data.xp);
-        return data.xp;
+        const newXp = data.xp;
+        const newCapibas = data.capibas;
+        setXpNumber(newXp);
+        
+        // Atualizar UserContext
+        if (setUserData && userData) {
+          const newLevel = calculateLevel(newXp);
+          setUserData({
+            ...userData,
+            xp: newXp,
+            capibas: newCapibas
+          });
+          setCurrentLevel(newLevel);
+        }
+        
+        return { xp: newXp, capibas: newCapibas };
       }
     } catch (error) {
       console.error("Erro ao adicionar Xp:", error);
@@ -64,18 +84,70 @@ export default function controller({
   // --- LOGIC & CALCULATIONS ---
 
   function checkLevelUp() {
-    if (xpLimit && xpNumber >= xpLimit[currentLevel]) {
-      setCurrentLevel((prev) => prev + 1);
+    if (xpNumber !== undefined) {
+      const calculatedLevel = calculateLevel(xpNumber);
+      if (calculatedLevel !== currentLevel) {
+        setCurrentLevel(calculatedLevel);
+      }
     }
   }
 
   // --- SCANNER LOGIC ---
 
-  function handleScanSuccess(decodedText, decodedResult) {
+  async function registerRecycle() {
+    try {
+      if (!userData || !userData.id) {
+        console.error('Dados do usuário não disponíveis para registrar reciclagem');
+        return false;
+      }
+
+      const API = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${API}/recycle`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          userId: userData.id,
+          doneDate: new Date().toISOString()
+        })
+      });
+
+      if (response.ok) {
+        return true;
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Erro ao registrar reciclagem:', response.status, errorData);
+      }
+    } catch (error) {
+      console.error('Erro ao registrar reciclagem:', error);
+    }
+    return false;
+  }
+
+  async function handleScanSuccess(decodedText, decodedResult) {
     console.log(`Code matched = ${decodedText}`, decodedResult);
     
     if (REWARD_VALUES[decodedText]) {
-      addXpToBackend(REWARD_VALUES[decodedText], currentMultiplier);
+      // Registrar reciclagem na API
+      const recycleRegistered = await registerRecycle();
+      
+      // Adicionar XP e capibas com reason específico para reciclagem
+      await addXpToBackend(
+        REWARD_VALUES[decodedText], 
+        currentMultiplier,
+        "recycle_reward",
+        { description: "Recompensa por reciclagem registrada" },
+        CAPIBAS_PER_RECYCLE
+      );
+      
+      // Atualizar calendário se disponível e reciclagem foi registrada
+      if (recycleRegistered && calendarRef && calendarRef.current && calendarRef.current.refresh) {
+        setTimeout(() => {
+          calendarRef.current.refresh();
+        }, 500); // Pequeno delay para garantir que a API processou
+      }
+      
       setRecycleDone(true);
     }
   }

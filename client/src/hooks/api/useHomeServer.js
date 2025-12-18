@@ -1,7 +1,7 @@
 const API = import.meta.env.VITE_API_URL;
 
 async function getStreak() {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('accessToken');
   if (!token) return null; 
 
   const options = { 
@@ -18,7 +18,7 @@ async function getStreak() {
 }
 
 async function getXp() {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('accessToken');
   if (!token) return null;
 
   const options = { 
@@ -34,9 +34,14 @@ async function getXp() {
   throw new Error(response.statusText);
 }
 
-async function postAddXp(amount) {
-  const token = localStorage.getItem('authToken');
+async function postAddXp(amount, capibas, reason, metadata) {
+  const token = localStorage.getItem('accessToken');
   if (!token) return null;
+
+  const body = { amount };
+  if (capibas !== undefined && capibas !== null) body.capibas = capibas;
+  if (reason) body.reason = reason;
+  if (metadata) body.metadata = metadata;
 
   const options = { 
     headers: { 
@@ -44,7 +49,7 @@ async function postAddXp(amount) {
       'Authorization': `Bearer ${token}` 
     }, 
     method: 'POST', 
-    body: JSON.stringify({ amount }) 
+    body: JSON.stringify(body) 
   };
 
   const response = await fetch(`${API}/auth/addxp`, options);
