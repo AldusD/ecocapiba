@@ -3,7 +3,7 @@ import useQuizServer from "../../../../../hooks/api/useQuizServer";
 
 export const ANSWER_BENCHMARK = 3;
 export const TIME_TO_ANSWER = 30;
-export const CAPIBAS_PER_QUIZ = 20;
+export const CAPIBAS_PER_QUIZ = 150;
 export const XP_PER_QUIZ = 250;
 
 const TIME_TO_NEXT_QUESTION = 1500;

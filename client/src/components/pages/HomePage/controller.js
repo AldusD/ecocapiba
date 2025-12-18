@@ -14,6 +14,8 @@ const REWARD_VALUES = {
   [RECYCLE_URLS.CAPIVARA]: 2500
 };
 
+const CAPIBAS_PER_RECYCLE = 250;
+
 export default function controller({
   setXpNumber, xpNumber,
   setCurrentLevel, currentLevel,
@@ -50,14 +52,15 @@ export default function controller({
     }
   }
 
-  async function addXpToBackend(amount, multiplier = currentMultiplier) {
+  async function addXpToBackend(amount, multiplier = currentMultiplier, reason = "generic_reward", metadata = null, capibas = 0) {
     try {
       const finalAmount = Math.round(amount * multiplier);
       
-      const data = await useHomeServer.postAddXp(finalAmount);
+      const data = await useHomeServer.postAddXp(finalAmount, capibas, reason, metadata);
       
       if (data) {
         const newXp = data.xp;
+        const newCapibas = data.capibas;
         setXpNumber(newXp);
         
         // Atualizar UserContext
@@ -65,12 +68,13 @@ export default function controller({
           const newLevel = calculateLevel(newXp);
           setUserData({
             ...userData,
-            xp: newXp
+            xp: newXp,
+            capibas: newCapibas
           });
           setCurrentLevel(newLevel);
         }
         
-        return newXp;
+        return { xp: newXp, capibas: newCapibas };
       }
     } catch (error) {
       console.error("Erro ao adicionar Xp:", error);
@@ -128,8 +132,14 @@ export default function controller({
       // Registrar reciclagem na API
       const recycleRegistered = await registerRecycle();
       
-      // Adicionar XP
-      await addXpToBackend(REWARD_VALUES[decodedText], currentMultiplier);
+      // Adicionar XP e capibas com reason específico para reciclagem
+      await addXpToBackend(
+        REWARD_VALUES[decodedText], 
+        currentMultiplier,
+        "recycle_reward",
+        { description: "Recompensa por reciclagem registrada" },
+        CAPIBAS_PER_RECYCLE
+      );
       
       // Atualizar calendário se disponível e reciclagem foi registrada
       if (recycleRegistered && calendarRef && calendarRef.current && calendarRef.current.refresh) {

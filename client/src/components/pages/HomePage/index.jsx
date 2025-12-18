@@ -28,6 +28,7 @@ import {
   GlobalStyle
 } from "./styles";
 import { Link } from "react-router-dom";
+import { CAPIBAS_PER_QUIZ } from "./components/Quiz/controller";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -130,7 +131,9 @@ export default function HomePage() {
               {quizMode && (
                 <Quiz 
                   closeQuiz={() => setQuizMode(false)} 
-                  onQuizComplete={homeController.addXpToBackend} 
+                  onQuizComplete={(amount) => {
+                    homeController.addXpToBackend(amount, currentMultiplier, "quiz_reward", { description: "Recompensa por completar quiz" }, CAPIBAS_PER_QUIZ);
+                  }} 
                 />
               )}
             </QuizItem>

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import enums from "../../../enums/";
 import { useUser } from "../../../context/UserContext";
 import { calculateLevel } from "../../../utils/levelUtils";
+import { getRewardName } from "../../../utils/rewardNames";
 import { useLogout } from "../../../hooks/api/useUserServer";
 import {
   GlobalStyle,
@@ -111,9 +112,12 @@ export default function ProfilePage() {
               })
             : "";
 
+          // Usar a função getRewardName para obter nome específico
+          const rewardName = getRewardName(entry);
+
           return {
             id: entry.id,
-            title: entry.title ?? "Recompensa",
+            title: rewardName,
             date,
             amount: entry.capibas ?? 0,
           };
