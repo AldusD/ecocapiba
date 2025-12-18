@@ -26,6 +26,15 @@ export class RecycleRepository {
     return recycleByDate ? recycleByDate.doneDate : null;
   }
 
+    async getRecylesById(id: number): Promise<number | null> {
+    const recycleById = await this.prisma.recyclesMade.findUnique({
+      where: { id: Number(id) },
+      select: { userId: true },
+    });
+
+    return recycleById ? recycleById.userId : null;
+  }
+
   async getRecyclesByUserId(userId: number): Promise<RecyclesMade[] | null> {
     return await this.prisma.recyclesMade.findMany({
       where: { userId: Number(userId) },

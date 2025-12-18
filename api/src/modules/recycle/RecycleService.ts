@@ -19,6 +19,14 @@ export class RecycleService {
     }
   }
 
+    async checkRecycle(userId: number, currentDate: Date) {
+    const hasRecycled = await this.recycleRepository.getRecyclesByDate(
+      userId,
+      currentDate
+    );
+    return hasRecycled !== null;
+  }
+
   async getStreakMultiplier(userId: number): Promise<{ streakWeeks: number, multiplier: number }> {
     let streakWeeks = 0;
     let checkDate = new Date();

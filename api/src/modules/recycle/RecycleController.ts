@@ -35,6 +35,21 @@ export class RecycleController {
     }
   }
 
+  public async checkRecycle(req: Request, res: Response) {
+    try {
+      const { userId, date } = req.body;
+
+      const hasRecycled = await this.recycleService.checkRecycle(
+        userId,
+        new Date(date)
+      );
+
+      return res.status(HttpStatusEnum.OK).json({ hasRecycled });
+    } catch (error) {
+      return res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json(MessagesEnum.ERROR_SERVER);
+    }
+  }
+  
   async getCalendar(req: Request, res: Response) {
     try {
       const userId = Number(res.locals.user);

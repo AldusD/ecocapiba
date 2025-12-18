@@ -67,8 +67,10 @@ npm test -- --coverage
 - Testam o fluxo completo das rotas HTTP, incluindo middleware de autenticação
 - **Auth**: Testa rotas de login, register, profile, getXp, addXp
 - **Quiz**: Testa rota de registro de tentativas de quiz (`/quiz/attempt/:quizId`)
+- **Recycle**: Testa rotas de check-recycle, create, calendar, streak
 - **Auth**: Testa rotas de login, register, profile, getXp, addXp
 - **Quiz**: Testa rota de registro de tentativas de quiz
+- **Recycle**: Testa rotas de check-recycle, create, calendar, streak
 
 ## Cobertura
 
