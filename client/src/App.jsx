@@ -1,9 +1,8 @@
+/* eslint-disable react/prop-types */
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UserProvider } from './context/UserContext';
 import { useUser } from './context/UserContext';
-
-import React, { useEffect } from 'react';
 
 import HomePage from './components/pages/HomePage';
 import AboutUsPage from './components/pages/AboutUsPage';
@@ -15,13 +14,9 @@ import ProfilePage from './components/pages/ProfilePage';
 const queryClient = new QueryClient();
 
 export default function App() {
-  useEffect(() => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-  }, []);
   const RootRedirect = () => {
     const { userData } = useUser();
-    const isAuthenticated = !!userData || !!localStorage.getItem('accessToken');
+    const isAuthenticated = !!userData || !!localStorage.getItem('authToken');
     return isAuthenticated ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />;
   }
 

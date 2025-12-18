@@ -1,4 +1,4 @@
-const API = import.meta.env.VITE_API_URL;
+const API = import.meta.env.VITE_API_BASE_URL;
 
 async function getStreak() {
   const token = localStorage.getItem('authToken');

@@ -1,5 +1,6 @@
 import { type Request, type Response } from "express";
 import { RecycleService } from "./RecycleService.js";
+import { AuthService } from "../auth/AuthService.js";
 import { HttpStatusEnum } from "../shared/enums/httpStatusEnum.js";
 import { MessagesEnum } from "../shared/enums/messagesEnum.js";
 
@@ -23,16 +24,23 @@ export class RecycleController {
 
   public async create(req: Request, res: Response) {
     try {
-      const { userId, doneDate } = req.body;
+      const userId = Number(res.locals.user);
+      const { doneDate, xpAmount } = req.body;
 
       const registerRecycle = await this.recycleService.registerRecycle(
         userId,
         new Date(doneDate)
       );
+
+      // Award XP to user
+      const authService = new AuthService();
+      if (xpAmount) {
+        await authService.addUserReward(userId, xpAmount, 0);
+      }
       
       return res.status(HttpStatusEnum.CREATED).json({ registerRecycle });
     } catch (error) {
-      
+      console.error(error);
       return res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json(MessagesEnum.ERROR_SERVER);
     }
   }

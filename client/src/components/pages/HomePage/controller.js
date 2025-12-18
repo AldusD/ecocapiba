@@ -21,7 +21,8 @@ export default function controller({
   setIsScannerVisible, isScannerVisible,
   setRecycleDone,
   scannerRef, readerRef,
-  xpLimit
+  xpLimit,
+  onRecycleRegistered
 }) {
 
     // --- API CALLS ---
@@ -61,6 +62,40 @@ export default function controller({
     }
   }
 
+  async function registerRecycleToBackend(xpAmount) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/recycle`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          doneDate: today.toISOString(),
+          xpAmount: xpAmount
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Refresh user data (streak and XP) after registering recycle
+        await fetchUserData();
+        
+        if (onRecycleRegistered) {
+          onRecycleRegistered();
+        }
+        return data;
+      }
+    } catch (error) {
+      console.error("Erro ao registrar reciclagem:", error);
+    }
+  }
+
   // --- LOGIC & CALCULATIONS ---
 
   function checkLevelUp() {
@@ -75,7 +110,9 @@ export default function controller({
     console.log(`Code matched = ${decodedText}`, decodedResult);
     
     if (REWARD_VALUES[decodedText]) {
-      addXpToBackend(REWARD_VALUES[decodedText], currentMultiplier);
+      const xpAmount = REWARD_VALUES[decodedText];
+      addXpToBackend(xpAmount, currentMultiplier);
+      registerRecycleToBackend(Math.round(xpAmount * currentMultiplier));
       setRecycleDone(true);
     }
   }
@@ -116,6 +153,7 @@ export default function controller({
   return {
     fetchUserData,
     addXpToBackend,
+    registerRecycleToBackend,
     checkLevelUp,
     initializeScanner,
     cleanupScanner,
