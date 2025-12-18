@@ -7,6 +7,8 @@ import PopUp from "./components/PopUp";
 import enums from "../../../enums/";
 import StreakWidget from "./components/Streak/index.jsx";
 import useHomePageController from "./controller"; // Importando o controller
+import { useUser } from "../../../context/UserContext";
+import { calculateLevel } from "../../../utils/levelUtils";
 
 import {
   Dashboard,
@@ -30,10 +32,12 @@ import { Link } from "react-router-dom";
 const API = import.meta.env.VITE_API_URL;
 
 export default function HomePage() {
+  const { userData } = useUser();
+  
   // State Definitions
-  const [xpNumber, setXpNumber] = useState(0); //to be changed to userdata
-  const [currentLevel, setCurrentLevel] = useState(0); //to be changed to userdata
-  const [currentStreak, setCurrentStreak] = useState(0);  //to be changed to userdata
+  const [xpNumber, setXpNumber] = useState(userData?.xp || 0);
+  const [currentLevel, setCurrentLevel] = useState(calculateLevel(userData?.xp || 0));
+  const [currentStreak, setCurrentStreak] = useState(0);
   const [currentMultiplier, setCurrentMultiplier] = useState(1.0);
   const [isScannerVisible, setIsScannerVisible] = useState(false);
   const [quizMode, setQuizMode] = useState(false);
@@ -47,6 +51,8 @@ export default function HomePage() {
   const titleList = Object.values(enums.TITLES);
   const xpLimit = Object.values(enums.XP_LIMITS);
   
+  const { setUserData } = useUser();
+  
   // Initialize Controller
   const homeController = useHomePageController({
     setXpNumber, xpNumber,
@@ -56,12 +62,23 @@ export default function HomePage() {
     setIsScannerVisible, isScannerVisible,
     setRecycleDone,
     scannerRef, readerRef,
-    xpLimit
+    xpLimit,
+    setUserData,
+    userData
   });
 
 
   const xpString = `${xpNumber} / ${xpLimit[currentLevel]} XP`;
   const barPercentage = Math.min(100, (xpNumber / xpLimit[currentLevel]) * 100);
+
+  // Atualizar dados quando userData mudar
+  useEffect(() => {
+    if (userData) {
+      const userXp = userData.xp || 0;
+      setXpNumber(userXp);
+      setCurrentLevel(calculateLevel(userXp));
+    }
+  }, [userData]);
 
   useEffect(() => {
     homeController.fetchUserData();
@@ -93,7 +110,7 @@ export default function HomePage() {
             <h1>Ecocapiba</h1>
           </div>
           <Link to="/profile" className="user-avatar" aria-label="Perfil do usuário">
-            U
+            {userData?.name ? userData.name.charAt(0).toUpperCase() : 'U'}
           </Link>
         </header>
 

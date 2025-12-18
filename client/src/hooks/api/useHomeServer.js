@@ -1,7 +1,7 @@
 const API = import.meta.env.VITE_API_URL;
 
 async function getStreak() {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('accessToken');
   if (!token) return null; 
 
   const options = { 
@@ -18,7 +18,7 @@ async function getStreak() {
 }
 
 async function getXp() {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('accessToken');
   if (!token) return null;
 
   const options = { 
@@ -35,7 +35,7 @@ async function getXp() {
 }
 
 async function postAddXp(amount) {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('accessToken');
   if (!token) return null;
 
   const options = { 

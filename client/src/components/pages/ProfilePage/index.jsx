@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import enums from "../../../enums/";
+import { useUser } from "../../../context/UserContext";
+import { calculateLevel } from "../../../utils/levelUtils";
+import { useLogout } from "../../../hooks/api/useUserServer";
 import {
   GlobalStyle,
   PageContainer,
@@ -9,6 +12,7 @@ import {
   ProfileHeader,
   Avatar,
   UserInfo,
+  LogoutButton,
 } from "./styles";
 import {
   CardLevelHighlight,
@@ -20,8 +24,11 @@ import {
 import CapibasHistory from "./components/CapibasHistory";
 
 export default function ProfilePage() {
-  const [xpNumber, setXpNumber] = useState(0);
-  const [currentLevel, setCurrentLevel] = useState(0);
+  const { userData } = useUser();
+  const navigate = useNavigate();
+  const logoutMutation = useLogout();
+  const [xpNumber, setXpNumber] = useState(userData?.xp || 0);
+  const [currentLevel, setCurrentLevel] = useState(calculateLevel(userData?.xp || 0));
   const [historyItems, setHistoryItems] = useState([]);
 
   const titleList = Object.values(enums.TITLES);
@@ -34,10 +41,26 @@ export default function ProfilePage() {
 
   const API = import.meta.env.VITE_API_URL;
 
+  // Atualizar dados quando userData mudar
+  useEffect(() => {
+    if (userData) {
+      const userXp = userData.xp || 0;
+      setXpNumber(userXp);
+      setCurrentLevel(calculateLevel(userXp));
+    }
+  }, [userData]);
+
   useEffect(() => {
     async function fetchXp() {
+      // Se já temos dados do contexto, não precisa buscar
+      if (userData?.xp !== undefined) {
+        return;
+      }
+
       try {
-        const token = localStorage.getItem("authToken");
+        const token = localStorage.getItem("accessToken");
+        if (!token) return;
+
         const response = await fetch(`${API}/auth/getxp`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -48,6 +71,7 @@ export default function ProfilePage() {
         if (response.ok) {
           const data = await response.json();
           setXpNumber(data.xp);
+          setCurrentLevel(calculateLevel(data.xp));
         } else {
           console.error("Falha ao buscar Xp:", response.statusText);
         }
@@ -56,12 +80,14 @@ export default function ProfilePage() {
       }
     }
     fetchXp();
-  }, [API]);
+  }, [API, userData]);
 
   useEffect(() => {
     async function fetchCapibasHistory() {
       try {
-        const token = localStorage.getItem("authToken");
+        const token = localStorage.getItem("accessToken");
+        if (!token) return;
+
         const response = await fetch(`${API}/auth/capibas-history?limit=20`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -103,10 +129,26 @@ export default function ProfilePage() {
   }, [API]);
 
   useEffect(() => {
-    if (xpNumber >= xpLimit[currentLevel]) {
-      setCurrentLevel((prev) => prev + 1);
+    if (xpNumber !== undefined) {
+      const calculatedLevel = calculateLevel(xpNumber);
+      if (calculatedLevel !== currentLevel) {
+        setCurrentLevel(calculatedLevel);
+      }
     }
-  }, [xpNumber, currentLevel, xpLimit]);
+  }, [xpNumber, currentLevel]);
+
+  const handleLogout = () => {
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        navigate('/login');
+      },
+      onError: (error) => {
+        console.error('Erro ao fazer logout:', error);
+        // Mesmo com erro, limpar dados locais e redirecionar
+        navigate('/login');
+      }
+    });
+  };
 
   return (
     <>
@@ -117,10 +159,12 @@ export default function ProfilePage() {
         </BackButton>
         <ProfileCard>
           <ProfileHeader>
-            <Avatar aria-hidden="true">U</Avatar>
+            <Avatar aria-hidden="true">
+              {userData?.name ? userData.name.charAt(0).toUpperCase() : 'U'}
+            </Avatar>
             <UserInfo>
-              <h2>Usuário Eco</h2>
-              <p>Perfil EcoCapiba</p>
+              <h2>{userData?.name || 'Usuário Eco'}</h2>
+              <p>{userData?.email || 'Perfil EcoCapiba'}</p>
             </UserInfo>
           </ProfileHeader>
 
@@ -140,6 +184,13 @@ export default function ProfilePage() {
           </CardLevelHighlight>
 
           <CapibasHistory items={historyItems} />
+
+          <LogoutButton 
+            onClick={handleLogout}
+            disabled={logoutMutation.isPending}
+          >
+            {logoutMutation.isPending ? 'Saindo...' : 'Sair da Conta'}
+          </LogoutButton>
         </ProfileCard>
       </PageContainer>
     </>

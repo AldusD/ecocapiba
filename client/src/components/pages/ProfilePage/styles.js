@@ -167,3 +167,34 @@ export const ActionValue = styled.span`
     font-weight: 800;
     font-size: 1.15rem;
 `;
+
+export const LogoutButton = styled.button`
+    width: 100%;
+    padding: 14px 20px;
+    margin-top: 24px;
+    background: ${enums.COLORS.LOGOUT_BG};
+    color: ${enums.COLORS.LOGOUT_TEXT};
+    border: 1px solid ${enums.COLORS.LOGOUT_TEXT};
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+    &:hover:not(:disabled) {
+        background: ${enums.COLORS.LOGOUT_BG_HOVER};
+        border-color: ${enums.COLORS.LOGOUT_TEXT};
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+`;

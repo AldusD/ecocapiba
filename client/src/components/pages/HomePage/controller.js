@@ -1,5 +1,6 @@
 import { Html5QrcodeScanner } from "html5-qrcode";
 import useHomeServer from "../../../hooks/api/useHomeServer.js";
+import { calculateLevel } from "../../../utils/levelUtils.js";
 
 const RECYCLE_URLS = {
   RECICLAGEM: "https://pt.wikipedia.org/wiki/Reciclagem",
@@ -21,7 +22,9 @@ export default function controller({
   setIsScannerVisible, isScannerVisible,
   setRecycleDone,
   scannerRef, readerRef,
-  xpLimit
+  xpLimit,
+  setUserData,
+  userData
 }) {
 
     // --- API CALLS ---
@@ -53,8 +56,20 @@ export default function controller({
       const data = await useHomeServer.postAddXp(finalAmount);
       
       if (data) {
-        setXpNumber(data.xp);
-        return data.xp;
+        const newXp = data.xp;
+        setXpNumber(newXp);
+        
+        // Atualizar UserContext
+        if (setUserData && userData) {
+          const newLevel = calculateLevel(newXp);
+          setUserData({
+            ...userData,
+            xp: newXp
+          });
+          setCurrentLevel(newLevel);
+        }
+        
+        return newXp;
       }
     } catch (error) {
       console.error("Erro ao adicionar Xp:", error);
@@ -64,8 +79,11 @@ export default function controller({
   // --- LOGIC & CALCULATIONS ---
 
   function checkLevelUp() {
-    if (xpLimit && xpNumber >= xpLimit[currentLevel]) {
-      setCurrentLevel((prev) => prev + 1);
+    if (xpNumber !== undefined) {
+      const calculatedLevel = calculateLevel(xpNumber);
+      if (calculatedLevel !== currentLevel) {
+        setCurrentLevel(calculatedLevel);
+      }
     }
   }
 
