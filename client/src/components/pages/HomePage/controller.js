@@ -128,6 +128,94 @@ export default function controller({
   async function handleScanSuccess(decodedText, decodedResult) {
     console.log(`Code matched = ${decodedText}`, decodedResult);
     
+    // Verificar se é um QR code do funcionário (contém /scan/ ou começa com ECOCAP-)
+    let qrCode = null;
+    if (decodedText.includes('/scan/')) {
+      // Extrair código da URL
+      const match = decodedText.match(/\/scan\/([^\/\s]+)/);
+      if (match && match[1]) {
+        qrCode = match[1];
+      }
+    } else if (decodedText.startsWith('ECOCAP-')) {
+      // Código direto
+      qrCode = decodedText;
+    }
+    
+    if (qrCode) {
+      // Processar QR code do funcionário
+      try {
+        const API = import.meta.env.VITE_API_URL;
+        const token = localStorage.getItem('accessToken');
+        
+        const response = await fetch(`${API}/recycle/validate-qr`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ code: qrCode })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          
+          // Buscar dados atualizados do usuário para garantir sincronização
+          try {
+            const API = import.meta.env.VITE_API_URL;
+            const token = localStorage.getItem('accessToken');
+            const profileResponse = await fetch(`${API}/auth/profile`, {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+            
+            if (profileResponse.ok) {
+              const userData = await profileResponse.json();
+              if (setUserData) {
+                const newLevel = calculateLevel(userData.xp || 0);
+                setUserData(userData);
+                setCurrentLevel(newLevel);
+                setXpNumber(userData.xp || 0);
+              }
+            }
+          } catch (profileError) {
+            console.error('Erro ao buscar dados atualizados:', profileError);
+            // Fallback: atualizar manualmente
+            if (setUserData && userData) {
+              const newXp = (userData.xp || 0) + (data.xp || 0);
+              const newCapibas = (userData.capibas || 0) + (data.capibas || 0);
+              const newLevel = calculateLevel(newXp);
+              setUserData({
+                ...userData,
+                xp: newXp,
+                capibas: newCapibas
+              });
+              setCurrentLevel(newLevel);
+              setXpNumber(newXp);
+            }
+          }
+          
+          // Atualizar calendário
+          if (calendarRef && calendarRef.current && calendarRef.current.refresh) {
+            setTimeout(() => {
+              calendarRef.current.refresh();
+            }, 500);
+          }
+          
+          setRecycleDone(true);
+          alert(`Reciclagem registrada! Você ganhou ${data.xp} XP e ${data.capibas} capibas!`);
+        } else {
+          const errorData = await response.json().catch(() => ({}));
+          alert(errorData.error || 'Erro ao processar QR Code');
+        }
+      } catch (error) {
+        console.error('Erro ao processar QR Code:', error);
+        alert('Erro ao processar QR Code. Tente novamente.');
+      }
+      return;
+    }
+    
+    // Processar QR codes antigos (URLs fixas)
     if (REWARD_VALUES[decodedText]) {
       // Registrar reciclagem na API
       const recycleRegistered = await registerRecycle();

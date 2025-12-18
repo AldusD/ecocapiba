@@ -10,6 +10,7 @@ import AboutUsPage from './components/pages/AboutUsPage';
 import NotFoundPage from './components/pages/NotFoundPage';
 import EmployeePage from './components/pages/EmployeePage';
 import LoginPage from './components/pages/LoginPage/LoginPage';
+import EmployeeLoginPage from './components/pages/EmployeeLoginPage';
 import ProfilePage from './components/pages/ProfilePage';
 import InvitePage from './components/pages/InvitePage/InvitePage';
 import UserDataLoader from './components/UserDataLoader';
@@ -39,6 +40,18 @@ export default function App() {
   const InviteRoute = ({ element: Element, ...rest }) => {
     return <Element {...rest} />;
   }
+
+  // Rota de funcionário - verifica token de funcionário
+  const EmployeeRoute = ({ element: Element, ...rest }) => {
+    const employeeToken = localStorage.getItem('employeeToken') || localStorage.getItem('employeeAccessToken');
+    return employeeToken ? <Element {...rest} /> : <Navigate to="/employee/login" replace />;
+  }
+
+  // Rota pública de login de funcionário
+  const EmployeeLoginRoute = ({ element: Element, ...rest }) => {
+    const employeeToken = localStorage.getItem('employeeToken') || localStorage.getItem('employeeAccessToken');
+    return !employeeToken ? <Element {...rest} /> : <Navigate to="/employee" replace />;
+  }
   
   return (
     <QueryClientProvider client={queryClient}>
@@ -51,7 +64,8 @@ export default function App() {
             <Route path='/convite/:code' element={ <InviteRoute element={InvitePage} /> } />
             <Route path='/home' element={ <ProtectedRoute element={HomePage} /> } />
             <Route path='/profile' element={ <ProtectedRoute element={ProfilePage} /> } />
-            <Route path='/employee' element={ <ProtectedRoute element={EmployeePage} /> } />
+            <Route path='/employee/login' element={ <EmployeeLoginRoute element={EmployeeLoginPage} /> } />
+            <Route path='/employee' element={ <EmployeeRoute element={EmployeePage} /> } />
             <Route path='/aboutus' element={ <AboutUsPage /> } />
             <Route path='*' element={ <NotFoundPage /> } />
           </Routes>
