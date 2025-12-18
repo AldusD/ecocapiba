@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useUser } from '../../context/UserContext';
 
-const API = import.meta.env.VITE_API_BASE_URL;
+const API = import.meta.env.VITE_API_URL;
 
 const parseResponse = async (response) => {
     const textData = await response.text();
@@ -48,14 +48,26 @@ const logout = async () => {
 }
 
 const getUserData = async () => 	{
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        throw new Error('Token não encontrado');
+    }
+
     const options = { 
         headers: { 
             'Content-Type': 'application/json', 
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}` }, 
-            method: 'GET', 
-        };
+            Authorization: `Bearer ${token}` 
+        }, 
+        method: 'GET', 
+    };
 
     const response = await fetch(`${API}/auth/profile`, options);
+    
+    if (!response.ok) {
+        const errorData = await parseResponse(response);
+        throw new Error(errorData.message || errorData.error || `Erro HTTP: ${response.status} ao buscar dados do usuário.`);
+    }
+
     return response.text();
 }
 
@@ -108,12 +120,26 @@ const cpfAuth = async (userData) => {
 
 export function useSignin () {
     const { setUserData } = useUser();
-    const navigateToHome = (data) => {
+    const navigateToHome = async (data) => {
         if (data && data.trim().startsWith('{')) {
             const parsedData = JSON.parse(data);
-            localStorage.setItem("accessToken", parsedData.token.accessToken);
-            localStorage.setItem("refreshToken", parsedData.token.refreshToken);
-            setUserData({ ...parsedData.user });
+            const token = parsedData.token;
+            
+            // Salvar token
+            if (token) {
+                localStorage.setItem("accessToken", token);
+            }
+            
+            // Buscar dados completos do usuário
+            try {
+                const userDataResponse = await getUserData();
+                if (userDataResponse && userDataResponse.trim().startsWith('{')) {
+                    const userData = JSON.parse(userDataResponse);
+                    setUserData(userData);
+                }
+            } catch (error) {
+                console.error("Erro ao buscar dados do usuário:", error);
+            }
         }
         return;
     }
@@ -125,29 +151,52 @@ export function useSignup () {
     const { setUserData } = useUser();
 
     const navigateToHome = async (data, variables) => {
-        // If register response includes tokens and user, use them
+        // If register response includes token, save it and fetch user data
         if (data && data.trim().startsWith('{')) {
             const parsed = JSON.parse(data);
-            if (parsed.token) {
-                localStorage.setItem("accessToken", parsed.token.accessToken);
-                localStorage.setItem("refreshToken", parsed.token.refreshToken);
-                setUserData({ ...parsed.user });
-                return;
+            const token = parsed.token;
+            
+            if (token) {
+                localStorage.setItem("accessToken", token);
+                
+                // Buscar dados completos do usuário
+                try {
+                    const userDataResponse = await getUserData();
+                    if (userDataResponse && userDataResponse.trim().startsWith('{')) {
+                        const userData = JSON.parse(userDataResponse);
+                        setUserData(userData);
+                        return;
+                    }
+                } catch (error) {
+                    console.error("Erro ao buscar dados do usuário após registro:", error);
+                }
             }
         }
 
-        // Otherwise, try to login immediately with the same credentials
+        // Fallback: try to login immediately with the same credentials
         try {
             const loginResp = await login(variables);
             if (loginResp && loginResp.trim().startsWith('{')) {
                 const parsedLogin = JSON.parse(loginResp);
-                if (parsedLogin.token) {
-                    localStorage.setItem("accessToken", parsedLogin.token.accessToken);
-                    localStorage.setItem("refreshToken", parsedLogin.token.refreshToken);
-                    setUserData({ ...parsedLogin.user });
+                const token = parsedLogin.token;
+                
+                if (token) {
+                    localStorage.setItem("accessToken", token);
+                    
+                    // Buscar dados completos do usuário
+                    try {
+                        const userDataResponse = await getUserData();
+                        if (userDataResponse && userDataResponse.trim().startsWith('{')) {
+                            const userData = JSON.parse(userDataResponse);
+                            setUserData(userData);
+                        }
+                    } catch (error) {
+                        console.error("Erro ao buscar dados do usuário após login:", error);
+                    }
                 }
             }
         } catch (err) {
+            console.error("Erro ao fazer login após registro:", err);
             // ignore: caller can handle navigation/errors
         }
     }
@@ -156,10 +205,11 @@ export function useSignup () {
 }
 
 export function useLogout () {
+    const { setUserData } = useUser();
+    
     const clearStorage = () => {
         localStorage.setItem("accessToken", '');
         localStorage.setItem("refreshToken",'');
-        const { setUserData } = useUser();
         setUserData(null); 
         return;
     }
@@ -172,12 +222,17 @@ export function useUserData () {
     
     const fillUserData = (data) => {
         if (data && data.trim().startsWith('{')) { 
-            setUserData({ ...JSON.parse(data).user });
+            const userData = JSON.parse(data);
+            setUserData(userData);
         }
         return;
     }
 
-    return useMutation({ mutationFn: getUserData, onSuccess: fillUserData });
+    return useMutation({ 
+        mutationFn: getUserData, 
+        onSuccess: fillUserData
+        // onError será tratado pelo componente que chama (UserDataLoader)
+    });
 }
 
 export function useNewTokens () {
@@ -195,15 +250,26 @@ export function useNewTokens () {
 export function useCpfAuth (onRequiresEmail) {
     const { setUserData } = useUser();
     
-    const navigateToHome = (data) => {
+    const navigateToHome = async (data) => {
         if (data && data.trim().startsWith('{')) {
             const parsedData = JSON.parse(data);
+            const token = parsedData.token;
 
-            localStorage.setItem("accessToken", parsedData.token.accessToken);
-            localStorage.setItem("refreshToken", parsedData.token.refreshToken);
+            if (token) {
+                localStorage.setItem("accessToken", token);
+            }
 
-            setUserData({ ...parsedData.user });
-            return parsedData;
+            // Buscar dados completos do usuário
+            try {
+                const userDataResponse = await getUserData();
+                if (userDataResponse && userDataResponse.trim().startsWith('{')) {
+                    const userData = JSON.parse(userDataResponse);
+                    setUserData(userData);
+                    return parsedData;
+                }
+            } catch (error) {
+                console.error("Erro ao buscar dados do usuário:", error);
+            }
         }
     }
 

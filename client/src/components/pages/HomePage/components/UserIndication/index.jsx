@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+import { useUser } from "../../../../../context/UserContext";
 import {
   ShareSectionCard,
   ShareLinkBox,
@@ -8,8 +9,23 @@ import {
 } from "./styles";
 
 export default function UserIndication() {  
+  const { userData } = useUser();
   const [copied, setCopied] = useState(false);
-  const shareUrl = "eccocapiba.com/convite/1a2b3c";
+  
+  // Gerar URL de convite dinamicamente com o código do usuário
+  const shareUrl = useMemo(() => {
+    const invitationCode = userData?.invitationCode || '';
+    const baseUrl = window.location.origin || 'https://eccocapiba.com';
+    // Garantir que a URL tenha protocolo
+    const fullUrl = baseUrl.startsWith('http') 
+      ? `${baseUrl}/convite/${invitationCode}`
+      : `https://${baseUrl}/convite/${invitationCode}`;
+    return fullUrl;
+  }, [userData?.invitationCode]);
+  
+  // URL sem protocolo para exibição
+  const displayUrl = shareUrl.replace(/^https?:\/\//, '');
+  
   const shareText = "Venha conhecer a Eccocapiba! Use meu link de convite e ganhe recompensas: ";
 
   const handleWhatsAppShare = () => {
@@ -24,7 +40,7 @@ export default function UserIndication() {
         await navigator.share({
           title: 'Convite Eccocapiba',
           text: shareText,
-          url: `https://${shareUrl}`
+          url: shareUrl
         });
       } catch (error) {
         // Usuário cancelou ou erro ocorreu
@@ -40,7 +56,7 @@ export default function UserIndication() {
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(`${shareText}https://${shareUrl}`)
+    navigator.clipboard.writeText(`${shareText}${shareUrl}`)
       .then(() => {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
@@ -48,12 +64,22 @@ export default function UserIndication() {
       .catch(err => console.error('Erro ao copiar:', err));
   };
 
+  // Se não houver código de convite, mostrar mensagem
+  if (!userData?.invitationCode) {
+    return (
+      <ShareSectionCard>
+        <h3>Compartilhe e Ganhe!</h3>
+        <p>Carregando seu link de convite...</p>
+      </ShareSectionCard>
+    );
+  }
+
   return (
     <ShareSectionCard>
       <h3>Compartilhe e Ganhe!</h3>
       <p>Convide seus amigos e ganhe recompensas juntos.</p>
       <ShareLinkBox onClick={copyToClipboard} style={{ cursor: 'pointer' }}>
-        {shareUrl}
+        {displayUrl}
       </ShareLinkBox>
       {copied && (
         <p style={{ color: '#10b981', fontSize: '14px', marginTop: '8px' }}>

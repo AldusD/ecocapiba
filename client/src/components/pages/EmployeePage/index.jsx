@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { MapPin, Download, CheckCircle, History, Zap, LogOut } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MapPin, Download, CheckCircle, History, Zap, LogOut, User } from 'lucide-react';
+import EmployeeDataLoader from '../../EmployeeDataLoader';
+import { useCreateQRCode, useQRHistory } from '../../../hooks/api/useEmployeeServer';
 import {
   AppContainer,
   Header,
@@ -45,7 +47,9 @@ export default function EmployeeQRGenerator() {
   const [qrCodeUrl, setQrCodeUrl] = useState('');
   const [currentQRData, setCurrentQRData] = useState(null);
   const [history, setHistory] = useState([]);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const createQRMutation = useCreateQRCode();
+  const historyMutation = useQRHistory();
+  const [employeeData, setEmployeeData] = useState(null);
 
   const xpOptions = [
     { value: '300', label: 'Pequeno', emoji: '🌱' },
@@ -65,35 +69,47 @@ export default function EmployeeQRGenerator() {
         return;
     }
 
-    setIsGenerating(true);
-
-    const qrData = {
-      type: 'recycling',
-      xp: parseInt(finalXp),
-      location: location,
-      timestamp: new Date().toISOString(),
-      notes: notes,
-      id: `REC-${Date.now().toString().slice(-6)}`
-    };
-
     try {
-      await new Promise(resolve => setTimeout(resolve, 600));
+      const result = await createQRMutation.mutateAsync({
+        xp: parseInt(finalXp),
+        capibas: 250,
+        location: location.trim(),
+        notes: notes.trim() || undefined,
+      });
 
-      const jsonString = JSON.stringify(qrData);
-      const encodedData = encodeURIComponent(jsonString);
-      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodedData}&color=67A02C&bgcolor=ffffff&margin=10`;
+      setQrCodeUrl(result.qrUrl);
+      setCurrentQRData({
+        code: result.code,
+        xp: result.xp,
+        capibas: result.capibas,
+        location: result.location,
+        notes: result.notes,
+        createdAt: result.createdAt,
+      });
 
-      setQrCodeUrl(qrUrl);
-      setCurrentQRData(qrData);
-      setHistory(prev => [{...qrData, generatedAt: new Date()}, ...prev]);
+      // Atualizar histórico
+      loadHistory();
 
     } catch (error) {
       console.error(error);
-      alert('Erro ao gerar');
-    } finally {
-      setIsGenerating(false);
+      alert(error.message || 'Erro ao gerar QR Code');
     }
   };
+
+  const loadHistory = async () => {
+    try {
+      const result = await historyMutation.mutateAsync();
+      if (result.history) {
+        setHistory(result.history);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar histórico:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadHistory();
+  }, []);
 
   const handleDownloadQR = async () => {
     if (!qrCodeUrl) return;
@@ -103,7 +119,7 @@ export default function EmployeeQRGenerator() {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `ecocapiba-${currentQRData.id}.png`;
+      link.download = `ecocapiba-${currentQRData.code}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -116,14 +132,73 @@ export default function EmployeeQRGenerator() {
 
   return (
     <AppContainer>
+      <EmployeeDataLoader onDataLoaded={setEmployeeData} />
       <Header>
         <Logo>
           <span>🌱</span>
           <h1>EcoCapiba</h1>
         </Logo>
-        <LogoutButton>
-          <LogOut size={18} />
-        </LogoutButton>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          {employeeData ? (
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '12px',
+              padding: '10px 18px',
+              backgroundColor: 'rgba(103, 160, 44, 0.15)',
+              borderRadius: '10px',
+              color: '#67A02C',
+              border: '1px solid rgba(103, 160, 44, 0.3)'
+            }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                backgroundColor: '#67A02C',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: '1.1rem'
+              }}>
+                {employeeData.name ? employeeData.name.charAt(0).toUpperCase() : 'E'}
+              </div>
+              <div style={{ textAlign: 'left' }}>
+                <div style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '2px' }}>
+                  {employeeData.name || 'Funcionário'}
+                </div>
+                <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>
+                  {employeeData.email || ''}
+                </div>
+                <div style={{ fontSize: '0.7rem', opacity: 0.7, marginTop: '2px' }}>
+                  ID: {employeeData.employeeId || 'N/A'}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '8px',
+              padding: '8px 12px',
+              color: '#888',
+              fontSize: '0.85rem'
+            }}>
+              <User size={16} />
+              <span>Carregando...</span>
+            </div>
+          )}
+          <LogoutButton
+            onClick={() => {
+              localStorage.removeItem('employeeToken');
+              localStorage.removeItem('employeeAccessToken');
+              window.location.href = '/employee/login';
+            }}
+          >
+            <LogOut size={18} />
+          </LogoutButton>
+        </div>
       </Header>
 
       <MainCard>
@@ -200,9 +275,9 @@ export default function EmployeeQRGenerator() {
 
             <GenerateButton 
               onClick={handleGenerateQR} 
-              disabled={isGenerating}
+              disabled={createQRMutation.isPending}
             >
-              {isGenerating ? 'Gerando...' : (
+              {createQRMutation.isPending ? 'Gerando...' : (
                 <>
                   Gerar QR Code
                   <CheckCircle size={20} />
@@ -229,7 +304,7 @@ export default function EmployeeQRGenerator() {
                   <h3>{currentQRData.location}</h3>
                   <TicketXp>+{currentQRData.xp} XP</TicketXp>
                   <TicketMeta>
-                    <span>#{currentQRData.id}</span> • <span>{new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    <span>#{currentQRData.code}</span> • <span>{new Date(currentQRData.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                   </TicketMeta>
                 </TicketInfo>
 
@@ -249,17 +324,23 @@ export default function EmployeeQRGenerator() {
               Últimos Envios
             </SectionTitle>
             <HistoryList>
-              {history.map((item, i) => (
-                <HistoryRow key={i}>
+              {history.map((item) => (
+                <HistoryRow key={item.id || item.code}>
                   <div style={{ fontFamily: 'monospace', color: '#64748b' }}>
-                    {new Date(item.generatedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    {new Date(item.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                   </div>
                   <div>
-                    <strong style={{ display: 'block', color: '#333' }}>{item.location}</strong>
+                    <strong style={{ display: 'block', color: '#333' }}>{item.location || 'Sem localização'}</strong>
                     {item.notes && <span style={{ fontSize: '0.85rem', color: '#888' }}>{item.notes}</span>}
+                    {item.used && (
+                      <span style={{ fontSize: '0.75rem', color: '#10b981', display: 'block', marginTop: '2px' }}>
+                        ✓ Utilizado
+                      </span>
+                    )}
                   </div>
                   <HistoryXp>
                     +{item.xp} XP
+                    {item.used && <span style={{ fontSize: '0.7rem', display: 'block', opacity: 0.7 }}>Usado</span>}
                   </HistoryXp>
                 </HistoryRow>
               ))}

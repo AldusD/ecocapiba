@@ -1,10 +1,15 @@
 import { type Request, type Response } from "express";
 import { RecycleService } from "./RecycleService.js";
+import { EmployeeQRService } from "../employee/EmployeeQRService.js";
 import { HttpStatusEnum } from "../shared/enums/httpStatusEnum.js";
 import { MessagesEnum } from "../shared/enums/messagesEnum.js";
+import { authenticate } from "../../middleware/authenticate.js";
 
 export class RecycleController {
-  constructor(private recycleService: RecycleService = new RecycleService()) {}
+  constructor(
+    private recycleService: RecycleService = new RecycleService(),
+    private qrService: EmployeeQRService = new EmployeeQRService()
+  ) {}
 
   public async checkRecycle(req: Request, res: Response) {
     try {
@@ -71,6 +76,31 @@ export class RecycleController {
     } catch (error) {
       console.error(error);
       return res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json(MessagesEnum.ERROR_SERVER);
+    }
+  }
+
+  async validateQRCode(req: Request, res: Response) {
+    try {
+      const userId = Number(res.locals.user);
+      const { code } = req.body;
+
+      if (!code) {
+        return res.status(HttpStatusEnum.UNPROCESSABLE_ENTITY).json({
+          error: "Código do QR Code é obrigatório"
+        });
+      }
+
+      // Processar QR code e adicionar recompensas (isso já registra a reciclagem internamente)
+      const result = await this.qrService.validateAndProcessQRCode(code, userId);
+
+      return res.status(HttpStatusEnum.OK).json({
+        success: true,
+        ...result,
+      });
+    } catch (err: any) {
+      return res.status(HttpStatusEnum.INTERNAL_SERVER_ERROR).json({
+        error: err.message || "Erro ao processar QR Code",
+      });
     }
   }
 }
