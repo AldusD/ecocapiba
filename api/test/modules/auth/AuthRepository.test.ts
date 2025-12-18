@@ -35,7 +35,7 @@ describe('AuthRepository', () => {
       rewardLog: {
         create: jest.fn(),
       },
-      $transaction: jest.fn((queries) => Promise.all(queries)),
+      // todo roque $transaction: jest.fn((queries) => Promise.all(queries)),
     };
 
     authRepository = new AuthRepository();
