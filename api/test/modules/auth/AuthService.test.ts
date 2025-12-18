@@ -36,29 +36,29 @@ describe('AuthService', () => {
 
   describe('authUser', () => {
     it('deve autenticar usuário com credenciais válidas', async () => {
-      mockAuthRepository.getByEmail.mockResolvedValue(mockUser);
+      mockAuthRepository.getByCPF.mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
-      const token = await authService.authUser('test@example.com', 'password123');
+      const token = await authService.authUser('12345678900', 'password123');
 
-      expect(mockAuthRepository.getByEmail).toHaveBeenCalledWith('test@example.com');
+      expect(mockAuthRepository.getByCPF).toHaveBeenCalledWith('12345678900');
       expect(bcrypt.compare).toHaveBeenCalledWith('password123', mockUser.password);
       expect(token).toBeTruthy();
       expect(typeof token).toBe('string');
     });
 
     it('deve lançar erro quando usuário não existe', async () => {
-      mockAuthRepository.getByEmail.mockResolvedValue(null);
+      mockAuthRepository.getByCPF.mockResolvedValue(null);
 
-      await expect(authService.authUser('test@example.com', 'password123'))
+      await expect(authService.authUser('12345678900', 'password123'))
         .rejects.toThrow(MessagesEnum.ERROR_INVALID_CREDENTIALS);
     });
 
     it('deve lançar erro quando senha está incorreta', async () => {
-      mockAuthRepository.getByEmail.mockResolvedValue(mockUser);
+      mockAuthRepository.getByCPF.mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-      await expect(authService.authUser('test@example.com', 'wrongpassword'))
+      await expect(authService.authUser('12345678900', 'wrongpassword'))
         .rejects.toThrow(MessagesEnum.ERROR_INVALID_CREDENTIALS);
     });
   });

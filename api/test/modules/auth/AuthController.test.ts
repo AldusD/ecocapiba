@@ -39,13 +39,13 @@ describe('AuthController', () => {
       const token = 'mock-jwt-token';
       mockAuthService.authUser.mockResolvedValue(token);
       mockRequest.body = {
-        email: 'test@example.com',
+        cpf: '12345678900',
         password: 'password123',
       };
 
       await authController.login(mockRequest as Request, mockResponse as Response);
 
-      expect(mockAuthService.authUser).toHaveBeenCalledWith('test@example.com', 'password123');
+      expect(mockAuthService.authUser).toHaveBeenCalledWith('12345678900', 'password123');
       expect(mockResponse.status).toHaveBeenCalledWith(HttpStatusEnum.OK);
       expect(mockResponse.json).toHaveBeenCalledWith({ token });
     });
@@ -53,7 +53,7 @@ describe('AuthController', () => {
     it('deve retornar erro com credenciais inválidas', async () => {
       mockAuthService.authUser.mockRejectedValue(new Error(MessagesEnum.ERROR_INVALID_CREDENTIALS));
       mockRequest.body = {
-        email: 'test@example.com',
+        cpf: '12345678900',
         password: 'wrongpassword',
       };
 
