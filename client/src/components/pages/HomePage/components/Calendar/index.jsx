@@ -8,7 +8,7 @@ import {
   Wrapper,
 } from "./styles";
 
-const API = import.meta.env.VITE_API_BASE_URL;
+const API = import.meta.env.VITE_API_URL;
 
 const Calendar = forwardRef((props, ref) => {
   const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];

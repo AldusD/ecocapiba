@@ -31,7 +31,7 @@ import {
 import { Link } from "react-router-dom";
 import { CAPIBAS_PER_QUIZ } from "./components/Quiz/controller";
 
-const API = import.meta.env.VITE_API_BASE_URL;
+const API = import.meta.env.VITE_API_URL;
 
 export default function HomePage() {
   const { userData } = useUser();

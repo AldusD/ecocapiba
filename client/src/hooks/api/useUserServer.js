@@ -239,7 +239,7 @@ export function useNewTokens () {
     const fillTokens = (data) => {
         if (data && data.trim().startsWith('{')) {
             const parsed = JSON.parse(data);
-            localStorage.setItem("authToken", parsed.token);
+            localStorage.setItem("accessToken", parsed.token);
         }
         return;
     }

@@ -84,11 +84,11 @@ export default function controller({
 
   async function registerRecycleToBackend(xpAmount) {
     try {
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem("accessToken");
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/recycle`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/recycle`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -131,16 +131,18 @@ export default function controller({
 
   async function registerRecycle() {
     try {
+      const token = localStorage.getItem("accessToken");
       if (!userData || !userData.id) {
         console.error('Dados do usuário não disponíveis para registrar reciclagem');
         return false;
       }
-
+ // roque
       const API = import.meta.env.VITE_API_URL;
       const response = await fetch(`${API}/recycle`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
           userId: userData.id,
