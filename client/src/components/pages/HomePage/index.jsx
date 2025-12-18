@@ -46,6 +46,7 @@ export default function HomePage() {
   // Refs
   const readerRef = useRef(null);
   const scannerRef = useRef(null);
+  const calendarRef = useRef(null);
 
   // Constants
   const titleList = Object.values(enums.TITLES);
@@ -64,7 +65,8 @@ export default function HomePage() {
     scannerRef, readerRef,
     xpLimit,
     setUserData,
-    userData
+    userData,
+    calendarRef
   });
 
 
@@ -212,7 +214,7 @@ export default function HomePage() {
             <UserIndication />
           </Card>
           <Card>
-            <Calendar />
+            <Calendar ref={calendarRef} />
           </Card>
         </aside>
       </Dashboard>

@@ -24,7 +24,8 @@ export default function controller({
   scannerRef, readerRef,
   xpLimit,
   setUserData,
-  userData
+  userData,
+  calendarRef
 }) {
 
     // --- API CALLS ---
@@ -89,11 +90,54 @@ export default function controller({
 
   // --- SCANNER LOGIC ---
 
-  function handleScanSuccess(decodedText, decodedResult) {
+  async function registerRecycle() {
+    try {
+      if (!userData || !userData.id) {
+        console.error('Dados do usuário não disponíveis para registrar reciclagem');
+        return false;
+      }
+
+      const API = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${API}/recycle`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          userId: userData.id,
+          doneDate: new Date().toISOString()
+        })
+      });
+
+      if (response.ok) {
+        return true;
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Erro ao registrar reciclagem:', response.status, errorData);
+      }
+    } catch (error) {
+      console.error('Erro ao registrar reciclagem:', error);
+    }
+    return false;
+  }
+
+  async function handleScanSuccess(decodedText, decodedResult) {
     console.log(`Code matched = ${decodedText}`, decodedResult);
     
     if (REWARD_VALUES[decodedText]) {
-      addXpToBackend(REWARD_VALUES[decodedText], currentMultiplier);
+      // Registrar reciclagem na API
+      const recycleRegistered = await registerRecycle();
+      
+      // Adicionar XP
+      await addXpToBackend(REWARD_VALUES[decodedText], currentMultiplier);
+      
+      // Atualizar calendário se disponível e reciclagem foi registrada
+      if (recycleRegistered && calendarRef && calendarRef.current && calendarRef.current.refresh) {
+        setTimeout(() => {
+          calendarRef.current.refresh();
+        }, 500); // Pequeno delay para garantir que a API processou
+      }
+      
       setRecycleDone(true);
     }
   }
