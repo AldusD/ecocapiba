@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-REQUIRED_VARS=("VITE_API_BASE_URL")
+REQUIRED_VARS=("VITE_API_URL")
 for VAR in "${REQUIRED_VARS[@]}"; do
   if [ -z "${!VAR}" ]; then
     echo "❌ $VAR is not set"
@@ -10,7 +10,7 @@ for VAR in "${REQUIRED_VARS[@]}"; do
 done
 
 docker build \
-  --build-arg VITE_API_BASE_URL="${VITE_API_BASE_URL}" \
+  --build-arg VITE_API_URL="${VITE_API_URL}" \
   -t ecocapiba-frontend \
   ../../client
 

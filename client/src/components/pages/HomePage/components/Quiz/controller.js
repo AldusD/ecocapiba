@@ -33,7 +33,6 @@ export default function controller({
 
     async function sendQuizAttempt() {
       const reponse = await useQuizServer.postQuizAttempt({ correctCount, quizId: quizData.id });
-      console.log("todo roque", reponse, { correctCount, quizId: quizData.id }); // todo roque remover
       
       // Award XP if user passed the quiz
       if (correctCount >= ANSWER_BENCHMARK && onQuizComplete) {
