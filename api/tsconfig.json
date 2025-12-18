@@ -26,9 +26,6 @@
 
     // Other Outputs
     "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
-  "declarationDir": "./dist/types",
 
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
@@ -44,12 +41,12 @@
 
     // Recommended Options
     "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": false,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
   },
-  "include": ["src", "test"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src", "prisma/generated"],
+  "exclude": ["node_modules", "dist", "test"]
 }

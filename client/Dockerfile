@@ -1,13 +1,16 @@
-FROM node:20
+FROM node:20-alpine
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package*.json ./
-# Use npm ci when a lockfile exists for reproducible installs; fallback to npm install
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+RUN npm ci
 
 COPY . .
 
-EXPOSE 3000
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
+EXPOSE 5173
 
 CMD ["npm", "start"]

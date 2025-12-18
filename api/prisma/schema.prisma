@@ -5,8 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -15,9 +14,157 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(uuid()) @db.VarChar(36)
-  name     String
-  email    String @unique
-  cpf      String @unique
-  password String
+  id             Int    @id @default(autoincrement())
+  name           String
+  email          String @unique
+  cpf            String @unique
+  invitationCode String @unique
+  password       String
+  xp             Int    @default(0)
+  capibas        Float  @default(0)
+
+  recyclesMade RecyclesMade[]
+  QuizAttempt  QuizAttempt[]
+  recycleRewardLogs RecycleRewardLog[]
+  quizAttemptRewardLogs QuizAttemptRewardLog[]
+
+  inviterLogs InvitationLog[] @relation("UserInviterRelation")
+  invitedLogs InvitationLog[] @relation("UserInvitedRelation")
+  rewardLogs  RewardLog[]
+  recycleQRCodes RecycleQRCode[]
+}
+
+model InvitationLog {
+  id        Int   @id @default(autoincrement())
+  inviterId Int
+  invitedId Int
+  xp        Int
+  capibas   Float
+
+  createdAt DateTime @default(now())
+
+  inviter User @relation("UserInviterRelation", fields: [inviterId], references: [id])
+  invited User @relation("UserInvitedRelation", fields: [invitedId], references: [id])
+
+  @@unique([invitedId, inviterId])
+}
+
+model RecyclesMade {
+  id       Int      @id @default(autoincrement())
+  userId   Int
+  doneDate DateTime
+
+  User User @relation(fields: [userId], references: [id])
+  recycleRewardLogs RecycleRewardLog[]
+}
+
+model Quiz {
+  id        Int           @id @default(autoincrement())
+  type      Int
+  questions Question[]
+  attempts  QuizAttempt[]
+}
+
+model Question {
+  id           Int    @id @default(autoincrement())
+  quizId       Int
+  title        String
+  alternatives String
+  Quiz         Quiz   @relation(fields: [quizId], references: [id])
+}
+
+model QuizAttempt {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  quizId    Int
+  status    Int
+  createdAt DateTime @default(now())
+
+  Quiz Quiz @relation(fields: [quizId], references: [id])
+  User User @relation(fields: [userId], references: [id])
+  quizAttemptRewardLogs QuizAttemptRewardLog[]
+}
+
+model RewardLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  xp        Int
+  capibas   Float
+  reason    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  User User @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+}
+
+model RecycleRewardLog {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  recyclesMadeId Int
+  xp            Int
+  capibas       Float
+  metadata      Json?
+  createdAt     DateTime @default(now())
+
+  User        User        @relation(fields: [userId], references: [id])
+  RecyclesMade RecyclesMade @relation(fields: [recyclesMadeId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([recyclesMadeId])
+}
+
+model QuizAttemptRewardLog {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  quizAttemptId Int
+  xp           Int
+  capibas      Float
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  User       User       @relation(fields: [userId], references: [id])
+  QuizAttempt QuizAttempt @relation(fields: [quizAttemptId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([quizAttemptId])
+}
+
+model Employee {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  employeeId String @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  recycleQRCodes RecycleQRCode[]
+
+  @@index([email])
+  @@index([employeeId])
+}
+
+model RecycleQRCode {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  employeeId  Int
+  xp          Int
+  capibas     Float    @default(250)
+  location    String?
+  notes       String?
+  used        Boolean  @default(false)
+  usedBy      Int?
+  usedAt      DateTime?
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime?
+
+  Employee Employee @relation(fields: [employeeId], references: [id])
+  User     User?    @relation(fields: [usedBy], references: [id])
+
+  @@index([code])
+  @@index([employeeId])
+  @@index([used])
+  @@index([usedBy])
 }

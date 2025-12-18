@@ -1,6 +1,13 @@
 node_modules/
+dist
+
+api/dist/
+client/dist/
 
 /api/src/generated/prisma
 
 .env
-.env.*
+
+.yml
+
+.DS_Store
