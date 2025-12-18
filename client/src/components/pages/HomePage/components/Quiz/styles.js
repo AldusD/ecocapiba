@@ -12,7 +12,6 @@ export const QuizStyles = styled.div`
   min-width: 60vh;
   max-width: 90vw;
   max-height: 96vh;
-  margin: 40px auto;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   text-align: center;
   overflow: hidden;

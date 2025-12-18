@@ -28,7 +28,7 @@ import {
 } from "./styles";
 import { Link } from "react-router-dom";
 
-const API = import.meta.env.VITE_API_URL;
+const API = import.meta.env.VITE_API_BASE_URL;
 
 export default function HomePage() {
   // State Definitions
@@ -39,6 +39,7 @@ export default function HomePage() {
   const [isScannerVisible, setIsScannerVisible] = useState(false);
   const [quizMode, setQuizMode] = useState(false);
   const [recycleDone, setRecycleDone] = useState(false);
+  const [refreshCalendar, setRefreshCalendar] = useState(false);
 
   // Refs
   const readerRef = useRef(null);
@@ -47,6 +48,10 @@ export default function HomePage() {
   // Constants
   const titleList = Object.values(enums.TITLES);
   const xpLimit = Object.values(enums.XP_LIMITS);
+  
+  const handleRecycleRegistered = () => {
+    setRefreshCalendar(prev => !prev);
+  };
   
   // Initialize Controller
   const homeController = useHomePageController({
@@ -57,7 +62,8 @@ export default function HomePage() {
     setIsScannerVisible, isScannerVisible,
     setRecycleDone,
     scannerRef, readerRef,
-    xpLimit
+    xpLimit,
+    onRecycleRegistered: handleRecycleRegistered
   });
 
 
@@ -193,7 +199,7 @@ export default function HomePage() {
           <Card as="section" className="share-section" style={{ display: 'none' }}>
             <UserIndication />
           </Card>
-          <Card style={{ display: 'none' }}>
+          <Card style={{ display: 'none' }} key={refreshCalendar}>
             <Calendar />
           </Card>
         </aside>

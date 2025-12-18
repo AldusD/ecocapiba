@@ -8,8 +8,8 @@ export class AuthController {
 
     async login (req: Request, res: Response) {
         try {
-            const { email, password } = req.body;
-            const token = await this.authService.authUser(email, password);
+            const { cpf, password } = req.body;
+            const token = await this.authService.authUser(cpf, password);
             res.status(HttpStatusEnum.OK).json({token});
         } catch(err: any) {
             res.status(HttpStatusEnum.INVALID_CREDENTIALS).send({ error: err.message });

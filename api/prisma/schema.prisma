@@ -25,6 +25,8 @@ model User {
 
   recyclesMade RecyclesMade[]
   QuizAttempt  QuizAttempt[]
+  recycleRewardLogs RecycleRewardLog[]
+  quizAttemptRewardLogs QuizAttemptRewardLog[]
 
   inviterLogs InvitationLog[] @relation("UserInviterRelation")
   invitedLogs InvitationLog[] @relation("UserInvitedRelation")
